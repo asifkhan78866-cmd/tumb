@@ -1,0 +1,14 @@
+**/__pycache__/
+**/*.pyc
+.venv/
+venv/
+frontend/node_modules/
+frontend/.next/
+backend/weights/*.pth
+backend/dataset/*
+backend/predictions/*
+backend/uploads/*
+backend/logs/*
+.git/
+.gitignore
+*.md

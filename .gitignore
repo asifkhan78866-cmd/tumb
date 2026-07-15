@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# ML artifacts / data (keep folder via .gitkeep)
+backend/weights/*.pth
+backend/dataset/*
+!backend/dataset/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/predictions/*
+!backend/predictions/.gitkeep
+backend/logs/*
+!backend/logs/.gitkeep
+*.nii
+*.nii.gz
+
+# Secrets / credentials
+kaggle.json
+.kaggle/
+backend/.env
+.env
+!backend/.env.example
+!frontend/.env.example
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+frontend/.env*.local
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
