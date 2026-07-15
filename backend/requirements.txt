@@ -6,6 +6,7 @@ numpy>=1.24.0
 opencv-python-headless>=4.8.0
 Pillow>=10.0.0
 nibabel>=5.1.0            # BraTS NIfTI volumes
+h5py>=3.10.0             # BraTS 2020 per-slice .h5 files
 scikit-image>=0.22.0
 # Training / metrics / plots
 tensorboard>=2.15.0

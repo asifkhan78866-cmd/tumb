@@ -141,10 +141,19 @@ def summarize_dataset(root: Path | None = None) -> dict:
     n_images = _count(image_exts, root)
     n_masks = len([p for p in root.rglob("*") if "seg" in p.name.lower() or "mask" in p.name.lower()])
     n_volumes = _count(volume_exts, root)
+    # BraTS 2020 mirror ships one .h5 per slice (image + mask together).
+    n_h5_slices = _count(("volume_*_slice_*.h5",), root)
 
-    # "Patients" for BraTS-style volume datasets = number of subject folders.
+    # "Patients" for BraTS-style datasets: subject folders, NIfTI subjects, or
+    # unique volume ids parsed from the .h5 filenames.
     patient_dirs = {p.parent for p in root.rglob("*_flair.nii*")}
-    n_patients = len(patient_dirs) if patient_dirs else len([d for d in root.iterdir() if d.is_dir()])
+    if patient_dirs:
+        n_patients = len(patient_dirs)
+    elif n_h5_slices:
+        vols = {p.name.split("_slice_")[0] for p in root.rglob("volume_*_slice_*.h5")}
+        n_patients = len(vols)
+    else:
+        n_patients = len([d for d in root.iterdir() if d.is_dir()])
 
     return {
         "root": str(root),
@@ -153,7 +162,8 @@ def summarize_dataset(root: Path | None = None) -> dict:
         "image_count": n_images,
         "mask_count": n_masks,
         "volume_count": n_volumes,
-        "integrity_ok": (n_images > 0) or (n_volumes > 0),
+        "h5_slice_count": n_h5_slices,
+        "integrity_ok": (n_images > 0) or (n_volumes > 0) or (n_h5_slices > 0),
     }
 
 

@@ -115,15 +115,62 @@ def discover_nifti_pairs(root: Path) -> list[tuple[str, str, int]]:
     return triples
 
 
+def discover_brats_h5(root: Path, tumor_only: bool = True) -> list[str]:
+    """Find BraTS 2020 per-slice HDF5 files (``volume_X_slice_Y.h5``).
+
+    Each file holds ``image`` (H, W, 4 modalities) and ``mask`` (H, W, 3 tumor
+    sub-regions). When a metadata CSV with per-slice pixel counts is present we
+    use it to keep only tumor-containing slices (far faster than opening every
+    file, and it focuses training on informative slices).
+    """
+    data_dirs = [p for p in root.rglob("content/data") if p.is_dir()]
+    if not data_dirs:
+        # fall back to any directory that actually contains volume_*.h5 files
+        h5_any = list(root.rglob("volume_*_slice_*.h5"))
+        if not h5_any:
+            return []
+        data_dirs = [h5_any[0].parent]
+    data_dir = data_dirs[0]
+
+    csv_paths = list(root.rglob("*Metadata*.csv"))
+    if tumor_only and csv_paths:
+        import csv as _csv
+
+        keep: list[str] = []
+        with open(csv_paths[0]) as f:
+            reader = _csv.DictReader(f)
+            for row in reader:
+                counts = (
+                    int(float(row.get("label0_pxl_cnt", 0) or 0))
+                    + int(float(row.get("label1_pxl_cnt", 0) or 0))
+                    + int(float(row.get("label2_pxl_cnt", 0) or 0))
+                )
+                if counts <= 0:
+                    continue
+                # CSV stores a Kaggle-notebook path; map its basename to our copy.
+                fname = Path(row["slice_path"]).name
+                fpath = data_dir / fname
+                if fpath.exists():
+                    keep.append(str(fpath))
+        if keep:
+            return keep
+
+    # No CSV (or tumor_only disabled): use every slice file.
+    return [str(p) for p in sorted(data_dir.glob("volume_*_slice_*.h5"))]
+
+
 class SegmentationDataset(Dataset):
     """Segmentation samples from NIfTI volumes or weak Otsu masks on 2D images."""
 
     def __init__(self, root: Path, size: int = config.IMAGE_SIZE, augment: bool = False):
         self.size = size
         self.aug = Augmentor(seed=None) if augment else None
-        self.nifti = discover_nifti_pairs(root)
+        # Preference order: BraTS .h5 slices (real masks) -> NIfTI volumes ->
+        # 2D images with weak Otsu masks.
+        self.h5 = discover_brats_h5(root)
+        self.nifti = [] if self.h5 else discover_nifti_pairs(root)
         self.images: list[str] = []
-        if not self.nifti:
+        if not self.h5 and not self.nifti:
             for p in root.rglob("*"):
                 if p.is_file() and p.suffix.lower() in IMAGE_EXTS:
                     self.images.append(str(p))
@@ -133,7 +180,21 @@ class SegmentationDataset(Dataset):
             self._nib = nib
 
     def __len__(self):
+        if self.h5:
+            return len(self.h5)
         return len(self.nifti) if self.nifti else len(self.images)
+
+    def _load_h5(self, idx):
+        import h5py
+
+        with h5py.File(self.h5[idx], "r") as h:
+            image = h["image"][:]  # (H, W, 4) modalities
+            mask = h["mask"][:]    # (H, W, 3) tumor sub-regions
+        # FLAIR (channel 0) is best for whole-tumor extent.
+        img = cv2.normalize(image[:, :, 0], None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        # Whole tumor = union of all sub-regions.
+        msk = ((mask.sum(axis=2) > 0).astype(np.uint8)) * 255
+        return img, msk
 
     def _load_nifti(self, idx):
         flair, seg, z = self.nifti[idx]
@@ -151,7 +212,9 @@ class SegmentationDataset(Dataset):
         return img, msk
 
     def __getitem__(self, idx):
-        if self.nifti:
+        if self.h5:
+            img, msk = self._load_h5(idx)
+        elif self.nifti:
             img, msk = self._load_nifti(idx)
         else:
             img, msk = self._load_image(idx)
