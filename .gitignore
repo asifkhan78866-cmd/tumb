@@ -8,6 +8,8 @@ venv/
 
 # ML artifacts / data (keep folder via .gitkeep)
 backend/weights/*.pth
+# ...but ship the trained classifier so inference works out of the box.
+!backend/weights/best_classifier.pth
 backend/dataset/*
 !backend/dataset/.gitkeep
 backend/uploads/*
@@ -16,6 +18,14 @@ backend/predictions/*
 !backend/predictions/.gitkeep
 backend/logs/*
 !backend/logs/.gitkeep
+# Ship real evaluation metrics + plots so the dashboard shows true numbers.
+!backend/logs/metrics.json
+!backend/logs/cls_confusion_matrix.png
+!backend/logs/cls_roc.png
+!backend/logs/cls_acc.png
+!backend/logs/cls_loss.png
+!backend/logs/eval_confusion_matrix.png
+!backend/logs/eval_roc.png
 *.nii
 *.nii.gz
 
