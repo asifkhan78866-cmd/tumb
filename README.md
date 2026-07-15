@@ -129,6 +129,21 @@ summary (patients, classes, image/mask counts) also written to
 they need if it's missing (`train_classifier` → classification data,
 `train_segmentation` → BraTS).
 
+### Pre-trained classifier included
+
+`backend/weights/best_classifier.pth` ships in the repo — a ConvLSTM trained on
+the 7,200-image dataset (**~84% validation accuracy**), so classification works
+immediately after cloning, no training required. Real evaluation metrics are in
+`backend/logs/metrics.json` and drive the Metrics dashboard.
+
+### Train the U-Net on a GPU (recommended)
+
+Segmentation on BraTS (24k+ slices) needs a GPU. Open
+[`notebooks/train_unet_brats_gpu.ipynb`](notebooks/train_unet_brats_gpu.ipynb)
+in **Google Colab** or **Kaggle** (GPU runtime) — it clones the repo, installs
+deps, downloads BraTS, trains `best_unet.pth` on real masks, evaluates, and lets
+you download the weights to drop into `backend/weights/`.
+
 ### For the best / most accurate results
 
 - **Classification** already uses the properly labelled 4-class dataset above.
