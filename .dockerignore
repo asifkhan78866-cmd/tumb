@@ -4,11 +4,20 @@
 venv/
 frontend/node_modules/
 frontend/.next/
+# Keep the shipped Method 1 classifier and its metrics IN the image so a plain
+# `docker run` behaves like a checkout. Everything else generated is excluded.
 backend/weights/*.pth
+!backend/weights/best_classifier.pth
 backend/dataset/*
 backend/predictions/*
 backend/uploads/*
 backend/logs/*
+!backend/logs/metrics.json
+!backend/logs/method1_metrics.json
+backend/.model_cache/
+.venv/
+.env
 .git/
 .gitignore
 *.md
+!README.md
