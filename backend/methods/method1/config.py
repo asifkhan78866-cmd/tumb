@@ -36,7 +36,11 @@ BRATS_PATH = _global.BRATS_DATASET_PATH
 BRI_PATH = _global.BRI_DATASET_PATH
 
 METRICS_PATH = _global.LOGS_DIR / METHOD1.metrics_filename
-SFLA_RESULT_PATH = _global.LOGS_DIR / (METHOD1.optimization_result_filename or "method1_sfla_result.json")
+METADATA_PATH = _global.METHOD1_METADATA_PATH
+LOGS_DIR = _global.LOGS_DIR / "method1"
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
+SFLA_RESULT_PATH = _global.LOGS_DIR / "method1" / "sfla_results.json"
+SFLA_RESULT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
 def run_card_path(stage: str):

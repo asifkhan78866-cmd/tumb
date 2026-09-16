@@ -2,7 +2,8 @@
   "method_id": "method1",
   "classification": {
     "split": "LEGACY random slice-level validation split (NOT a held-out test set)",
-    "dataset": "Brain Tumor MRI Dataset (BRI), Training+Testing folders merged",
+    "split_level": "image-level",
+    "dataset": "Brain Tumor MRI Dataset (BRI), Training+Testing merged",
     "accuracy": 0.8403,
     "precision": 0.8379,
     "recall": 0.8442,
@@ -68,7 +69,7 @@
       "These numbers come from the classifier checkpoint shipped with the repository, before the two-method refactor. They are real measurements, but their provenance is weaker than the current pipeline's.",
       "The split was random at the slice level with no patient grouping, so near-duplicate images from one patient could appear in both training and validation. The score is therefore optimistic.",
       "It is the split that early stopping also selected on, so it is a model-selection score, not a held-out test score.",
-      "It was measured with the legacy whole-slice geometry (transform m1-v1-legacy). Retrain with `python -m backend.methods.method1.training.train_classifier` for a patient-grouped held-out test number.",
+      "It was measured with the legacy whole-slice geometry (transform m1-v1-legacy). Retrain with `python -m backend.methods.method1.training.train_classifier` for a real held-out test number.",
       "No segmentation model was trained, so no Dice or IoU exists for Method 1."
     ]
   },

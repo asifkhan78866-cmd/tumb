@@ -57,9 +57,27 @@ BRI_DATASET_PATH = _env_path("BRI_DATASET_PATH", DATASET_DIR / "brain-tumor-mri-
 BRATS_DATASET_PATH = _env_path("BRATS_DATASET_PATH", DATASET_DIR / "brats2020-training-data")
 SPECT_DATASET_PATH = _env_path("SPECT_DATASET_PATH", DATASET_DIR / "spect")
 
-# Method 1 weights (legacy names kept: the shipped classifier lives here).
-SEG_WEIGHTS_PATH = _env_path("METHOD1_UNET_WEIGHTS", WEIGHTS_DIR / "best_unet.pth")
-CLS_WEIGHTS_PATH = _env_path("METHOD1_CONVLSTM_WEIGHTS", WEIGHTS_DIR / "best_classifier.pth")
+# Method 1 weights. New runs write into weights/method1/; the legacy flat paths
+# are still honoured so the classifier shipped in the repo keeps loading.
+METHOD1_WEIGHTS_DIR = WEIGHTS_DIR / "method1"
+METHOD1_WEIGHTS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _method1_weight(env_var: str, new_name: str, legacy_name: str) -> Path:
+    """Prefer weights/method1/<name>, falling back to the legacy flat path."""
+    explicit = os.getenv(env_var, "").strip()
+    if explicit:
+        return Path(explicit).expanduser()
+    new = METHOD1_WEIGHTS_DIR / new_name
+    legacy = WEIGHTS_DIR / legacy_name
+    return new if new.exists() or not legacy.exists() else legacy
+
+
+SEG_WEIGHTS_PATH = _method1_weight("METHOD1_UNET_WEIGHTS", "best_unet.pth", "best_unet.pth")
+CLS_WEIGHTS_PATH = _method1_weight(
+    "METHOD1_CONVLSTM_WEIGHTS", "best_classifier.pth", "best_classifier.pth"
+)
+METHOD1_METADATA_PATH = METHOD1_WEIGHTS_DIR / "model_metadata.json"
 # Method 2 weights.
 M2_SEG_WEIGHTS_PATH = _env_path("METHOD2_SEGMENTATION_WEIGHTS", WEIGHTS_DIR / "method2_segmentation.pth")
 M2_DCN_WEIGHTS_PATH = _env_path("METHOD2_DCN_WEIGHTS", WEIGHTS_DIR / "method2_dcn.pth")
@@ -67,19 +85,67 @@ M2_DCN_WEIGHTS_PATH = _env_path("METHOD2_DCN_WEIGHTS", WEIGHTS_DIR / "method2_dc
 # --------------------------------------------------------------------------- #
 # Device
 # --------------------------------------------------------------------------- #
+def _mps_available() -> bool:
+    """True on Apple Silicon with a working Metal backend."""
+    try:
+        return bool(torch.backends.mps.is_available() and torch.backends.mps.is_built())
+    except Exception:
+        return False
+
+
 def _resolve_device() -> "torch.device":
-    """Honour ``DEVICE=auto|cpu|cuda``; fall back to CPU if CUDA is unavailable."""
+    """Honour ``DEVICE=auto|cpu|cuda|mps``, preferring the fastest stable backend.
+
+    ``auto`` picks CUDA, then MPS (Apple Silicon), then CPU. An explicit request
+    for an unavailable backend degrades to CPU with a printed reason rather than
+    raising at the first tensor allocation — training on the wrong device by
+    accident is far more expensive than a warning.
+    """
     want = os.getenv("DEVICE", "auto").strip().lower() or "auto"
     if want in {"", "auto"}:
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if _mps_available():
+            return torch.device("mps")
+        return torch.device("cpu")
     if want.startswith("cuda") and not torch.cuda.is_available():
         print("[config] DEVICE=cuda requested but CUDA is unavailable — using CPU.")
+        return torch.device("cpu")
+    if want.startswith("mps") and not _mps_available():
+        print("[config] DEVICE=mps requested but Metal is unavailable — using CPU.")
         return torch.device("cpu")
     return torch.device(want)
 
 
 DEVICE = _resolve_device()
-USE_AMP = DEVICE.type == "cuda"  # mixed precision only makes sense on CUDA
+# Mixed precision via GradScaler is a CUDA path only. MPS has no equivalent
+# scaler, and enabling autocast there silently produces NaNs on some torch
+# builds, so MPS trains in float32.
+USE_AMP = DEVICE.type == "cuda"
+# Pinned memory and non-blocking host->device copies are CUDA-only benefits.
+PIN_MEMORY = DEVICE.type == "cuda"
+
+
+def device_report() -> dict:
+    """Everything worth printing before a training run starts."""
+    info = {
+        "device": str(DEVICE),
+        "torch": torch.__version__,
+        "cuda_available": torch.cuda.is_available(),
+        "mps_available": _mps_available(),
+        "mixed_precision": USE_AMP,
+        "pin_memory": PIN_MEMORY,
+        "cpu_count": os.cpu_count(),
+    }
+    if torch.cuda.is_available():
+        try:
+            info["cuda_device"] = torch.cuda.get_device_name(0)
+            info["cuda_memory_gb"] = round(
+                torch.cuda.get_device_properties(0).total_memory / 1024**3, 1
+            )
+        except Exception:
+            pass
+    return info
 
 # --------------------------------------------------------------------------- #
 # Data / model hyper-parameters

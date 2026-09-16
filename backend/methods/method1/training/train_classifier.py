@@ -20,6 +20,7 @@ What this script guarantees, and the previous one did not:
 from __future__ import annotations
 
 import argparse
+import json
 import time
 
 import numpy as np
@@ -31,14 +32,21 @@ from backend import config
 from backend.methods.common.checkpoint import build_meta, save_checkpoint
 from backend.methods.common.metrics_store import update_metrics
 from backend.methods.common.runcard import RunCard, write_run_card
-from backend.methods.common.splits import group_train_val_test_split, split_summary
+from backend.methods.common.splits import (
+    group_split,
+    group_train_val_test_split,
+    split_summary,
+)
 from backend.methods.method1 import config as m1
 from backend.methods.method1.datasets import (
     ClassificationDataset,
     DatasetError,
     build_roi_cache,
+    class_distribution,
+    class_weights,
     classification_group_of,
     discover_classification_samples,
+    partition_by_official_split,
 )
 from backend.methods.method1.models import ConvLSTMClassifier, UNet
 from backend.methods.method1.transforms import M1_V1_LEGACY, M1_V2, TransformSpec
@@ -125,7 +133,15 @@ def main() -> int:
     ap.add_argument("--val-frac", type=float, default=0.15)
     ap.add_argument("--test-frac", type=float, default=0.15)
     ap.add_argument("--data-root", default=None)
+    ap.add_argument("--ignore-official-split", action="store_true",
+                    help="ignore the dataset's Training/Testing folders and split randomly")
+    ap.add_argument("--no-class-weights", action="store_true",
+                    help="disable inverse-frequency class weighting in the loss")
     args = ap.parse_args()
+
+    print("[cls] device report:")
+    for k, v in config.device_report().items():
+        print(f"[cls]   {k:18s}= {v}")
 
     seed_everything(config.SEED)
     device = config.DEVICE
@@ -147,15 +163,32 @@ def main() -> int:
     if config.SFLA_ENABLED and m1.SFLA_RESULT_PATH.exists():
         print(f"[cls] Using SFLA-optimised hyper-parameters from {m1.SFLA_RESULT_PATH}")
 
-    train_s, val_s, test_s = group_train_val_test_split(
-        samples, classification_group_of, args.val_frac, args.test_frac, seed=config.SEED
-    )
+    # Prefer the dataset's own split. Validation is carved out of the TRAINING
+    # pool only; the Testing folder is never touched until the final evaluation.
+    use_official = ds_meta.get("has_official_split") and not args.ignore_official_split
+    if use_official:
+        train_pool, test_s = partition_by_official_split(samples)
+        train_s, val_s = group_split(
+            train_pool, classification_group_of,
+            [1.0 - args.val_frac, args.val_frac], seed=config.SEED,
+        )
+        split_kind = "dataset Training/Testing split; validation carved from Training only"
+    else:
+        train_s, val_s, test_s = group_train_val_test_split(
+            samples, classification_group_of, args.val_frac, args.test_frac, seed=config.SEED
+        )
+        split_kind = "grouped random three-way split (dataset provided no Training/Testing)"
+
     summary = split_summary(
         {"train": train_s, "val": val_s, "test": test_s}, classification_group_of
     )
-    print(f"[cls] split (patient-grouped): {summary['counts']} | leak-free={summary['leak_free']}")
-    if not summary["leak_free"]:
-        print("ERROR: split produced overlapping groups; refusing to train.")
+    print(f"[cls] split: {split_kind}")
+    print(f"[cls]   counts {summary['counts']} | train/val leak-free={not summary['group_overlap'].get('train|val')}")
+    print(f"[cls]   per-class train: {class_distribution(train_s)}")
+    print(f"[cls]   per-class val  : {class_distribution(val_s)}")
+    print(f"[cls]   per-class test : {class_distribution(test_s)}")
+    if summary["group_overlap"].get("train|val"):
+        print("ERROR: train and validation share groups; refusing to train.")
         return 1
 
     roi_boxes: dict = {}
@@ -173,14 +206,21 @@ def main() -> int:
             samples, seg, spec, str(meta.get("model_version", "unknown")), device
         )
 
+    loader_kwargs: dict = {
+        "num_workers": args.workers,
+        "pin_memory": config.PIN_MEMORY,
+    }
+    if args.workers > 0:
+        # Respawning workers every epoch dominates runtime on a small dataset.
+        loader_kwargs["persistent_workers"] = True
+        loader_kwargs["prefetch_factor"] = 4
     loaders = {
         name: DataLoader(
             ClassificationDataset(part, spec, augment=(name == "train"), roi_boxes=roi_boxes),
             batch_size=batch_size,
             shuffle=(name == "train"),
-            num_workers=args.workers,
-            pin_memory=config.USE_AMP,
             drop_last=(name == "train"),
+            **loader_kwargs,
         )
         for name, part in (("train", train_s), ("val", val_s), ("test", test_s))
     }
@@ -193,7 +233,15 @@ def main() -> int:
         lstm_steps=int(hp["lstm_steps"]),
         dropout=float(hp["dropout"]),
     ).to(device)
-    criterion = torch.nn.CrossEntropyLoss()
+    weights = class_weights(train_s) if not args.no_class_weights else None
+    if weights:
+        print(f"[cls] class weights (inverse frequency): "
+              f"{dict(zip(m1.CLASS_NAMES, [round(w, 3) for w in weights]))}")
+        criterion = torch.nn.CrossEntropyLoss(
+            weight=torch.tensor(weights, dtype=torch.float32, device=device)
+        )
+    else:
+        criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=float(hp["weight_decay"]))
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
     scaler = torch.amp.GradScaler("cuda", enabled=config.USE_AMP)
@@ -247,12 +295,58 @@ def main() -> int:
         hyperparameters=hp,
         test_accuracy=test_m["accuracy"],
     )
-    save_checkpoint(m1.CLS_WEIGHTS_PATH, model.state_dict(), meta,
+    # New runs always write into weights/method1/, regardless of where the
+    # legacy checkpoint lived, so the two never shadow each other confusingly.
+    ckpt_path = config.METHOD1_WEIGHTS_DIR / "best_classifier.pth"
+    save_checkpoint(ckpt_path, model.state_dict(), meta,
                     epoch=best_epoch, val_acc=stopper.best)
-    print(f"[cls] checkpoint -> {m1.CLS_WEIGHTS_PATH}")
+    print(f"[cls] checkpoint -> {ckpt_path}")
+
+    metadata = {
+        "method_id": m1.METHOD_ID,
+        "method_name": m1.SPEC.display_name,
+        "architecture": m1.CLS_ARCHITECTURE,
+        "class_order": list(m1.CLASS_NAMES),
+        "class_labels": [m1.CLASS_LABELS[c] for c in m1.CLASS_NAMES],
+        "dataset_path": ds_meta["root"],
+        "dataset_counts": {
+            "train": class_distribution(train_s),
+            "validation": class_distribution(val_s),
+            "test": class_distribution(test_s),
+            "total": len(samples),
+        },
+        "split_strategy": split_kind,
+        "split_level": ds_meta.get("split_level"),
+        "preprocessing": spec.to_dict(),
+        "input_size": spec.image_size,
+        "batch_size": batch_size,
+        "optimizer": "Adam",
+        "learning_rate": lr,
+        "weight_decay": hp["weight_decay"],
+        "scheduler": "CosineAnnealingLR",
+        "class_weights": dict(zip(m1.CLASS_NAMES, weights)) if weights else None,
+        "epochs": args.epochs,
+        "best_epoch": best_epoch,
+        "random_seed": config.SEED,
+        "device": str(device),
+        "device_report": config.device_report(),
+        "sfla": {
+            "enabled": config.SFLA_ENABLED,
+            "applied_parameters": hp,
+            "result_file": str(m1.SFLA_RESULT_PATH) if m1.SFLA_RESULT_PATH.exists() else None,
+        },
+        "model_version": meta.model_version,
+        "checkpoint_path": str(ckpt_path),
+        "training_timestamp": meta.created_at,
+        "test_metrics": None,  # filled in below, after the held-out evaluation
+        "warnings": warnings,
+    }
 
     section = {
-        "split": "patient-grouped held-out test",
+        # Describe the split that was actually used. Calling an image-level
+        # split "patient-grouped" would overstate how independent the test set is.
+        "split": split_kind,
+        "split_level": ds_meta.get("split_level", "unknown"),
         "dataset": ds_meta["root"],
         "accuracy": round(test_m["accuracy"], 4),
         "precision": round(test_m["precision"], 4),
@@ -269,6 +363,15 @@ def main() -> int:
     }
     update_metrics(m1.METHOD_ID, "classification", section)
 
+    metadata["test_metrics"] = {
+        k: section[k] for k in
+        ("accuracy", "precision", "recall", "sensitivity", "specificity", "f1", "auc",
+         "avg_inference_time_s", "confusion_matrix", "per_class")
+    }
+    m1.METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    m1.METADATA_PATH.write_text(json.dumps(metadata, indent=2, default=str))
+    print(f"[cls] metadata   -> {m1.METADATA_PATH}")
+
     write_run_card(
         m1.run_card_path("classification"),
         RunCard(
@@ -276,7 +379,8 @@ def main() -> int:
             stage="classification",
             dataset={**ds_meta, "name": "Brain Tumor MRI Dataset (BRI)"},
             split_strategy={
-                "type": "patient/group-level three-way",
+                "type": split_kind,
+                "level": ds_meta.get("split_level", "unknown"),
                 "group_key": "filename stem (dataset has no patient ids)",
                 "val_frac": args.val_frac,
                 "test_frac": args.test_frac,
@@ -292,7 +396,7 @@ def main() -> int:
             epochs=args.epochs,
             best_epoch=best_epoch,
             metrics=section,
-            checkpoint_path=str(m1.CLS_WEIGHTS_PATH),
+            checkpoint_path=str(ckpt_path),
             inference_time_s=round(avg_time, 5),
             train_duration_s=round(time.perf_counter() - started, 1),
             model_version=meta.model_version,

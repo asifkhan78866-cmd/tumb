@@ -64,6 +64,21 @@ def _canonical_class(folder_name: str) -> Optional[str]:
 # --------------------------------------------------------------------------- #
 # Classification discovery
 # --------------------------------------------------------------------------- #
+def official_split_of(path: str) -> Optional[str]:
+    """Return "train" / "test" when the dataset's own split folder is on the path.
+
+    The Kaggle BRI set ships ``Training/`` and ``Testing/``. That split is the
+    one every published number on this dataset is measured against, so it is
+    preserved rather than merged and re-drawn.
+    """
+    parts = {p.lower() for p in Path(path).parts}
+    if parts & {"testing", "test"}:
+        return "test"
+    if parts & {"training", "train"}:
+        return "train"
+    return None
+
+
 def discover_classification_samples(
     root: Path, respect_official_split: bool = True
 ) -> tuple[list[tuple[str, int]], dict]:
@@ -125,16 +140,78 @@ def discover_classification_samples(
             f"a model that can never predict the missing classes."
         )
 
+    by_split: dict[str, list[tuple[str, int]]] = {"train": [], "test": [], "none": []}
+    for sample in samples:
+        by_split[official_split_of(sample[0]) or "none"].append(sample)
+    has_official = bool(by_split["train"] and by_split["test"])
+
+    per_class_split = {}
+    for name in m1.CLASS_NAMES:
+        idx = m1.CLASS_NAMES.index(name)
+        per_class_split[name] = {
+            "train": sum(1 for s in by_split["train"] if s[1] == idx),
+            "test": sum(1 for s in by_split["test"] if s[1] == idx),
+        }
+
+    warnings = [BRI_GROUPING_WARNING]
+    if has_official:
+        warnings.append(
+            "Using the dataset's own Training/Testing split. It is an IMAGE-level "
+            "split: this dataset ships no patient identifiers, so slices from one "
+            "patient may appear on both sides and the test score can be optimistic."
+        )
+    else:
+        warnings.append(
+            "No Training/Testing folders found — falling back to a grouped random "
+            "three-way split."
+        )
+
     meta = {
         "root": str(root),
         "num_samples": len(samples),
         "classes_found": sorted(matched_dirs),
         "official_split_counts": official_split,
-        "respect_official_split": respect_official_split and bool(official_split),
+        "has_official_split": has_official,
+        "respect_official_split": respect_official_split and has_official,
+        "per_class_split": per_class_split,
+        "counts": {"train_pool": len(by_split["train"]), "test": len(by_split["test"]),
+                   "unassigned": len(by_split["none"])},
         "grouping": "filename-stem (no patient ids in this dataset)",
-        "warnings": [BRI_GROUPING_WARNING],
+        "split_level": "image-level (dataset provides no patient ids)",
+        "warnings": warnings,
     }
     return samples, meta
+
+
+def partition_by_official_split(
+    samples: Sequence[tuple[str, int]]
+) -> tuple[list[tuple[str, int]], list[tuple[str, int]]]:
+    """Split into ``(train_pool, test)`` using the dataset's own folders."""
+    train_pool, test = [], []
+    for sample in samples:
+        (test if official_split_of(sample[0]) == "test" else train_pool).append(sample)
+    return train_pool, test
+
+
+def class_distribution(samples: Sequence[tuple[str, int]]) -> dict[str, int]:
+    return {
+        name: sum(1 for s in samples if s[1] == i)
+        for i, name in enumerate(m1.CLASS_NAMES)
+    }
+
+
+def class_weights(samples: Sequence[tuple[str, int]]) -> list[float]:
+    """Inverse-frequency weights, normalised to mean 1.
+
+    Applied to the loss so a minority class is not simply ignored. Reported in
+    the run card so the effect on the metrics is traceable.
+    """
+    counts = class_distribution(samples)
+    total = sum(counts.values()) or 1
+    n = len(m1.CLASS_NAMES)
+    raw = [total / (n * max(1, counts[name])) for name in m1.CLASS_NAMES]
+    mean = sum(raw) / len(raw)
+    return [w / mean for w in raw]
 
 
 def classification_group_of(sample: tuple[str, int]) -> str:

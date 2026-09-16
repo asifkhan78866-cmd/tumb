@@ -82,3 +82,45 @@ def test_rejects_impossible_fractions():
         group_train_val_test_split(["a"], lambda s: s, 0.6, 0.6)
     with pytest.raises(ValueError):
         group_split(["a"], lambda s: s, [])
+
+
+# --- official Training/Testing split -------------------------------------- #
+def test_official_split_detection():
+    from backend.methods.method1.datasets import official_split_of
+
+    assert official_split_of("archive/Training/glioma/a.jpg") == "train"
+    assert official_split_of("archive/Testing/notumor/b.jpg") == "test"
+    assert official_split_of("data/bri/archive/Training/pituitary/c.jpg") == "train"
+    assert official_split_of("somewhere/else/d.jpg") is None
+
+
+def test_partition_keeps_testing_folder_out_of_the_train_pool():
+    from backend.methods.method1.datasets import partition_by_official_split
+
+    samples = [("archive/Training/glioma/a.jpg", 0), ("archive/Testing/glioma/b.jpg", 0),
+               ("archive/Training/notumor/c.jpg", 2), ("archive/Testing/notumor/d.jpg", 2)]
+    train_pool, test = partition_by_official_split(samples)
+    assert [p for p, _ in train_pool] == ["archive/Training/glioma/a.jpg",
+                                          "archive/Training/notumor/c.jpg"]
+    assert [p for p, _ in test] == ["archive/Testing/glioma/b.jpg",
+                                    "archive/Testing/notumor/d.jpg"]
+    assert not (set(train_pool) & set(test))
+
+
+def test_class_weights_counter_imbalance():
+    from backend.methods.method1.datasets import class_weights
+
+    # notumor is 3x the others -> it must receive the smallest weight.
+    samples = [("a.jpg", 0)] * 10 + [("b.jpg", 1)] * 10 + \
+              [("c.jpg", 2)] * 30 + [("d.jpg", 3)] * 10
+    w = class_weights(samples)
+    assert len(w) == 4
+    assert w[2] == min(w), "the majority class must be down-weighted"
+    assert abs(sum(w) / len(w) - 1.0) < 1e-6, "weights are normalised to mean 1"
+
+
+def test_class_weights_are_flat_when_balanced():
+    from backend.methods.method1.datasets import class_weights
+
+    samples = [("x.jpg", i) for i in range(4) for _ in range(25)]
+    assert all(abs(w - 1.0) < 1e-6 for w in class_weights(samples))
