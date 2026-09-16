@@ -8,7 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { assetUrl, getHistory, reportUrl, type HistoryItem, type MethodId } from "@/lib/api";
+import {
+  assetUrl,
+  errorMessage,
+  getHistory,
+  reportUrl,
+  type HistoryItem,
+  type MethodId,
+} from "@/lib/api";
 
 const FILTERS: { id: MethodId | "all"; label: string }[] = [
   { id: "all", label: "All methods" },
@@ -26,7 +33,7 @@ export default function HistoryPage() {
     setItems(null);
     getHistory(50, filter === "all" ? undefined : filter)
       .then((r) => active && setItems(r))
-      .catch((e) => active && setError(e.message));
+      .catch((e) => active && setError(errorMessage(e)));
     return () => {
       active = false;
     };

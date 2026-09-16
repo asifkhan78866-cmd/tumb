@@ -18,6 +18,7 @@ import { StatCard } from "@/components/stat-card";
 import { MethodSelector } from "@/components/method-selector";
 import { WarningList } from "@/components/warning-list";
 import {
+  errorMessage,
   getHealth,
   getMethod,
   getMethodMetrics,
@@ -45,7 +46,7 @@ export default function MetricsPage() {
         setMethods(m);
         setHealth(h);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(errorMessage(e)));
   }, []);
 
   // Never leave one method's numbers on screen while another is selected.
@@ -59,7 +60,7 @@ export default function MetricsPage() {
         setMetrics(m);
         setDetail(d);
       })
-      .catch((e) => active && setError(e.message));
+      .catch((e) => active && setError(errorMessage(e)));
     return () => {
       active = false;
     };
@@ -68,8 +69,11 @@ export default function MetricsPage() {
   if (error) {
     return (
       <Card>
-        <CardContent className="p-6 text-destructive">
-          Failed to load metrics: {error}. Make sure the backend is running.
+        <CardContent className="space-y-3 p-6">
+          <p className="font-semibold text-destructive">Cannot load data from the backend</p>
+          <pre className="whitespace-pre-wrap rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
+            {error}
+          </pre>
         </CardContent>
       </Card>
     );

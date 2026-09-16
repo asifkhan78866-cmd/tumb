@@ -139,19 +139,54 @@ export interface Health {
   warnings: string[];
 }
 
-async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, init);
-  if (!res.ok) {
-    let detail = res.statusText;
-    try {
-      const body = await res.json();
-      detail = body.detail ?? JSON.stringify(body);
-    } catch {
-      /* keep statusText */
-    }
-    throw new Error(`API ${res.status}: ${detail}`);
+/** Requests abort after this long so a hung backend surfaces instead of spinning. */
+export const REQUEST_TIMEOUT_MS = 10_000;
+/** Inference is slower than a plain GET, so uploads get their own budget. */
+export const UPLOAD_TIMEOUT_MS = 120_000;
+
+const UNREACHABLE = (where: string) =>
+  `Cannot reach the backend at ${API_BASE}. Is it running? Start it from the repo root with:\n` +
+  `    uvicorn backend.main:app --reload\n(${where})`;
+
+/**
+ * Turn anything thrown by fetch into a non-empty, actionable message.
+ *
+ * Returning "" or undefined here is what previously left pages showing loading
+ * skeletons forever: the caller stored a falsy error, so the error branch never
+ * rendered and the page fell back to its skeleton state.
+ */
+export function errorMessage(e: unknown): string {
+  if (e instanceof DOMException && e.name === "AbortError") {
+    return `Request timed out after ${REQUEST_TIMEOUT_MS / 1000}s. ${UNREACHABLE("timeout")}`;
   }
-  return res.json() as Promise<T>;
+  // A network-level failure (connection refused, DNS, CORS block) arrives as a
+  // bare TypeError with a browser-specific message.
+  if (e instanceof TypeError) return UNREACHABLE(e.message || "network error");
+  const msg = e instanceof Error ? e.message : String(e ?? "");
+  return msg.trim() ? msg : UNREACHABLE("unknown error");
+}
+
+async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${API_BASE}${path}`, { ...init, signal: controller.signal });
+    if (!res.ok) {
+      let detail = res.statusText;
+      try {
+        const body = await res.json();
+        detail = body.detail ?? JSON.stringify(body);
+      } catch {
+        /* keep statusText */
+      }
+      throw new Error(`API ${res.status} on ${path}: ${detail}`);
+    }
+    return (await res.json()) as T;
+  } catch (e) {
+    throw new Error(errorMessage(e));
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export function assetUrl(path: string | null | undefined): string {
@@ -195,6 +230,9 @@ export function predictWithMethod(
     form.append("file", file);
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${API_BASE}/api/predict/${methodId}`);
+    xhr.timeout = UPLOAD_TIMEOUT_MS;
+    xhr.ontimeout = () =>
+      reject(new Error(`Upload timed out after ${UPLOAD_TIMEOUT_MS / 1000}s. ${UNREACHABLE("upload timeout")}`));
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable && onProgress) {
         onProgress(Math.round((e.loaded / e.total) * 100));
@@ -213,7 +251,7 @@ export function predictWithMethod(
         reject(new Error(`API ${xhr.status}: ${detail}`));
       }
     };
-    xhr.onerror = () => reject(new Error("Network error during upload"));
+    xhr.onerror = () => reject(new Error(UNREACHABLE("upload network error")));
     xhr.send(form);
   });
 }

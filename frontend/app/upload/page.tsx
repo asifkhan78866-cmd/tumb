@@ -14,6 +14,7 @@ import { MethodSelector } from "@/components/method-selector";
 import { ArchitectureCard } from "@/components/architecture-card";
 import { WarningList } from "@/components/warning-list";
 import {
+  errorMessage,
   getMethod,
   getMethods,
   predictWithMethod,
@@ -34,7 +35,7 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getMethods().then(setMethods).catch((e) => setError(e.message));
+    getMethods().then(setMethods).catch((e) => setError(errorMessage(e)));
   }, []);
 
   // Fetch the selected method's detail, and drop any result belonging to the
@@ -46,7 +47,7 @@ export default function UploadPage() {
     setResult(null);
     getMethod(selected)
       .then((d) => active && setDetail(d))
-      .catch((e) => active && setError(e.message));
+      .catch((e) => active && setError(errorMessage(e)));
     return () => {
       active = false;
     };
