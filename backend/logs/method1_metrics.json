@@ -1,0 +1,76 @@
+{
+  "method_id": "method1",
+  "classification": {
+    "split": "LEGACY random slice-level validation split (NOT a held-out test set)",
+    "dataset": "Brain Tumor MRI Dataset (BRI), Training+Testing folders merged",
+    "accuracy": 0.8403,
+    "precision": 0.8379,
+    "recall": 0.8442,
+    "sensitivity": 0.8442,
+    "specificity": 0.9466,
+    "f1": 0.8383,
+    "auc": null,
+    "avg_inference_time_s": null,
+    "confusion_matrix": [
+      [
+        301,
+        50,
+        9,
+        7
+      ],
+      [
+        52,
+        241,
+        27,
+        55
+      ],
+      [
+        3,
+        10,
+        328,
+        2
+      ],
+      [
+        5,
+        9,
+        1,
+        340
+      ]
+    ],
+    "per_class": {
+      "precision": [
+        0.8337950138504155,
+        0.7774193548387097,
+        0.8986301369863013,
+        0.8415841584158416
+      ],
+      "recall": [
+        0.8201634877384196,
+        0.6426666666666667,
+        0.956268221574344,
+        0.9577464788732394
+      ],
+      "f1": [
+        0.8269230769230769,
+        0.7036496350364964,
+        0.9265536723163842,
+        0.895915678524374
+      ],
+      "specificity": [
+        0.9440820130475303,
+        0.9352112676056338,
+        0.9662716499544212,
+        0.9410138248847926
+      ]
+    },
+    "model_version": "legacy-untagged",
+    "warnings": [
+      "These numbers come from the classifier checkpoint shipped with the repository, before the two-method refactor. They are real measurements, but their provenance is weaker than the current pipeline's.",
+      "The split was random at the slice level with no patient grouping, so near-duplicate images from one patient could appear in both training and validation. The score is therefore optimistic.",
+      "It is the split that early stopping also selected on, so it is a model-selection score, not a held-out test score.",
+      "It was measured with the legacy whole-slice geometry (transform m1-v1-legacy). Retrain with `python -m backend.methods.method1.training.train_classifier` for a patient-grouped held-out test number.",
+      "No segmentation model was trained, so no Dice or IoU exists for Method 1."
+    ]
+  },
+  "updated_at": "migrated-from-legacy-metrics.json"
+}

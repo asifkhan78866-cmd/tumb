@@ -1,21 +1,31 @@
 """Pydantic response models for the API (drives the Swagger docs)."""
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PredictionResponse(BaseModel):
-    prediction_id: str = Field(..., example="a1b2c3d4e5f6")
-    class_: str = Field(..., alias="class", example="Glioma")
-    confidence: float = Field(..., example=98.2)
-    inference_time: str = Field(..., example="0.32 sec")
-    segmentation_mask: str = Field(..., example="/predictions/a1b2c3d4e5f6_mask.png")
-    original_image: str = Field(..., example="/predictions/a1b2c3d4e5f6_original.png")
-    gradcam_overlay: str = Field(..., example="/predictions/a1b2c3d4e5f6_overlay.png")
-    probabilities: dict = Field(default_factory=dict)
+    """Legacy ``/upload`` shape. Optional URL fields are ``null`` when the
+    corresponding stage did not run — they are never filled with a placeholder."""
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
+
+    prediction_id: str = Field(..., examples=["a1b2c3d4e5f6"])
+    class_: str = Field(..., alias="class", examples=["Glioma"])
+    confidence: float = Field(..., examples=[98.2])
+    inference_time: str = Field(..., examples=["0.32 sec"])
+    segmentation_mask: Optional[str] = Field(None, examples=["/predictions/a1b2c3d4e5f6_mask.png"])
+    original_image: Optional[str] = Field(None, examples=["/predictions/a1b2c3d4e5f6_original.png"])
+    gradcam_overlay: Optional[str] = Field(None, examples=["/predictions/a1b2c3d4e5f6_overlay.png"])
+    segmentation_available: bool = False
+    probabilities: dict = Field(default_factory=dict)
+    method_id: str = "method1"
+    method_name: str = ""
+    prediction_key: Optional[str] = None
+    model_version: str = "untrained"
+    warnings: list[str] = Field(default_factory=list)
 
 
 class HealthResponse(BaseModel):
@@ -23,6 +33,7 @@ class HealthResponse(BaseModel):
     device: str
     seg_weights_loaded: bool
     cls_weights_loaded: bool
+    warnings: list[str] = Field(default_factory=list)
 
 
 class ModelInfoResponse(BaseModel):
@@ -42,12 +53,6 @@ class TrainStatusResponse(BaseModel):
     updated_at: str | None = None
 
 
-class MetricsResponse(BaseModel):
-    accuracy: float
-    dice: float
-    sensitivity: float
-    specificity: float
-    precision: float
-    recall: float
-    f1: float
-    avg_inference_time_s: float
+# NOTE: the per-method metrics contract lives in
+# backend.methods.common.schemas.MethodMetricsResponse, where every field is
+# Optional so "not evaluated" can be expressed as null rather than 0.0.
