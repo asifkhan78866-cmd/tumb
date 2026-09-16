@@ -7,7 +7,17 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - APP_ENV=production
       - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - FRONTEND_ORIGIN=http://localhost:3000
+      - MAX_UPLOAD_MB=20
+      - METHOD2_MODALITY=SPECT
+      - TRAINING_API_ENABLED=false
+    # Kaggle/HF credentials are read from a local .env by the BACKEND only.
+    # They are never passed to the frontend service.
+    env_file:
+      - path: .env
+        required: false
     volumes:
       # Persist weights, dataset and generated images across restarts.
       - ./backend/weights:/app/backend/weights
@@ -24,11 +34,12 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      args:
+        # Build-time: this value is compiled into the browser bundle.
+        NEXT_PUBLIC_API_URL: http://localhost:8000
     container_name: neuroseg-frontend
     ports:
       - "3000:3000"
-    environment:
-      # Browser talks to the backend on the host-published port.
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
