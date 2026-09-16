@@ -17,33 +17,37 @@ import { Card, CardContent } from "@/components/ui/card";
 const FEATURES = [
   {
     icon: ScanLine,
-    title: "U-Net Segmentation",
-    desc: "Pixel-accurate tumor masks from a deep encoder–decoder with skip connections.",
+    title: "Two independent methods",
+    desc: "Separate weights, datasets, preprocessing and metrics — nothing is shared or averaged between them.",
   },
   {
     icon: Layers,
-    title: "ConvLSTM Classification",
-    desc: "Four-way tumor typing: Glioma, Meningioma, Pituitary or No Tumor.",
+    title: "Segmentation + classification",
+    desc: "Binary or multi-class tumour masks feeding a ConvLSTM or a Dense Convolutional Network.",
   },
   {
     icon: Sparkles,
-    title: "Grad-CAM Explainability",
-    desc: "Heatmaps reveal exactly where the model is looking on each scan.",
+    title: "Explainability & optimization",
+    desc: "Grad-CAM heatmaps for Method 1, plus a real Shuffled Frog Leaping hyper-parameter search.",
   },
   {
     icon: Activity,
-    title: "Live Metrics",
-    desc: "Dice, sensitivity, specificity, precision, recall and inference time.",
+    title: "Honest metrics",
+    desc: "Patient-level splits, a held-out test set, and \u201cN/A\u201d wherever a metric was never computed.",
   },
 ];
 
-const PIPELINE = [
-  "Upload MRI",
-  "Preprocessing",
-  "U-Net Mask",
-  "Crop Tumor",
-  "ConvLSTM",
-  "Prediction",
+const METHOD_FLOWS = [
+  {
+    name: "Method 1",
+    subtitle: "U-Net + ConvLSTM + SFLA",
+    steps: ["Input", "Preprocess", "U-Net", "ROI Crop", "ConvLSTM", "SFLA", "Classes"],
+  },
+  {
+    name: "Method 2",
+    subtitle: "Multi-class Seg + SPECT + DCN",
+    steps: ["Input", "Grayscale/Filtering", "Multi-class Seg", "SPECT Features", "DCN", "Classes"],
+  },
 ];
 
 export default function LandingPage() {
@@ -61,25 +65,25 @@ export default function LandingPage() {
             <Brain className="h-8 w-8" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Brain Tumor Segmentation
+            Brain Tumor Analysis
             <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              &amp; Classification AI
+              Two Methods, One Platform
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            A production-grade deep-learning pipeline — U-Net segmentation
-            followed by a ConvLSTM classifier — with Grad-CAM explainability and
-            downloadable clinical-style reports.
+            Two independent deep-learning pipelines for brain-tumour analysis, each
+            with its own models, datasets and metrics — and an interface that tells
+            you exactly which parts have actually been trained.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/upload" className={buttonVariants({ size: "lg" })}>
               Upload an MRI <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/metrics"
+              href="/compare"
               className={buttonVariants({ variant: "outline", size: "lg" })}
             >
-              View Metrics
+              Compare Methods
             </Link>
           </div>
         </motion.div>
@@ -113,29 +117,48 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pipeline */}
-      <section className="rounded-3xl border bg-muted/30 px-6 py-14">
-        <h2 className="mb-10 text-center text-3xl font-bold">
-          Inference pipeline
-        </h2>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {PIPELINE.map((step, i) => (
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-3"
-            >
-              <div className="rounded-full border bg-background px-5 py-2 text-sm font-medium shadow-sm">
-                {step}
-              </div>
-              {i < PIPELINE.length - 1 && (
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              )}
-            </motion.div>
-          ))}
+      {/* Pipelines */}
+      <section className="space-y-10 rounded-3xl border bg-muted/30 px-6 py-14">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold">Two inference pipelines</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
+            Pick one on the Analyse page. They are evaluated separately and never
+            compared by a single score.
+          </p>
+        </div>
+        {METHOD_FLOWS.map((method, mi) => (
+          <div key={method.name} className="space-y-4">
+            <div className="text-center">
+              <span className="text-xs font-semibold uppercase tracking-wide text-primary">
+                {method.name}
+              </span>
+              <p className="text-sm font-medium">{method.subtitle}</p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {method.steps.map((step, i) => (
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: mi * 0.1 + i * 0.06 }}
+                  className="flex items-center gap-3"
+                >
+                  <div className="rounded-full border bg-background px-4 py-2 text-sm font-medium shadow-sm">
+                    {step}
+                  </div>
+                  {i < method.steps.length - 1 && (
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="text-center">
+          <Link href="/compare" className={buttonVariants({ variant: "outline" })}>
+            Compare both methods <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
