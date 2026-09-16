@@ -20,6 +20,7 @@ backend/logs/*
 !backend/logs/.gitkeep
 # Ship real evaluation metrics + plots so the dashboard shows true numbers.
 !backend/logs/metrics.json
+!backend/logs/method1_metrics.json
 !backend/logs/cls_confusion_matrix.png
 !backend/logs/cls_roc.png
 !backend/logs/cls_acc.png
@@ -37,8 +38,17 @@ backend/.env
 !backend/.env.example
 !frontend/.env.example
 
+# Model / ROI caches (regenerated from the checkpoints)
+backend/.model_cache/
+
+# Tests / tooling
+.pytest_cache/
+tests/__pycache__/
+
 # Node / Next.js
 node_modules/
+frontend/tsconfig.tsbuildinfo
+frontend/.eslintcache
 .next/
 out/
 frontend/.env*.local
