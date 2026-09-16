@@ -41,13 +41,21 @@ app = FastAPI(
     ),
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=config.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS. In development the frontend often cannot use port 3000 (another project
+# may already own it), so any localhost/127.0.0.1 port is accepted there —
+# otherwise every API call fails as an opaque browser-level "failed to fetch"
+# that looks like the backend being down. Production keeps the explicit
+# ALLOWED_ORIGINS list; the regex is never applied outside development.
+_cors: dict = {
+    "allow_origins": config.ALLOWED_ORIGINS,
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+if config.APP_ENV == "development":
+    _cors["allow_origin_regex"] = r"https?://(localhost|127\.0\.0\.1)(:\d+)?"
+
+app.add_middleware(CORSMiddleware, **_cors)
 
 # Serve generated images so the frontend can display them by URL.
 app.mount("/predictions", StaticFiles(directory=str(config.PREDICTIONS_DIR)), name="predictions")

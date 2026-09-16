@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArchitectureCard } from "@/components/architecture-card";
 import { WarningList } from "@/components/warning-list";
 import {
+  errorMessage,
   getAllMetrics,
   getMethod,
   pct,
@@ -49,14 +50,17 @@ export default function ComparePage() {
         setMetrics(m);
         setDetails(d);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(errorMessage(e)));
   }, []);
 
   if (error) {
     return (
       <Card>
-        <CardContent className="p-6 text-destructive">
-          Failed to load comparison: {error}. Make sure the backend is running.
+        <CardContent className="space-y-3 p-6">
+          <p className="font-semibold text-destructive">Cannot load data from the backend</p>
+          <pre className="whitespace-pre-wrap rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
+            {error}
+          </pre>
         </CardContent>
       </Card>
     );
