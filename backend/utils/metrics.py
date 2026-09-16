@@ -58,12 +58,50 @@ def classification_metrics(y_true, y_pred, num_classes: int) -> dict:
     }
 
 
+def macro_auc(y_true, y_score, num_classes: int):
+    """Macro-averaged one-vs-rest ROC AUC, or ``None`` if it is undefined.
+
+    Returns ``None`` rather than a placeholder when no class has both positive
+    and negative examples — an AUC that could not be computed must not reach a
+    report as a number.
+    """
+    y_true = np.asarray(y_true)
+    y_score = np.asarray(y_score)
+    if y_score.ndim != 2 or y_score.shape[1] != num_classes or len(y_true) == 0:
+        return None
+    aucs = []
+    for c in range(num_classes):
+        binary = (y_true == c).astype(int)
+        if binary.sum() in (0, len(binary)):
+            continue  # undefined for this class
+        _, _, auc = _roc(binary, y_score[:, c])
+        aucs.append(auc)
+    return float(np.mean(aucs)) if aucs else None
+
+
+def _pyplot():
+    """Return pyplot, or None when matplotlib is unavailable.
+
+    Plots are diagnostics. A training run that has produced a checkpoint must
+    never be lost because a plotting library is missing, so every plotting
+    helper degrades to a warning instead of raising.
+    """
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+
+        return plt
+    except Exception as exc:  # pragma: no cover - environment dependent
+        print(f"[metrics] skipping plot ({type(exc).__name__}: {exc}); install matplotlib to enable plots.")
+        return None
+
+
 def save_confusion_matrix(cm, class_names, out_path: Path):
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
+    plt = _pyplot()
+    if plt is None:
+        return
     cm = np.asarray(cm)
     fig, ax = plt.subplots(figsize=(6, 5))
     im = ax.imshow(cm, cmap="Blues")
@@ -87,11 +125,9 @@ def save_confusion_matrix(cm, class_names, out_path: Path):
 
 def save_roc_curves(y_true, y_score, class_names, out_path: Path):
     """One-vs-rest ROC curves. ``y_score`` is (N, num_classes) softmax probs."""
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
+    plt = _pyplot()
+    if plt is None:
+        return
     y_true = np.asarray(y_true)
     y_score = np.asarray(y_score)
     n = len(class_names)
@@ -129,11 +165,9 @@ def _roc(binary, scores):
 
 
 def save_curve(values, ylabel: str, out_path: Path, second=None, labels=("train", "val")):
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
+    plt = _pyplot()
+    if plt is None:
+        return
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot(range(1, len(values) + 1), values, label=labels[0])
     if second is not None:
