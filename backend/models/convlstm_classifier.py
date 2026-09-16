@@ -72,9 +72,20 @@ class ConvLSTMClassifier(nn.Module):
         base: int = 32,
         lstm_hidden: int = 64,
         lstm_steps: int = 3,
+        dropout: float = 0.4,
     ):
         super().__init__()
         self.lstm_steps = lstm_steps
+        # Recorded so a checkpoint can be rebuilt with the geometry it was
+        # trained with (the SFLA search varies all of these).
+        self.hparams = {
+            "in_channels": in_channels,
+            "num_classes": num_classes,
+            "base": base,
+            "lstm_hidden": lstm_hidden,
+            "lstm_steps": lstm_steps,
+            "dropout": dropout,
+        }
 
         self.features = nn.Sequential(
             ConvBlock(in_channels, base),        # H/2
@@ -88,7 +99,7 @@ class ConvLSTMClassifier(nn.Module):
             nn.Flatten(),
             nn.Linear(lstm_hidden, 128),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.4),
+            nn.Dropout(dropout),
             nn.Linear(128, num_classes),
         )
 
