@@ -9,7 +9,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV = [
   { href: "/", label: "Home" },
-  { href: "/upload", label: "Upload MRI" },
+  { href: "/upload", label: "Analyse" },
+  { href: "/compare", label: "Compare" },
   { href: "/history", label: "History" },
   { href: "/metrics", label: "Metrics" },
   { href: "/about", label: "About" },

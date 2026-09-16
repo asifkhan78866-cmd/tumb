@@ -1,18 +1,26 @@
 // Higher-level prediction service wrapping the raw API client.
+//
+// Every call is method-scoped: there is no way to request a prediction without
+// naming the method that should produce it.
 import {
   getHistory,
-  uploadImage,
+  predictWithMethod,
   type HistoryItem,
-  type PredictionResult,
+  type MethodId,
+  type MethodPrediction,
 } from "@/lib/api";
 
 export async function predict(
+  methodId: MethodId,
   file: File,
   onProgress?: (pct: number) => void
-): Promise<PredictionResult> {
-  return uploadImage(file, onProgress);
+): Promise<MethodPrediction> {
+  return predictWithMethod(methodId, file, onProgress);
 }
 
-export async function recentPredictions(limit = 12): Promise<HistoryItem[]> {
-  return getHistory(limit);
+export async function recentPredictions(
+  limit = 12,
+  methodId?: MethodId
+): Promise<HistoryItem[]> {
+  return getHistory(limit, methodId);
 }
