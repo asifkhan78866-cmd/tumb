@@ -1,226 +1,269 @@
-# 🧠 NeuroSeg AI — Brain Tumor Segmentation & Classification
+# 🧠 NeuroSeg AI — Two-Method Brain Tumor Analysis
 
-A production-ready, full-stack deep-learning system that **segments** brain
-tumors with a U-Net and **classifies** them with a ConvLSTM, wrapped in a FastAPI
-backend and a modern Next.js 15 medical dashboard.
+A full-stack research platform running **two independent deep-learning methods**
+for brain-tumor analysis behind one FastAPI backend and one Next.js dashboard.
 
-> ⚠️ **Research & educational use only.** This is not a certified medical device
-> and must not be used for clinical diagnosis.
-
----
-
-## ✨ Features
-
-| Area | Highlights |
-|------|-----------|
-| **Segmentation** | 2D U-Net · encoder/decoder · skip connections · BatchNorm · Dropout · Dice + BCE loss · Adam · LR scheduler · mixed precision · early stopping · TensorBoard · checkpointing (`best_unet.pth`) |
-| **Classification** | ConvLSTM (Conv + BatchNorm + ConvLSTM + Dense + Softmax) · 4 classes: Glioma / Meningioma / Pituitary / No Tumor (`best_classifier.pth`) |
-| **Explainability** | Grad-CAM heatmap overlay on every prediction |
-| **Data** | Automatic Kaggle download (BraTS 2023 → fallbacks) · integrity check · dataset summary |
-| **API** | FastAPI · `/upload`, `/health`, `/model-info`, `/train-status`, `/metrics`, `/history`, `/report/{id}` · Swagger at `/docs` |
-| **Frontend** | Next.js 15 · TypeScript · TailwindCSS · shadcn-style UI · Framer Motion · dark mode · drag-and-drop upload · progress bar · confidence meter · charts · history · PDF report · toasts · loading skeletons |
-| **Reports** | One-click PDF (image, mask, Grad-CAM, class, confidence, date, model) |
-| **Deploy** | Dockerfiles + `docker-compose.yml` |
+> ⚠️ **Research / decision-support only.** This is not a certified medical device,
+> it has not been clinically validated, and it must not be used to diagnose, treat,
+> or make any care decision for a patient. Every output requires interpretation by a
+> qualified radiologist.
 
 ---
 
-## 📁 Project structure
+## The two methods
+
+| | **Method 1** | **Method 2** |
+|---|---|---|
+| **Name** | 3D/2D U-Net Segmentation + ConvLSTM Classification + SFLA Optimization | Multi-class Segmentation + SPECT Feature Stage + Dense Convolutional Network |
+| **Pipeline** | Input → Preprocess → U-Net → ROI Crop → ConvLSTM → SFLA → Classes → Grad-CAM | Input → Grayscale/Filtering → Multi-class Segmentation → SPECT Features → DCN → Classes |
+| **Modality** | MRI | SPECT |
+| **Segmentation** | 2D U-Net, binary whole-tumour mask | Multi-class U-Net: background / necrotic core / edema / enhancing tumour |
+| **Classifier** | ConvLSTM (Conv+BN → ConvLSTM cell → dense) | `DenseConvNetClassifier` — DenseNet-BC style dense blocks |
+| **Optimization** | SFLA over classifier hyper-parameters | — |
+| **Explainability** | Grad-CAM | not part of this method's specification |
+| **Datasets** | BraTS (segmentation) + BRI 4-class (classification) | SPECT (classification) + BraTS (segmentation head) |
+| **Ships trained?** | classifier only (see below) | **no** — untrained by design |
+
+**They share nothing.** Separate weights, datasets, preprocessing, class lists,
+metrics files and entry points. Loading one method's checkpoint into the other
+fails loudly instead of silently producing garbage.
+
+### What is and is not trained in this repository
+
+| Component | State |
+|---|---|
+| Method 1 classifier (`best_classifier.pth`) | **Ships trained.** ~84% accuracy, but on a *legacy random slice-level split* — see the caveats it carries. |
+| Method 1 U-Net (`best_unet.pth`) | **Not included.** Segmentation reports itself unavailable until you train it. |
+| Method 2 segmentation + DCN | **Not included.** The API returns `prediction: null` with warnings rather than inventing an answer. |
+
+No placeholder metric is ever emitted. A number that was not measured shows as
+`null` in the API and **N/A** in the UI.
+
+---
+
+## 📁 Folder layout
 
 ```
 tumb/
+├── .env.example                  # every variable, documented
 ├── backend/
-│   ├── api/            # FastAPI routes + Pydantic schemas
-│   ├── models/         # UNet, ConvLSTM classifier
-│   ├── training/       # train_segmentation, train_classifier, evaluate, common
-│   ├── utils/          # preprocessing, dataset, dataset_download, losses, metrics, gradcam, report
-│   ├── services/       # inference engine + JSON stores
-│   ├── weights/        # best_unet.pth, best_classifier.pth (generated)
-│   ├── dataset/        # auto-downloaded data (generated)
-│   ├── predictions/    # generated images + PDF reports
-│   ├── logs/           # TensorBoard, plots, metrics.json
-│   ├── config.py       # central config (paths, hyper-params, device)
-│   ├── main.py         # FastAPI app entrypoint
-│   ├── predict.py      # CLI single-image inference
+│   ├── main.py                   # FastAPI app (legacy + /api routes)
+│   ├── config.py                 # global config: paths, device, seeds, limits
+│   ├── api/
+│   │   ├── routes.py             # legacy method-unaware routes (delegate to Method 1)
+│   │   ├── methods_routes.py     # /api/methods, /api/predict/{id}, /api/metrics/{id}, …
+│   │   └── schemas.py
+│   ├── methods/
+│   │   ├── registry.py           # ← the only place that knows which methods exist
+│   │   ├── common/
+│   │   │   ├── splits.py         # patient/volume-level splitting
+│   │   │   ├── checkpoint.py     # tagged checkpoints + method isolation
+│   │   │   ├── metrics_store.py  # per-method, per-stage metrics (merge, never clobber)
+│   │   │   ├── runcard.py        # training provenance records
+│   │   │   └── schemas.py        # the shared prediction envelope
+│   │   ├── method1/
+│   │   │   ├── config.py  transforms.py  datasets.py  pipeline.py  inference.py
+│   │   │   ├── models/           # re-exports UNet + ConvLSTMClassifier
+│   │   │   ├── training/         # train_segmentation.py, train_classifier.py
+│   │   │   └── optimization/     # sfla.py (the algorithm), run_sfla.py (the entry point)
+│   │   └── method2/
+│   │       ├── config.py  transforms.py  datasets.py  features.py  pipeline.py  inference.py
+│   │       ├── models/           # dcn.py (DenseConvNetClassifier), segmentation.py
+│   │       └── training/         # train_segmentation.py, train_classifier.py
+│   ├── models/                   # shared architectures (UNet, ConvLSTM)
+│   ├── utils/                    # losses, metrics, gradcam, report, dataset_download
+│   ├── weights/ dataset/ logs/ predictions/
 │   └── requirements.txt
 ├── frontend/
-│   ├── app/            # landing, upload, history, metrics, about (App Router)
-│   ├── components/     # navbar, dropzone, prediction card, charts, ui/*
-│   ├── hooks/          # useTrainStatus
-│   ├── lib/            # api client, utils
-│   └── services/       # prediction service
-├── docker-compose.yml
-└── README.md
+│   ├── app/                      # landing, upload, compare, history, metrics, about
+│   ├── components/               # method-selector, architecture-card, warning-list, …
+│   └── lib/api.ts                # typed, method-aware API client
+├── tests/                        # 88 tests
+└── docker-compose.yml
 ```
+
+Adding a third method means adding one `MethodSpec` and one package. No dispatch
+table elsewhere changes — the API, the UI and the PDF report all iterate the registry.
 
 ---
 
 ## 🚀 Quick start
 
-### 1. Backend
-
 ```bash
-cd backend
-python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+# 1. Configure
+cp .env.example .env          # fill in Kaggle credentials only if you will download data
+
+# 2. Backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --reload          # http://localhost:8000/docs
+
+# 3. Frontend
+cd frontend && npm install
+npm run dev                                # http://localhost:3000
 ```
 
-**Run the API immediately** (works even before training — falls back to
-randomly-initialised weights so you can exercise the full UI):
-
-```bash
-# from the repo root:
-uvicorn backend.main:app --reload
-# → http://localhost:8000  ·  Swagger at http://localhost:8000/docs
-```
-
-### 2. Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.example .env.local          # points NEXT_PUBLIC_API_URL at the backend
-npm run dev
-# → http://localhost:3000
-```
-
-Upload an MRI on the **Upload** page and you'll get the original scan, the
-segmentation mask, a Grad-CAM overlay, the predicted class, confidence and
-inference time — plus a downloadable PDF report.
+The app runs immediately. Method 1 will classify (its classifier ships) and will
+tell you that segmentation is unavailable; Method 2 will tell you it is untrained.
 
 ---
 
-## 🔑 API keys (Kaggle)
+## 🔑 Environment variables
 
-Dataset downloading needs a free **Kaggle API token**:
+All live in `.env` (git-ignored). Full documentation is in `.env.example`.
 
-1. Go to <https://www.kaggle.com/settings> → **Create New API Token** (downloads
-   `kaggle.json` with your `username` and `key`).
-2. Put those values in `backend/.env`:
+> **Security:** `KAGGLE_KEY` and `HF_TOKEN` are read **only** by the backend process.
+> Never give them a `NEXT_PUBLIC_` prefix — Next.js inlines every `NEXT_PUBLIC_*`
+> value into the browser bundle, publishing the secret to anyone who opens the page.
 
-   ```bash
-   cp backend/.env.example backend/.env    # if you haven't already
-   # then edit backend/.env:
-   KAGGLE_USERNAME=your_username
-   KAGGLE_KEY=your_api_key
-   ```
+| Group | Variables |
+|---|---|
+| **App** | `APP_ENV` · `BACKEND_HOST` · `BACKEND_PORT` · `FRONTEND_ORIGIN` · `ALLOWED_ORIGINS` |
+| **Data** | `DATA_ROOT` · `BRI_DATASET_PATH` · `BRATS_DATASET_PATH` · `SPECT_DATASET_PATH` |
+| **Download** | `KAGGLE_USERNAME` · `KAGGLE_KEY` · `HF_TOKEN` *(optional)* |
+| **Weights** | `METHOD1_UNET_WEIGHTS` · `METHOD1_CONVLSTM_WEIGHTS` · `METHOD2_SEGMENTATION_WEIGHTS` · `METHOD2_DCN_WEIGHTS` |
+| **Modality** | `METHOD2_MODALITY` · `METHOD2_SPEC_MODALITY_LABEL` |
+| **Optimization** | `SFLA_ENABLED` · `SFLA_SEED` · `SFLA_POPULATION` · `SFLA_ITERATIONS` · `SFLA_MEMEPLEXES` · `SFLA_LOCAL_ITERATIONS` |
+| **Runtime** | `DEVICE` · `MODEL_CACHE_DIR` · `MAX_UPLOAD_MB` · `RANDOM_SEED` · `TRAINING_API_ENABLED` |
 
-`backend/.env` is git-ignored. (Alternatively, drop `kaggle.json` at
-`~/.kaggle/kaggle.json` and `chmod 600` it — either works.)
+---
 
-## 📦 Dataset (automatic)
+## 📦 Datasets
 
-> **Accuracy matters here:** classification labels and segmentation masks come
-> from **different** datasets, so the system downloads both for best results:
->
-> | Task | Dataset | Provides |
-> |------|---------|----------|
-> | Classification | `masoudnickparvar/brain-tumor-mri-dataset` | 4 labelled classes (glioma/meningioma/pituitary/notumor) |
-> | Segmentation | `awsaf49/brats2020-training-data` (BraTS) | Ground-truth tumor masks |
+Nothing downloads implicitly. Ask for it:
 
 ```bash
-python -m backend.utils.dataset_download                    # both (default)
-python -m backend.utils.dataset_download --kind classification
-python -m backend.utils.dataset_download --kind segmentation --force
+python -m backend.utils.dataset_download --list                  # status only, no network
+python -m backend.utils.dataset_download --kind classification   # BRI 4-class
+python -m backend.utils.dataset_download --kind segmentation     # BraTS
+python -m backend.utils.dataset_download --kind both --dry-run   # show the plan
+python -m backend.utils.dataset_download --kind both --force     # replace existing (prints what)
 ```
 
-Both extract into `backend/dataset/`; the script verifies integrity and prints a
-summary (patients, classes, image/mask counts) also written to
-`backend/dataset/summary.json`. The training scripts auto-download the dataset
-they need if it's missing (`train_classifier` → classification data,
-`train_segmentation` → BraTS).
+The downloader verifies the extracted files, prints the exact destination, never
+overwrites without `--force`, and never logs any part of a credential.
 
-### Pre-trained classifier included
-
-`backend/weights/best_classifier.pth` ships in the repo — a ConvLSTM trained on
-the 7,200-image dataset (**~84% validation accuracy**), so classification works
-immediately after cloning, no training required. Real evaluation metrics are in
-`backend/logs/metrics.json` and drive the Metrics dashboard.
-
-### Train the U-Net on a GPU (recommended)
-
-Segmentation on BraTS (24k+ slices) needs a GPU. Open
-[`notebooks/train_unet_brats_gpu.ipynb`](notebooks/train_unet_brats_gpu.ipynb)
-in **Google Colab** or **Kaggle** (GPU runtime) — it clones the repo, installs
-deps, downloads BraTS, trains `best_unet.pth` on real masks, evaluates, and lets
-you download the weights to drop into `backend/weights/`.
-
-### For the best / most accurate results
-
-- **Classification** already uses the properly labelled 4-class dataset above.
-- **Segmentation**: BraTS ships real masks — train on those (not the Otsu
-  fallback). BraTS is ~2–15 GB and benefits hugely from a **GPU**.
-- Train longer with the defaults (`SEG_EPOCHS=50`, `CLS_EPOCHS=40`) or raise them
-  in `backend/.env`; early stopping prevents overfitting.
-- Run `evaluate.py` afterwards to populate real metrics on the dashboard.
+The **SPECT** dataset is not auto-downloadable — point `SPECT_DATASET_PATH` at a
+directory of class-named folders (`normal/`, `glioma/`, `meningioma/`,
+`pituitary/`). Method 2 discovers its labels from those folder names and fails
+with an explicit error if they do not match, rather than guessing.
 
 ---
 
 ## 🏋️ Training
 
-```bash
-# from the repo root (recommended):
-python -m backend.training.train_segmentation --epochs 50 --batch-size 16
-python -m backend.training.train_classifier   --epochs 40 --batch-size 16
-python -m backend.training.evaluate           # writes metrics.json + plots
-
-# …or from inside backend/ using the shims:
-cd backend
-python train_segmentation.py
-python train_classifier.py
-python evaluate.py
-```
-
-Each run prints per-epoch **loss, Dice, accuracy, precision, recall, F1,
-specificity, sensitivity**, saves the best checkpoint, and writes loss/Dice/
-accuracy curves, a **confusion matrix** and **ROC curves** to `backend/logs/`.
-Live TensorBoard:
+### Method 1
 
 ```bash
-tensorboard --logdir backend/logs
+# 1. Segmentation (volume-level splits, held-out test set)
+python -m backend.methods.method1.training.train_segmentation --epochs 50 --batch-size 16
+
+# 2. Optional: SFLA hyper-parameter search (reads train/val only — never the test split)
+python -m backend.methods.method1.optimization.run_sfla --iterations 10 --proxy-epochs 3
+#    ...then set SFLA_ENABLED=true in .env to make training use the result.
+#    --dry-run optimises an analytic objective, so you can exercise it with no dataset.
+
+# 3. Classifier (ROI geometry, requires the U-Net from step 1)
+python -m backend.methods.method1.training.train_classifier --epochs 40 --transform v2
 ```
 
-Training progress is exposed to the frontend via `GET /train-status`.
+### Method 2
 
-> **Note on segmentation masks:** BraTS provides ground-truth masks (used
-> directly). If a mask-free fallback dataset is downloaded, the pipeline derives
-> weak tumor masks via Otsu thresholding so segmentation remains trainable
-> end-to-end — swap in real masks for clinical-grade results.
+```bash
+# 1. Multi-class segmentation head (BraTS — the only real multi-region masks)
+python -m backend.methods.method2.training.train_segmentation --epochs 40 --batch-size 16
+
+# 2. DCN classifier
+python -m backend.methods.method2.training.train_classifier --modality spect --epochs 40
+#    --modality mri is an explicit fallback using BRI. The resulting model is an MRI
+#    model, is labelled as such in its checkpoint, and its numbers do not describe
+#    SPECT performance. The two modalities are never merged into one training set.
+```
+
+Every run writes a **run card** to `backend/logs/` recording dataset, split
+strategy, seed, preprocessing, image size, architecture, optimizer, epochs, best
+epoch, metrics, checkpoint path, inference time, version, git revision and warnings.
+
+### How splits work
+
+Splits are **patient/volume-level**, always three-way (train / val / **held-out
+test**), deterministic for a given `RANDOM_SEED`, and independent of file
+discovery order. Every slice of a BraTS volume lands in exactly one part, and a
+run refuses to start if the split produces overlapping groups.
+
+Early stopping watches validation. **The test split is opened exactly once**, after
+training finishes — and never by the SFLA search.
 
 ---
 
-## 🔌 API reference
+## 🔌 API
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/upload` | Upload an MRI → segmentation + classification result |
-| `GET`  | `/health` | Service + weight-load status |
-| `GET`  | `/model-info` | Architectures, classes, parameter counts |
-| `GET`  | `/train-status` | Live training progress |
-| `GET`  | `/metrics` | Aggregate evaluation metrics |
-| `GET`  | `/history?limit=` | Recent predictions |
-| `GET`  | `/report/{id}` | Download a PDF report |
-| `GET`  | `/docs` | Swagger UI |
+|---|---|---|
+| `GET` | `/api/methods` | List both methods with their live trained/untrained state |
+| `GET` | `/api/methods/{method_id}` | Full detail: pipeline, datasets, weights, run cards, SFLA result |
+| `POST` | `/api/predict/{method_id}` | Run that method's pipeline on an upload |
+| `POST` | `/api/train/{method_id}?stage=…` | Safe training endpoint (see below) |
+| `GET` | `/api/metrics/{method_id}` | That method's metrics — never mixed with the other's |
+| `GET` | `/api/metrics` | One row per method, for the Compare page |
+| `GET` | `/api/report/{method_id}/{id}` | Method-aware PDF report |
+| `GET` | `/health`, `/model-info`, `/history`, `/upload` | Legacy routes (delegate to Method 1) |
+| `GET` | `/docs` | Swagger UI |
 
-**`/upload` response:**
+Every prediction answers with the same envelope:
 
 ```json
 {
-  "prediction_id": "a1b2c3d4e5f6",
-  "class": "Glioma",
-  "confidence": 98.2,
-  "inference_time": "0.32 sec",
-  "segmentation_mask": "/predictions/a1b2c3d4e5f6_mask.png",
-  "original_image": "/predictions/a1b2c3d4e5f6_original.png",
-  "gradcam_overlay": "/predictions/a1b2c3d4e5f6_overlay.png",
-  "probabilities": { "Glioma": 98.2, "Meningioma": 1.1, "No Tumor": 0.4, "Pituitary": 0.3 }
+  "method_id": "method2",
+  "method_name": "Method 2 — Multi-class Segmentation + SPECT Feature Stage + DCN",
+  "prediction": null,
+  "confidence": null,
+  "class_probabilities": {},
+  "segmentation_available": false,
+  "segmentation_mask_url": null,
+  "heatmap_url": null,
+  "processing_time_s": 0.0024,
+  "model_version": "untrained",
+  "dataset_context": "SPECT Image Dataset (modality); BraTS 2023 (segmentation)",
+  "modality": "SPECT",
+  "warnings": ["Method 2's DCN is not trained.", "…"],
+  "details": { "feature_stage": { "dimension": 34, "names": [...], "values": [...] } }
 }
 ```
 
-### CLI inference
+`prediction` is `null` when no classifier ran — it is never filled with a guess.
+
+**`POST /api/train`** returns the exact command to run and refuses to launch
+anything unless `TRAINING_API_ENABLED=true`. An unauthenticated endpoint that
+starts a multi-hour GPU job is a denial-of-service primitive.
+
+---
+
+## 🖥️ Frontend
+
+- **Analyse** — `[ Method 1 ] [ Method 2 ]` toggle above the dropzone. Each option
+  shows whether that method actually has trained weights. Switching methods clears
+  the previous result, so one method's mask can never appear under the other's heading.
+- **Compare** — both pipelines side by side, **without ranking them**. Dice, IoU,
+  accuracy, precision, recall/sensitivity, specificity, F1, AUC and inference time,
+  with `N/A` wherever a metric was not computed. No aggregate score is produced:
+  the methods use different datasets, modalities and splits.
+- **Metrics** — one method at a time, never merged.
+- **History** — filterable by method; each entry carries the method that produced it.
+
+---
+
+## 🧪 Tests
 
 ```bash
-python -m backend.predict path/to/mri.png --report
+pip install pytest httpx
+pytest
 ```
+
+88 tests covering the method registry, both response schemas, checkpoint
+isolation, preprocessing consistency, missing-weight safety, SFLA reproducibility,
+patient-level splitting, metric calculations and API method switching. Tests that
+need torch skip cleanly when it is absent.
 
 ---
 
@@ -232,28 +275,50 @@ docker compose up --build
 # backend  → http://localhost:8000/docs
 ```
 
-Weights, dataset and predictions are mounted as volumes so they persist across
-restarts. For GPU training, base the backend image on `nvidia/cuda` and install
-the matching PyTorch build.
+`NEXT_PUBLIC_API_URL` is a **build argument**, not a runtime variable — Next.js
+inlines it into the browser bundle at build time. Change it in
+`docker-compose.yml` under `frontend.build.args` and rebuild.
 
 ---
 
-## 🖥️ Hardware
+## ⚠️ SPECT vs PECT
 
-Runs on **CPU by default** and automatically uses **CUDA** (with mixed precision)
-when a GPU is available — no code changes needed. Device is reported at
-`GET /health` and on the Metrics page.
+The reference diagram for Method 2 writes *Photon Emission Computed Tomography
+(PECT)*; the dataset and this implementation are **SPECT** (Single Photon Emission
+Computed Tomography). **These are not interchangeable terms.**
+
+`METHOD2_MODALITY=SPECT` is the real modality and is what the UI, the API and the
+PDF report display. `METHOD2_SPEC_MODALITY_LABEL=PECT` exists only so the research
+specification's own wording can be rendered where it is explicitly required, and
+it is always shown alongside the real modality — never as a claim that the two are
+the same thing.
 
 ---
 
-## 🧪 Tech stack
+## 📋 Known limitations
 
-**Backend:** Python · PyTorch · OpenCV · NiBabel · FastAPI · Uvicorn · ReportLab · TensorBoard
-**Frontend:** Next.js 15 · React 19 · TypeScript · TailwindCSS · Framer Motion · Recharts · Sonner · next-themes
+- **Method 2 ships untrained.** No checkpoint, no metrics. This is reported
+  explicitly everywhere rather than being papered over.
+- **Method 1's U-Net is not included.** Segmentation is unavailable until trained.
+  In `APP_ENV=development` a clearly-labelled `PLACEHOLDER` image may be rendered in
+  the mask panel; it is never presented as a model output.
+- **The shipped classifier's 84% is a legacy number** — a random slice-level split
+  that was also the model-selection split, measured with the legacy whole-slice
+  geometry. It carries those caveats through the API and into the PDF. Retrain for a
+  patient-grouped held-out figure.
+- **The BRI dataset has no patient identifiers.** Its split groups by filename stem,
+  which keeps obvious near-duplicates together but cannot guarantee patient disjointness.
+- **Method 2's segmentation head trains on BraTS MRI** because that is the only
+  multi-region annotated source available, while its classifier may run on SPECT.
+  This cross-modality step is recorded in the checkpoint and surfaced as a warning.
+- **`DenseConvNetClassifier` is a DenseNet-BC adaptation**, not a novel architecture.
+  The adaptations (single-channel input, compact stem, modality-feature branch) are
+  documented in `backend/methods/method2/models/dcn.py`.
+- **Binary tumour/no-tumour datasets are rejected**, not remapped onto four classes.
 
 ---
 
 ## 📄 License
 
 Released for research and educational purposes. Verify dataset licenses (BraTS /
-Kaggle) before any redistribution.
+Kaggle / SPECT source) before any redistribution.
