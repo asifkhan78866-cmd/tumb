@@ -21,15 +21,23 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend import config  # noqa: E402
+from backend.api.methods_routes import router as methods_router  # noqa: E402
 from backend.api.routes import router  # noqa: E402
 
 app = FastAPI(
     title=config.API_TITLE,
     version=config.API_VERSION,
     description=(
-        "Production-ready Brain Tumor Segmentation (U-Net) & Classification "
-        "(ConvLSTM) API. Upload an MRI slice to get a tumor mask, class, "
-        "confidence, Grad-CAM overlay and inference time."
+        "Two independent brain-tumor analysis methods behind one API.\n\n"
+        "* **Method 1** — U-Net segmentation → ROI crop → ConvLSTM classification, "
+        "with SFLA hyper-parameter optimisation and Grad-CAM.\n"
+        "* **Method 2** — multi-class segmentation → SPECT feature stage → Dense "
+        "Convolutional Network classification.\n\n"
+        "Use `/api/methods` to discover both, and `/api/predict/{method_id}` to run "
+        "one. Metrics are never mixed between methods, and a stage without trained "
+        "weights reports itself unavailable rather than returning an untrained "
+        "model's output.\n\n"
+        "Research / decision-support only — not a clinical diagnostic device."
     ),
 )
 
@@ -46,19 +54,28 @@ app.mount("/predictions", StaticFiles(directory=str(config.PREDICTIONS_DIR)), na
 app.mount("/uploads", StaticFiles(directory=str(config.UPLOADS_DIR)), name="uploads")
 
 app.include_router(router)
+app.include_router(methods_router)
 
 
 @app.get("/", tags=["system"])
-async def root():
+def root():
+    from backend.methods.registry import METHOD_IDS
+
     return {
         "name": config.API_TITLE,
         "version": config.API_VERSION,
         "docs": "/docs",
+        "methods": list(METHOD_IDS),
+        "methods_endpoint": "/api/methods",
         "config": config.summary(),
+        "disclaimer": (
+            "Research / decision-support output only. Not a clinical diagnosis and "
+            "not a certified medical device."
+        ),
     }
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("backend.main:app", host=config.BACKEND_HOST, port=config.BACKEND_PORT, reload=True)
