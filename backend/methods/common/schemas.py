@@ -91,6 +91,11 @@ class MethodSummary(BaseModel):
     trained: bool = False
     segmentation_available: bool = False
     classifier_available: bool = False
+    # Name, version and creation time of the classifier checkpoint on disk, so a
+    # client can show which trained model it is talking to. None when absent.
+    classifier_checkpoint: Optional[str] = None
+    classifier_model_version: Optional[str] = None
+    classifier_trained_at: Optional[str] = None
     warnings: list[str] = Field(default_factory=list)
 
 

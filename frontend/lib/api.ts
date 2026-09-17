@@ -46,6 +46,10 @@ export interface MethodSummary {
   trained: boolean;
   segmentation_available: boolean;
   classifier_available: boolean;
+  /** Classifier checkpoint on disk; absent when no classifier is trained. */
+  classifier_checkpoint?: string | null;
+  classifier_model_version?: string | null;
+  classifier_trained_at?: string | null;
   warnings: string[];
 }
 

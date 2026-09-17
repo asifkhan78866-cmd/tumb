@@ -1,77 +1,125 @@
 {
   "method_id": "method1",
   "classification": {
-    "split": "LEGACY random slice-level validation split (NOT a held-out test set)",
-    "split_level": "image-level",
-    "dataset": "Brain Tumor MRI Dataset (BRI), Training+Testing merged",
-    "accuracy": 0.8403,
-    "precision": 0.8379,
-    "recall": 0.8442,
-    "sensitivity": 0.8442,
-    "specificity": 0.9466,
-    "f1": 0.8383,
-    "auc": null,
-    "avg_inference_time_s": null,
+    "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "dataset": "/Users/syedasif/tumb/data/bri/archive",
+    "accuracy": 0.9641,
+    "precision": 0.9639,
+    "recall": 0.9659,
+    "sensitivity": 0.9659,
+    "specificity": 0.9882,
+    "f1": 0.9643,
+    "weighted": {
+      "precision": 0.9657,
+      "recall": 0.9641,
+      "specificity": 0.9887,
+      "f1": 0.9644
+    },
+    "auc": 0.997,
+    "avg_inference_time_s": 0.000657,
+    "total_eval_time_s": 0.949,
     "confusion_matrix": [
       [
-        301,
-        50,
-        9,
-        7
-      ],
-      [
-        52,
-        241,
-        27,
-        55
-      ],
-      [
-        3,
-        10,
-        328,
+        285,
+        13,
+        0,
         2
       ],
       [
-        5,
+        0,
+        301,
+        4,
+        1
+      ],
+      [
         9,
-        1,
-        340
+        14,
+        382,
+        0
+      ],
+      [
+        0,
+        4,
+        0,
+        296
       ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
     ],
     "per_class": {
       "precision": [
-        0.8337950138504155,
-        0.7774193548387097,
-        0.8986301369863013,
-        0.8415841584158416
+        0.9694,
+        0.9066,
+        0.9896,
+        0.99
       ],
       "recall": [
-        0.8201634877384196,
-        0.6426666666666667,
-        0.956268221574344,
-        0.9577464788732394
+        0.95,
+        0.9837,
+        0.9432,
+        0.9867
       ],
       "f1": [
-        0.8269230769230769,
-        0.7036496350364964,
-        0.9265536723163842,
-        0.895915678524374
+        0.9596,
+        0.9436,
+        0.9659,
+        0.9883
       ],
       "specificity": [
-        0.9440820130475303,
-        0.9352112676056338,
-        0.9662716499544212,
-        0.9410138248847926
+        0.9911,
+        0.9692,
+        0.9956,
+        0.997
       ]
     },
-    "model_version": "legacy-untagged",
+    "per_class_detail": {
+      "glioma": {
+        "precision": 0.9694,
+        "recall": 0.95,
+        "sensitivity": 0.95,
+        "specificity": 0.9911,
+        "f1": 0.9596,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.9066,
+        "recall": 0.9837,
+        "sensitivity": 0.9837,
+        "specificity": 0.9692,
+        "f1": 0.9436,
+        "support": 306
+      },
+      "notumor": {
+        "precision": 0.9896,
+        "recall": 0.9432,
+        "sensitivity": 0.9432,
+        "specificity": 0.9956,
+        "f1": 0.9659,
+        "support": 405
+      },
+      "pituitary": {
+        "precision": 0.99,
+        "recall": 0.9867,
+        "sensitivity": 0.9867,
+        "specificity": 0.997,
+        "f1": 0.9883,
+        "support": 300
+      }
+    },
+    "test_size": 1311,
+    "best_epoch": 46,
+    "model_version": "20260916-221953",
     "warnings": [
-      "These numbers come from the classifier checkpoint shipped with the repository, before the two-method refactor. They are real measurements, but their provenance is weaker than the current pipeline's.",
-      "The split was random at the slice level with no patient grouping, so near-duplicate images from one patient could appear in both training and validation. The score is therefore optimistic.",
-      "It is the split that early stopping also selected on, so it is a model-selection score, not a held-out test score.",
-      "It was measured with the legacy whole-slice geometry (transform m1-v1-legacy). Retrain with `python -m backend.methods.method1.training.train_classifier` for a real held-out test number.",
-      "No segmentation model was trained, so no Dice or IoU exists for Method 1."
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+      "Requested ROI-cropped geometry (m1-v2-roi) but no segmentation checkpoint exists at /Users/syedasif/tumb/backend/weights/method1/best_unet.pth. Falling back to the whole-slice geometry (m1-v1-legacy) so that training and inference stay identical. Train the U-Net first to use ROI cropping.",
+      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
     ]
   },
-  "updated_at": "migrated-from-legacy-metrics.json"
+  "updated_at": "2026-09-16T22:19:54+00:00"
 }

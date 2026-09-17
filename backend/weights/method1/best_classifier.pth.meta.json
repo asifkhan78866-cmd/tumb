@@ -1,0 +1,30 @@
+{
+  "format": 2,
+  "method_id": "method1",
+  "architecture": "ConvLSTMClassifier",
+  "role": "classification",
+  "class_names": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "image_size": 128,
+  "transform_id": "m1-v1-legacy",
+  "model_version": "20260916-221953",
+  "created_at": "2026-09-16T22:19:53+00:00",
+  "extra": {
+    "hyperparameters": {
+      "lr": 0.0020163476884057364,
+      "weight_decay": 9.867373211617695e-05,
+      "dropout": 0.1941984806918835,
+      "lstm_hidden": 96,
+      "lstm_steps": 2,
+      "base": 16,
+      "batch_size": 8
+    },
+    "val_f1": 0.9775
+  },
+  "epoch": 46,
+  "val_f1": 0.9774931835836972
+}

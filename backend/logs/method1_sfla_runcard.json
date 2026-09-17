@@ -1,0 +1,176 @@
+{
+  "method_id": "method1",
+  "stage": "sfla",
+  "dataset": {
+    "root": "/Users/syedasif/tumb/data/bri/archive",
+    "num_samples": 7023,
+    "classes_found": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "official_split_counts": {
+      "testing": 1311,
+      "training": 5712
+    },
+    "has_official_split": true,
+    "respect_official_split": true,
+    "per_class_split": {
+      "glioma": {
+        "train": 1321,
+        "test": 300
+      },
+      "meningioma": {
+        "train": 1339,
+        "test": 306
+      },
+      "notumor": {
+        "train": 1595,
+        "test": 405
+      },
+      "pituitary": {
+        "train": 1457,
+        "test": 300
+      }
+    },
+    "counts": {
+      "train_pool": 5712,
+      "test": 1311,
+      "unassigned": 0
+    },
+    "grouping": "filename-stem (no patient ids in this dataset)",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic."
+    ]
+  },
+  "split_strategy": {
+    "counts": {
+      "train": 4741,
+      "val": 837,
+      "test": 1311
+    },
+    "group_counts": {
+      "train": 4605,
+      "val": 837,
+      "test": 1284
+    },
+    "group_overlap": {},
+    "leak_free": true
+  },
+  "random_seed": 42,
+  "preprocessing": {
+    "id": "m1-v1-legacy",
+    "image_size": 128,
+    "order": "denoise_then_resize",
+    "denoise": true,
+    "clahe": true,
+    "roi_crop": false,
+    "roi_pad": 8,
+    "roi_min_pixels": 20,
+    "description": "Original geometry: full-resolution non-local-means denoise, CLAHE, then resize; classifier sees the whole slice, never an ROI crop. Used for the untagged classifier checkpoint shipped with the repository."
+  },
+  "image_size": 128,
+  "architecture": "ConvLSTMClassifier",
+  "model_config": {
+    "search_space": [
+      {
+        "name": "lr",
+        "kind": "float",
+        "low": 0.0001,
+        "high": 0.01,
+        "log": true
+      },
+      {
+        "name": "weight_decay",
+        "kind": "float",
+        "low": 1e-06,
+        "high": 0.001,
+        "log": true
+      },
+      {
+        "name": "dropout",
+        "kind": "float",
+        "low": 0.1,
+        "high": 0.6,
+        "log": false
+      },
+      {
+        "name": "lstm_hidden",
+        "kind": "choice",
+        "choices": [
+          32,
+          64,
+          96,
+          128
+        ]
+      },
+      {
+        "name": "lstm_steps",
+        "kind": "int",
+        "low": 1,
+        "high": 5,
+        "log": false
+      },
+      {
+        "name": "base",
+        "kind": "choice",
+        "choices": [
+          16,
+          32,
+          48
+        ]
+      },
+      {
+        "name": "batch_size",
+        "kind": "choice",
+        "choices": [
+          8,
+          16,
+          32
+        ]
+      }
+    ]
+  },
+  "optimizer": {
+    "name": "SFLA",
+    "population": 12,
+    "memeplexes": 3,
+    "iterations": 10,
+    "local_iterations": 2,
+    "max_step": 0.5
+  },
+  "epochs": 3,
+  "best_epoch": 0,
+  "metrics": {
+    "best_fitness": 0.8601990380505519,
+    "best_parameters": {
+      "lr": 0.0020163476884057364,
+      "weight_decay": 9.867373211617695e-05,
+      "dropout": 0.1941984806918835,
+      "lstm_hidden": 96,
+      "lstm_steps": 2,
+      "base": 16,
+      "batch_size": 8
+    },
+    "evaluations": 103
+  },
+  "checkpoint_path": "/Users/syedasif/tumb/backend/logs/method1/sfla_results.json",
+  "inference_time_s": null,
+  "train_duration_s": 4593.1,
+  "model_version": "20260916-220357",
+  "created_at": "2026-09-16T22:03:57+00:00",
+  "git_revision": "87bd4a5",
+  "device": "mps",
+  "python": "3.13.7",
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Requested ROI-cropped geometry (m1-v2-roi) but no segmentation checkpoint exists at /Users/syedasif/tumb/backend/weights/method1/best_unet.pth. Falling back to the whole-slice geometry (m1-v1-legacy) so that training and inference stay identical. Train the U-Net first to use ROI cropping.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+    "The test set was never loaded during optimisation.",
+    "Fitness is maximised. Objective: validation macro-F1 after a short proxy training run (test split untouched)"
+  ]
+}

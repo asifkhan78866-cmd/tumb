@@ -66,6 +66,17 @@ def _asset_url(path) -> str | None:
     return f"/predictions/{path.name}" if path else None
 
 
+def _classifier_fields(status: dict) -> dict:
+    cls = status["weights"].get("classification", {})
+    if not cls.get("present"):
+        return {}
+    return {
+        "classifier_checkpoint": cls.get("filename"),
+        "classifier_model_version": cls.get("model_version"),
+        "classifier_trained_at": cls.get("created_at"),
+    }
+
+
 # --------------------------------------------------------------------------- #
 # Discovery
 # --------------------------------------------------------------------------- #
@@ -90,6 +101,7 @@ def list_all_methods() -> list[MethodSummary]:
                 trained=status["trained"],
                 segmentation_available=status["segmentation_available"],
                 classifier_available=status["classifier_available"],
+                **_classifier_fields(status),
                 warnings=status["warnings"] + list(spec.notes),
             )
         )
@@ -116,7 +128,13 @@ def method_detail(method_id: str = PathParam(..., description=f"one of {METHOD_I
         import importlib
 
         transforms = importlib.import_module(spec.transforms_module)
-        preprocessing = transforms.DEFAULT_SPEC.to_dict()
+        # Describe the geometry the served checkpoint was trained with, not the
+        # default for future runs — they differ when no U-Net exists.
+        transform_id = status["weights"].get("classification", {}).get("transform_id")
+        if transform_id and hasattr(transforms, "get_spec"):
+            preprocessing = transforms.get_spec(transform_id).to_dict()
+        else:
+            preprocessing = transforms.DEFAULT_SPEC.to_dict()
     except Exception as exc:  # pragma: no cover - descriptive only
         preprocessing = {"error": f"could not describe preprocessing: {exc}"}
 
@@ -135,6 +153,7 @@ def method_detail(method_id: str = PathParam(..., description=f"one of {METHOD_I
         trained=status["trained"],
         segmentation_available=status["segmentation_available"],
         classifier_available=status["classifier_available"],
+        **_classifier_fields(status),
         warnings=status["warnings"] + list(spec.notes),
         pipeline_stages=[
             {"id": s.id, "label": s.label, "kind": s.kind, "description": s.description}

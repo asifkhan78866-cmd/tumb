@@ -179,10 +179,11 @@ METHOD1 = MethodSpec(
         "classification": "method1_classification_runcard.json",
         "sfla": "method1_sfla_runcard.json",
     },
-    optimization_result_filename="method1_sfla_result.json",
+    optimization_result_filename="method1/sfla_results.json",
     notes=(
-        "The classifier is trained on the same ROI geometry it is served — see "
-        "backend/methods/method1/transforms.py for the single shared definition.",
+        "The classifier is served the same geometry it was trained on (recorded in its "
+        "checkpoint): whole slices until a U-Net checkpoint exists, ROI crops after. "
+        "See backend/methods/method1/transforms.py for the single shared definition.",
     ),
 )
 
@@ -326,14 +327,22 @@ def runtime_status(spec: MethodSpec) -> dict[str, Any]:
     """
     from backend import config
 
+    from backend.methods.common.checkpoint import peek_meta
+
     weights: dict[str, Any] = {}
     for w in spec.weights:
         path = getattr(config, w.path_attr, None)
+        present = bool(path and path.exists())
+        meta = (peek_meta(path) or {}) if present else {}
         weights[w.role] = {
             "architecture": w.architecture,
             "env_var": w.env_var,
             "path": str(path) if path else "",
-            "present": bool(path and path.exists()),
+            "filename": path.name if path else "",
+            "present": present,
+            "model_version": meta.get("model_version") or ("legacy-untagged" if present else None),
+            "transform_id": meta.get("transform_id") or None,
+            "created_at": meta.get("created_at") or None,
         }
 
     datasets = []

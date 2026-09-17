@@ -10,6 +10,11 @@ venv/
 backend/weights/*.pth
 # ...but ship the trained classifier so inference works out of the box.
 !backend/weights/best_classifier.pth
+# ...and the Method 1 classifier trained with SFLA-selected hyper-parameters.
+backend/weights/method1/*
+!backend/weights/method1/best_classifier.pth
+!backend/weights/method1/best_classifier.pth.meta.json
+!backend/weights/method1/model_metadata.json
 backend/dataset/*
 !backend/dataset/.gitkeep
 backend/uploads/*
@@ -27,6 +32,15 @@ backend/logs/*
 !backend/logs/cls_loss.png
 !backend/logs/eval_confusion_matrix.png
 !backend/logs/eval_roc.png
+!backend/logs/method1_classification_runcard.json
+!backend/logs/method1_sfla_runcard.json
+!backend/logs/method1_cls_confusion_matrix.png
+!backend/logs/method1_cls_roc.png
+!backend/logs/method1_cls_acc.png
+!backend/logs/method1_cls_loss.png
+!backend/logs/method1/
+backend/logs/method1/*
+!backend/logs/method1/sfla_results.json
 *.nii
 *.nii.gz
 
@@ -58,3 +72,6 @@ npm-debug.log*
 .DS_Store
 .vscode/
 .idea/
+
+# Local datasets (large, never committed)
+data/

@@ -71,7 +71,17 @@ function StatusChip({ method }: { method: MethodSummary }) {
       </span>
     );
   }
-  if (method.classifier_available || method.segmentation_available) {
+  if (method.classifier_available) {
+    return (
+      <span
+        title="Classifier trained; segmentation not trained"
+        className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
+      >
+        <CheckCircle2 className="h-3 w-3" /> Classifier trained
+      </span>
+    );
+  }
+  if (method.segmentation_available) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
         <AlertTriangle className="h-3 w-3" /> Partial
