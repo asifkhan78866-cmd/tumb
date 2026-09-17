@@ -58,7 +58,9 @@ for _p in (WEIGHTS_DIR, DATASET_DIR, UPLOADS_DIR, PREDICTIONS_DIR, LOGS_DIR, MOD
 
 # Per-dataset roots. Each defaults to a sub-directory of DATA_ROOT so a plain
 # checkout keeps working, but any of them can point somewhere else entirely.
-BRI_DATASET_PATH = _env_path("BRI_DATASET_PATH", DATASET_DIR / "brain-tumor-mri-dataset")
+# The BRI default matches the documented layout (data/bri/archive/{Training,Testing}),
+# which is also where `python -m backend.utils.dataset_download --kind classification` puts it.
+BRI_DATASET_PATH = _env_path("BRI_DATASET_PATH", ROOT_DIR / "data" / "bri" / "archive")
 BRATS_DATASET_PATH = _env_path("BRATS_DATASET_PATH", DATASET_DIR / "brats2020-training-data")
 SPECT_DATASET_PATH = _env_path("SPECT_DATASET_PATH", DATASET_DIR / "spect")
 

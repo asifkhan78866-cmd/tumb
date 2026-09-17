@@ -59,7 +59,32 @@ def _verify_classification(root: Path) -> tuple[bool, str]:
         return False, f"missing class folders: {missing}"
     if images < 100:
         return False, f"only {images} images found — the download looks truncated"
-    return True, f"{images} images across {sorted(found)}"
+    # Every MRI method relies on the dataset's own split being directly under the root.
+    for split in ("Training", "Testing"):
+        split_dir = root / split
+        if not split_dir.is_dir():
+            return False, f"{split}/ not found directly under {root}"
+        absent = sorted(c for c in CLASS_DIRS if not (split_dir / c).is_dir())
+        if absent:
+            return False, f"{split}/ is missing class folders {absent}"
+    return True, f"{images} images across {sorted(found)} in Training/ and Testing/"
+
+
+def _flatten_single_wrapper(dest: Path) -> None:
+    """If extraction produced ``dest/<one folder>/{Training,Testing}``, move them up.
+
+    Different packagings of the same Kaggle dataset add a wrapper folder; the
+    loaders expect ``Training/`` and ``Testing/`` directly under the root.
+    """
+    if (dest / "Training").is_dir():
+        return
+    children = [c for c in dest.iterdir() if not c.name.startswith(".")]
+    if len(children) == 1 and children[0].is_dir() and (children[0] / "Training").is_dir():
+        wrapper = children[0]
+        for item in wrapper.iterdir():
+            shutil.move(str(item), str(dest / item.name))
+        wrapper.rmdir()
+        print(f"[dataset]   flattened wrapper folder '{wrapper.name}/' so Training/ and Testing/ sit at the root")
 
 
 def _verify_segmentation(root: Path) -> tuple[bool, str]:
@@ -91,7 +116,7 @@ def _sources() -> dict[str, DatasetSource]:
             key="classification",
             slug=config.KAGGLE_CLASSIFICATION,
             dest=config.BRI_DATASET_PATH,
-            description="Brain Tumor MRI Dataset — 4 labelled classes (Method 1 classifier)",
+            description="Brain Tumor MRI Dataset — 4 labelled classes (MRI Methods 1, 2 and 3)",
             verify=_verify_classification,
         ),
         "segmentation": DatasetSource(
@@ -185,6 +210,8 @@ def download_one(source: DatasetSource, force: bool = False, dry_run: bool = Fal
         print(f"[dataset]   FAILED: {type(exc).__name__}: {exc}")
         return False
 
+    if source.key == "classification":
+        _flatten_single_wrapper(source.dest)
     ok, detail = source.verify(source.dest)
     if ok:
         print(f"[dataset]   OK — verified: {detail}")
