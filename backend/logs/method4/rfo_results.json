@@ -1,0 +1,629 @@
+{
+  "algorithm": "Red Fox Optimization (RFO)",
+  "reference": "Po\u0142ap & Wo\u017aniak (2021), Expert Systems with Applications 166:114107",
+  "objective": "validation macro-F1 after a short proxy training run (test split untouched)",
+  "seed": 42,
+  "population": 6,
+  "iterations": 3,
+  "replace_fraction": 0.25,
+  "evaluations": 43,
+  "duration_s": 5330.22,
+  "search_space": [
+    {
+      "name": "lr",
+      "kind": "float",
+      "low": 3e-05,
+      "high": 0.003,
+      "log": true
+    },
+    {
+      "name": "weight_decay",
+      "kind": "float",
+      "low": 1e-05,
+      "high": 0.005,
+      "log": true
+    },
+    {
+      "name": "dropout",
+      "kind": "float",
+      "low": 0.2,
+      "high": 0.7,
+      "log": false
+    },
+    {
+      "name": "fc_units",
+      "kind": "choice",
+      "choices": [
+        1024,
+        2048,
+        4096
+      ]
+    },
+    {
+      "name": "batch_size",
+      "kind": "choice",
+      "choices": [
+        32,
+        64
+      ]
+    }
+  ],
+  "best_parameters": {
+    "lr": 9.415354729990893e-05,
+    "weight_decay": 0.0001926813116738516,
+    "dropout": 0.21991416442896075,
+    "fc_units": 1024,
+    "batch_size": 64
+  },
+  "best_fitness": 0.8888848487810266,
+  "best_position": [
+    0.24835771614287655,
+    0.476048119111578,
+    0.0398283288579215,
+    0.2985191099298727,
+    0.6185792757947416
+  ],
+  "history": [
+    {
+      "iteration": 1,
+      "best_fitness": 0.8801659266933991,
+      "mean_fitness": 0.8324880082773854,
+      "worst_fitness": 0.7808793054884919,
+      "evaluations": 19
+    },
+    {
+      "iteration": 2,
+      "best_fitness": 0.8888848487810266,
+      "mean_fitness": 0.8656166994625115,
+      "worst_fitness": 0.8271353645774294,
+      "evaluations": 31
+    },
+    {
+      "iteration": 3,
+      "best_fitness": 0.8888848487810266,
+      "mean_fitness": 0.8720953061764627,
+      "worst_fitness": 0.848411185062832,
+      "evaluations": 43
+    }
+  ],
+  "evaluation_log": [
+    {
+      "evaluation": 1,
+      "phase": "init",
+      "parameters": {
+        "lr": 0.0005701312571621135,
+        "weight_decay": 1.168162547326119e-05,
+        "dropout": 0.3375146591845596,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.7721317731657142
+    },
+    {
+      "evaluation": 2,
+      "phase": "init",
+      "parameters": {
+        "lr": 0.0006768933220766725,
+        "weight_decay": 0.0025583849505625,
+        "dropout": 0.2434694163147081,
+        "fc_units": 2048,
+        "batch_size": 32
+      },
+      "fitness": 0.7187166661474963
+    },
+    {
+      "evaluation": 3,
+      "phase": "init",
+      "parameters": {
+        "lr": 8.211021784073227e-05,
+        "weight_decay": 0.00023117388101352414,
+        "dropout": 0.21326798484193182,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8801659266933991
+    },
+    {
+      "evaluation": 4,
+      "phase": "init",
+      "parameters": {
+        "lr": 0.0003689811804481196,
+        "weight_decay": 3.93516209813194e-05,
+        "dropout": 0.4946328419379543,
+        "fc_units": 4096,
+        "batch_size": 32
+      },
+      "fitness": 0.6187110987271368
+    },
+    {
+      "evaluation": 5,
+      "phase": "init",
+      "parameters": {
+        "lr": 0.0012267604280668228,
+        "weight_decay": 0.00076605029811124,
+        "dropout": 0.3701252582589959,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.7330914376548362
+    },
+    {
+      "evaluation": 6,
+      "phase": "init",
+      "parameters": {
+        "lr": 0.00014135472985388203,
+        "weight_decay": 1.7795830038610088e-05,
+        "dropout": 0.24835818841673202,
+        "fc_units": 4096,
+        "batch_size": 64
+      },
+      "fitness": 0.8028596940103385
+    },
+    {
+      "evaluation": 7,
+      "phase": "global",
+      "parameters": {
+        "lr": 9.117970423365791e-05,
+        "weight_decay": 0.00014097848932555367,
+        "dropout": 0.22003589299655704,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8433288956707079
+    },
+    {
+      "evaluation": 8,
+      "phase": "global",
+      "parameters": {
+        "lr": 0.00013862734044874808,
+        "weight_decay": 0.00010317000739188191,
+        "dropout": 0.2468479115257489,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.7773507767750024
+    },
+    {
+      "evaluation": 9,
+      "phase": "global",
+      "parameters": {
+        "lr": 0.00028776208222653184,
+        "weight_decay": 0.00040294695480989977,
+        "dropout": 0.28601398190377547,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.7536704819923024
+    },
+    {
+      "evaluation": 10,
+      "phase": "global",
+      "parameters": {
+        "lr": 8.690133974655153e-05,
+        "weight_decay": 0.0002466077017547332,
+        "dropout": 0.2140799272538068,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8187019412069292
+    },
+    {
+      "evaluation": 11,
+      "phase": "global",
+      "parameters": {
+        "lr": 0.0002089151943356619,
+        "weight_decay": 7.692128486463644e-05,
+        "dropout": 0.3881265709887941,
+        "fc_units": 2048,
+        "batch_size": 32
+      },
+      "fitness": 0.811960298626202
+    },
+    {
+      "evaluation": 12,
+      "phase": "local",
+      "parameters": {
+        "lr": 7.534282424028626e-05,
+        "weight_decay": 0.0002047485803890449,
+        "dropout": 0.21472072826637148,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8687664262111062
+    },
+    {
+      "evaluation": 13,
+      "phase": "local",
+      "parameters": {
+        "lr": 9.372887699210189e-05,
+        "weight_decay": 0.00018579791090896566,
+        "dropout": 0.21717676575134545,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8517795014545912
+    },
+    {
+      "evaluation": 14,
+      "phase": "local",
+      "parameters": {
+        "lr": 0.00013497640029084076,
+        "weight_decay": 0.0001406729981159485,
+        "dropout": 0.2531172174556203,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.7692128770005797
+    },
+    {
+      "evaluation": 15,
+      "phase": "local",
+      "parameters": {
+        "lr": 0.00019161539863184532,
+        "weight_decay": 0.000676238359153213,
+        "dropout": 0.2877643442107975,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.6630289994438572
+    },
+    {
+      "evaluation": 16,
+      "phase": "local",
+      "parameters": {
+        "lr": 8.512768345745696e-05,
+        "weight_decay": 0.00020071681870198601,
+        "dropout": 0.21543403195157326,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8418692066546418
+    },
+    {
+      "evaluation": 17,
+      "phase": "local",
+      "parameters": {
+        "lr": 0.00021824796289784333,
+        "weight_decay": 8.305496493180493e-05,
+        "dropout": 0.38088498188828845,
+        "fc_units": 2048,
+        "batch_size": 32
+      },
+      "fitness": 0.6950470441770042
+    },
+    {
+      "evaluation": 18,
+      "phase": "leave_herd",
+      "parameters": {
+        "lr": 0.00010159716460039645,
+        "weight_decay": 4.630631753400701e-05,
+        "dropout": 0.48068406708157535,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8282738107469861
+    },
+    {
+      "evaluation": 19,
+      "phase": "leave_herd",
+      "parameters": {
+        "lr": 0.00018876534450268292,
+        "weight_decay": 3.907870380942903e-05,
+        "dropout": 0.6987688032475551,
+        "fc_units": 2048,
+        "batch_size": 32
+      },
+      "fitness": 0.7808793054884919
+    },
+    {
+      "evaluation": 20,
+      "phase": "global",
+      "parameters": {
+        "lr": 9.314624307687814e-05,
+        "weight_decay": 0.00018772066039695495,
+        "dropout": 0.2169925981625645,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.850183712013564
+    },
+    {
+      "evaluation": 21,
+      "phase": "global",
+      "parameters": {
+        "lr": 8.479148033484664e-05,
+        "weight_decay": 0.00020385026822711467,
+        "dropout": 0.21519652676970252,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8053786869694483
+    },
+    {
+      "evaluation": 22,
+      "phase": "global",
+      "parameters": {
+        "lr": 8.888994294418126e-05,
+        "weight_decay": 0.00012699449252040257,
+        "dropout": 0.31289490479256304,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8450091561956908
+    },
+    {
+      "evaluation": 23,
+      "phase": "global",
+      "parameters": {
+        "lr": 9.970665886892301e-05,
+        "weight_decay": 0.00018389719587453106,
+        "dropout": 0.24962469322018083,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8590520927130492
+    },
+    {
+      "evaluation": 24,
+      "phase": "global",
+      "parameters": {
+        "lr": 0.00013283143284779794,
+        "weight_decay": 8.276506481191317e-05,
+        "dropout": 0.4938097938682177,
+        "fc_units": 2048,
+        "batch_size": 32
+      },
+      "fitness": 0.8216048205786572
+    },
+    {
+      "evaluation": 25,
+      "phase": "local",
+      "parameters": {
+        "lr": 8.222078087366953e-05,
+        "weight_decay": 0.00023125027480228372,
+        "dropout": 0.21326485291653519,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8186123114134237
+    },
+    {
+      "evaluation": 26,
+      "phase": "local",
+      "parameters": {
+        "lr": 9.415354729990893e-05,
+        "weight_decay": 0.0001926813116738516,
+        "dropout": 0.21991416442896075,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8888848487810266
+    },
+    {
+      "evaluation": 27,
+      "phase": "local",
+      "parameters": {
+        "lr": 8.59345699688039e-05,
+        "weight_decay": 0.00023342680359467465,
+        "dropout": 0.21545342014834543,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.869870430897877
+    },
+    {
+      "evaluation": 28,
+      "phase": "local",
+      "parameters": {
+        "lr": 9.429912560934389e-05,
+        "weight_decay": 0.0001823505692579265,
+        "dropout": 0.2412608280857748,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8529178643085904
+    },
+    {
+      "evaluation": 29,
+      "phase": "local",
+      "parameters": {
+        "lr": 0.000132861897481466,
+        "weight_decay": 8.276790756599092e-05,
+        "dropout": 0.4938088392668481,
+        "fc_units": 2048,
+        "batch_size": 32
+      },
+      "fitness": 0.8042005338835023
+    },
+    {
+      "evaluation": 30,
+      "phase": "reproduce",
+      "parameters": {
+        "lr": 6.981506123444344e-05,
+        "weight_decay": 0.0002754068085010366,
+        "dropout": 0.24190915952841893,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8685915331122881
+    },
+    {
+      "evaluation": 31,
+      "phase": "reproduce",
+      "parameters": {
+        "lr": 0.00010073158368638977,
+        "weight_decay": 0.00025449217078087646,
+        "dropout": 0.2,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8271353645774294
+    },
+    {
+      "evaluation": 32,
+      "phase": "global",
+      "parameters": {
+        "lr": 8.514360477885548e-05,
+        "weight_decay": 0.00022027895359915637,
+        "dropout": 0.21502959879859995,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8716030529970273
+    },
+    {
+      "evaluation": 33,
+      "phase": "global",
+      "parameters": {
+        "lr": 9.306283137224206e-05,
+        "weight_decay": 0.00019745463898426593,
+        "dropout": 0.21934512084658633,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8395355141798977
+    },
+    {
+      "evaluation": 34,
+      "phase": "global",
+      "parameters": {
+        "lr": 7.923361656337547e-05,
+        "weight_decay": 0.0002367724319830701,
+        "dropout": 0.2326022426073056,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8548256910660625
+    },
+    {
+      "evaluation": 35,
+      "phase": "global",
+      "parameters": {
+        "lr": 9.850381268519872e-05,
+        "weight_decay": 0.00018572359817611123,
+        "dropout": 0.2433320565394651,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8858432947167835
+    },
+    {
+      "evaluation": 36,
+      "phase": "global",
+      "parameters": {
+        "lr": 9.712894252610675e-05,
+        "weight_decay": 0.00021903255734932265,
+        "dropout": 0.21073963098784956,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8704185079419112
+    },
+    {
+      "evaluation": 37,
+      "phase": "local",
+      "parameters": {
+        "lr": 0.00010276613987822075,
+        "weight_decay": 0.00019309001651152843,
+        "dropout": 0.21969739619894682,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.870575491998556
+    },
+    {
+      "evaluation": 38,
+      "phase": "local",
+      "parameters": {
+        "lr": 7.652493337155625e-05,
+        "weight_decay": 0.00022948262397425563,
+        "dropout": 0.2123929078882905,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8654464273907283
+    },
+    {
+      "evaluation": 39,
+      "phase": "local",
+      "parameters": {
+        "lr": 8.480838496826131e-05,
+        "weight_decay": 0.0002380262038273904,
+        "dropout": 0.21550982411848013,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8411465892597969
+    },
+    {
+      "evaluation": 40,
+      "phase": "local",
+      "parameters": {
+        "lr": 7.033160229472327e-05,
+        "weight_decay": 0.0002741179306430358,
+        "dropout": 0.24192328432893678,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8343922427783188
+    },
+    {
+      "evaluation": 41,
+      "phase": "local",
+      "parameters": {
+        "lr": 9.730227215630247e-05,
+        "weight_decay": 0.00018416241067923774,
+        "dropout": 0.2433133411716841,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8800740508969545
+    },
+    {
+      "evaluation": 42,
+      "phase": "reproduce",
+      "parameters": {
+        "lr": 9.352552510864264e-05,
+        "weight_decay": 0.000177230379019137,
+        "dropout": 0.24342897778737366,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.8588480738628236
+    },
+    {
+      "evaluation": 43,
+      "phase": "reproduce",
+      "parameters": {
+        "lr": 9.406866358091822e-05,
+        "weight_decay": 0.000172914968689147,
+        "dropout": 0.2234561871502025,
+        "fc_units": 1024,
+        "batch_size": 64
+      },
+      "fitness": 0.848411185062832
+    }
+  ],
+  "notes": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+    "The test set was never loaded during optimisation.",
+    "Fitness is maximised. Objective: validation macro-F1 after a short proxy training run (test split untouched)"
+  ],
+  "best_validation_score": 0.8888848487810266,
+  "fitness_history": [
+    0.8801659266933991,
+    0.8888848487810266,
+    0.8888848487810266
+  ],
+  "proxy_epochs": 2,
+  "device": "mps",
+  "timestamp": "2026-09-17T06:22:14+00:00",
+  "dataset": {
+    "path": "/Users/syedasif/tumb/data/bri/archive",
+    "train": 4741,
+    "validation": 837,
+    "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers"
+  }
+}
