@@ -12,6 +12,7 @@ import { UploadDropzone } from "@/components/upload-dropzone";
 import { PredictionCard } from "@/components/prediction-card";
 import { MethodSelector } from "@/components/method-selector";
 import { ArchitectureCard } from "@/components/architecture-card";
+import { ModelStatusCard } from "@/components/model-status-card";
 import { WarningList } from "@/components/warning-list";
 import {
   errorMessage,
@@ -150,7 +151,13 @@ export default function UploadPage() {
       </Card>
 
       {detail ? (
-        <ArchitectureCard method={detail} />
+        <>
+          <ModelStatusCard
+            method={detail}
+            index={(methods?.findIndex((m) => m.method_id === detail.method_id) ?? 0) + 1}
+          />
+          <ArchitectureCard method={detail} />
+        </>
       ) : (
         <Skeleton className="h-64 w-full rounded-xl" />
       )}

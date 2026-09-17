@@ -33,6 +33,7 @@ from backend.methods.method1.transforms import (
     clahe,
     crop_to_roi,
     denoise,
+    preprocess_file,
     resize,
     scale_to_unit,
     to_grayscale,
@@ -216,6 +217,100 @@ def class_weights(samples: Sequence[tuple[str, int]]) -> list[float]:
 
 def classification_group_of(sample: tuple[str, int]) -> str:
     return bri_patient_id(sample[0])
+
+
+def file_digest(path: str) -> str:
+    with open(path, "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
+
+
+def content_group_of(digests: dict[str, str]) -> Callable[[tuple[str, int]], str]:
+    """Group key = image content hash.
+
+    The Kaggle BRI set contains byte-identical copies under different filenames,
+    both inside Training and across Training/Testing. Grouping by filename stem
+    lets those copies land on both sides of the train/validation split, which
+    inflates the validation score the early stopper and SFLA optimise.
+    """
+    return lambda sample: digests[sample[0]]
+
+
+def drop_test_duplicates(
+    train_pool: Sequence[tuple[str, int]],
+    test: Sequence[tuple[str, int]],
+    digests: dict[str, str],
+) -> tuple[list[tuple[str, int]], list[str]]:
+    """Remove training images that are byte-identical to a test image.
+
+    The test set itself is never modified; only the leaking training copies go.
+    """
+    test_hashes = {digests[p] for p, _ in test}
+    kept = [s for s in train_pool if digests[s[0]] not in test_hashes]
+    removed = [p for p, _ in train_pool if digests[p] in test_hashes]
+    return kept, removed
+
+
+# --------------------------------------------------------------------------- #
+# Preprocessed-array cache — deterministic preprocessing done once, not per epoch
+# --------------------------------------------------------------------------- #
+def load_preprocessed(
+    samples: Sequence[tuple[str, int]], spec: TransformSpec, workers: Optional[int] = None
+) -> np.ndarray:
+    """Return an (N, H, W) float32 array of ``preprocess(image, spec)`` outputs.
+
+    Calls the exact function the inference engine calls, so a cached array is
+    identical to what serving computes for the same file. Non-local-means
+    denoising dominates the cost, so the result is cached on disk keyed by the
+    spec and the file list, and computed with a process pool.
+    """
+    from concurrent.futures import ProcessPoolExecutor
+    import os
+
+    paths = [p for p, _ in samples]
+    key = hashlib.sha1(
+        json.dumps([spec.to_dict(), sorted(paths)], sort_keys=True).encode()
+    ).hexdigest()[:16]
+    cache = config.MODEL_CACHE_DIR / f"method1_prep_{spec.id}_{key}.npz"
+    index = {p: i for i, p in enumerate(sorted(paths))}
+    if cache.exists():
+        arr = np.load(cache)["x"]
+        print(f"[method1] preprocessed cache hit: {cache.name} ({len(arr)} images)")
+    else:
+        ordered = sorted(paths)
+        workers = workers or max(1, (os.cpu_count() or 2) - 1)
+        print(f"[method1] preprocessing {len(ordered)} images with {workers} processes "
+              f"(spec {spec.id}); cached for later runs…")
+        with ProcessPoolExecutor(max_workers=workers) as ex:
+            arr = np.stack(list(ex.map(preprocess_file, [(p, spec) for p in ordered],
+                                       chunksize=32)))
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(cache, x=arr)
+        print(f"[method1] preprocessed cache written: {cache}")
+    return arr[[index[p] for p in paths]]
+
+
+class CachedClassificationDataset(Dataset):
+    """Whole-slice classification over preprocessed arrays.
+
+    Equivalent to :class:`ClassificationDataset` for specs without ROI cropping,
+    minus the per-epoch disk read and denoise. Augmentation (training only) is
+    seeded so a run is reproducible.
+    """
+
+    def __init__(self, images: np.ndarray, labels: Sequence[int], augment: bool = False,
+                 seed: int = 42):
+        self.images = images
+        self.labels = np.asarray(labels, dtype=np.int64)
+        self.aug = Augmentor(vflip=0.0, seed=seed) if augment else None
+
+    def __len__(self) -> int:
+        return len(self.labels)
+
+    def __getitem__(self, idx: int):
+        img = self.images[idx]
+        if self.aug is not None:
+            img = self.aug((img * 255).astype(np.uint8)).astype(np.float32) / 255.0
+        return torch.from_numpy(np.ascontiguousarray(img)).float().unsqueeze(0), int(self.labels[idx])
 
 
 # --------------------------------------------------------------------------- #

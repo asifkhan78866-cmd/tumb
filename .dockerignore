@@ -21,3 +21,4 @@ backend/.model_cache/
 .gitignore
 *.md
 !README.md
+data/

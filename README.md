@@ -32,7 +32,7 @@ fails loudly instead of silently producing garbage.
 
 | Component | State |
 |---|---|
-| Method 1 classifier (`best_classifier.pth`) | **Ships trained.** ~84% accuracy, but on a *legacy random slice-level split* — see the caveats it carries. |
+| Method 1 classifier (`weights/method1/best_classifier.pth`) | Trained locally with SFLA-selected hyper-parameters; 96.4% accuracy on the dataset's own `Testing/` folder (image-level split, whole-slice geometry — see caveats). Not committed; the legacy flat `weights/best_classifier.pth` is only used when it is absent. |
 | Method 1 U-Net (`best_unet.pth`) | **Not included.** Segmentation reports itself unavailable until you train it. |
 | Method 2 segmentation + DCN | **Not included.** The API returns `prediction: null` with warnings rather than inventing an answer. |
 
@@ -158,14 +158,27 @@ with an explicit error if they do not match, rather than guessing.
 # 1. Segmentation (volume-level splits, held-out test set)
 python -m backend.methods.method1.training.train_segmentation --epochs 50 --batch-size 16
 
-# 2. Optional: SFLA hyper-parameter search (reads train/val only — never the test split)
-python -m backend.methods.method1.optimization.run_sfla --iterations 10 --proxy-epochs 3
+# 2. Dataset check (expects BRI_DATASET_PATH=./data/bri/archive with Training/ and Testing/)
+python -m backend.methods.method1.inventory
+
+# 3. Validation-only baseline (never loads Testing/)
+python -m backend.methods.method1.training.train_classifier --skip-test --epochs 25 --patience 5
+
+# 4. SFLA hyper-parameter search (train/val only — Testing/ is never loaded)
+python -m backend.methods.method1.optimization.run_sfla --population 12 --memeplexes 3 \
+    --iterations 10 --local-iterations 2 --proxy-epochs 3 --seed 42
 #    ...then set SFLA_ENABLED=true in .env to make training use the result.
 #    --dry-run optimises an analytic objective, so you can exercise it with no dataset.
 
-# 3. Classifier (ROI geometry, requires the U-Net from step 1)
-python -m backend.methods.method1.training.train_classifier --epochs 40 --transform v2
+# 5. Final classifier; evaluates Testing/ exactly once at the end
+SFLA_ENABLED=true python -m backend.methods.method1.training.train_classifier --epochs 60 --patience 10
 ```
+
+Without U-Net weights the classifier trains and serves the whole-slice geometry
+(`m1-v1-legacy`), and says so. Preprocessed arrays are cached in
+`backend/.model_cache/`, so only the first run pays for the non-local-means
+denoise. Training copies byte-identical to a `Testing/` image (134 in the Kaggle
+release) are dropped from the training pool; `Testing/` itself is untouched.
 
 ### Method 2
 
@@ -302,12 +315,14 @@ the same thing.
 - **Method 1's U-Net is not included.** Segmentation is unavailable until trained.
   In `APP_ENV=development` a clearly-labelled `PLACEHOLDER` image may be rendered in
   the mask panel; it is never presented as a model output.
-- **The shipped classifier's 84% is a legacy number** — a random slice-level split
-  that was also the model-selection split, measured with the legacy whole-slice
-  geometry. It carries those caveats through the API and into the PDF. Retrain for a
-  patient-grouped held-out figure.
-- **The BRI dataset has no patient identifiers.** Its split groups by filename stem,
-  which keeps obvious near-duplicates together but cannot guarantee patient disjointness.
+- **Method 1's 96.4% test accuracy is image-level, not patient-level.** It is measured
+  once on the dataset's own `Testing/` folder, with validation carved from `Training/`
+  only. The BRI dataset has no patient identifiers, so slices from one patient may
+  sit on both sides and the figure may be optimistic. Exact duplicates are handled
+  (grouped across train/val, dropped from training when they duplicate a test image),
+  but near-duplicates are not.
+- **The trained classifier uses whole slices, not U-Net ROI crops**, because no U-Net
+  checkpoint exists yet. Training and serving use the same geometry.
 - **Method 2's segmentation head trains on BraTS MRI** because that is the only
   multi-region annotated source available, while its classifier may run on SPECT.
   This cross-modality step is recorded in the checkpoint and surfaced as a warning.

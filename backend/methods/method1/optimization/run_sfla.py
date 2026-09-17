@@ -1,23 +1,23 @@
 """Run the SFLA hyper-parameter search for Method 1's classifier.
 
-    python -m backend.methods.method1.optimization.run_sfla --iterations 10
+    python -m backend.methods.method1.optimization.run_sfla --population 12 --iterations 10
 
 **Optimisation target.** Classifier hyper-parameters: learning rate, weight
 decay, dropout, ConvLSTM hidden width, number of recurrent refinement steps,
 convolution base width and batch size.
 
 **Fitness.** Macro-F1 on the *validation* split after a short proxy training run
-of ``--proxy-epochs`` epochs. Macro-F1 rather than accuracy because the class
-balance is uneven and accuracy would reward ignoring the weakest class.
+of ``--proxy-epochs`` epochs. Macro-F1 rather than accuracy because accuracy
+would reward ignoring the weakest class.
 
-**The held-out test split is never loaded by this script.** Data is split three
-ways with the same patient-grouped, seeded splitter the training scripts use,
-and only the train and validation parts are opened. That is what makes the final
-test number an honest estimate of a model whose hyper-parameters were tuned.
+**The test set is never loaded by this script.** Data is prepared by the same
+function the training script uses (``prepare_data(load_test=False)``), so the
+validation split SFLA optimises is exactly the one final training early-stops on,
+and the dataset's ``Testing/`` folder is neither decoded nor preprocessed.
 
-The result — seed, population, memeplexes, iterations, objective, full
-evaluation log, convergence history and best parameter set — is written to
-``backend/logs/method1_sfla_result.json``. Training picks it up automatically
+The result — seed, population, memeplexes, iterations, objective, search space,
+full evaluation log, convergence history and best parameter set — is written to
+``backend/logs/method1/sfla_results.json``. Training picks it up automatically
 when ``SFLA_ENABLED=true``.
 
 With ``--dry-run`` the search runs against a cheap analytic objective instead of
@@ -26,15 +26,15 @@ training anything, which is how the reproducibility test exercises it.
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import time
+from datetime import datetime, timezone
 
 import torch
-from torch.utils.data import DataLoader
 
 from backend import config
 from backend.methods.common.runcard import RunCard, write_run_card
-from backend.methods.common.splits import group_train_val_test_split, split_summary
 from backend.methods.method1 import config as m1
 from backend.methods.method1.optimization.sfla import SFLA, Parameter, SearchSpace
 from backend.training.common import seed_everything
@@ -70,50 +70,31 @@ def _dry_run_objective(params: dict) -> float:
 
 def build_training_objective(args):
     """Real objective: train briefly on `train`, score macro-F1 on `val`."""
-    from backend.methods.method1.datasets import (
-        ClassificationDataset,
-        DatasetError,
-        classification_group_of,
-        discover_classification_samples,
+    from backend.methods.method1.training.train_classifier import (
+        build_criterion,
+        build_model,
+        make_loader,
+        prepare_data,
+        run_epoch,
     )
-    from backend.methods.method1.models import ConvLSTMClassifier
-    from backend.methods.method1.training.train_classifier import resolve_spec, run_epoch
-    from backend.utils.metrics import classification_metrics  # noqa: F401  (used via run_epoch)
 
-    warnings: list[str] = []
-    samples, ds_meta = discover_classification_samples(args.data_root or m1.BRI_PATH)
-    warnings.extend(ds_meta.get("warnings", []))
-    spec, _ = resolve_spec(args.transform, warnings)
-
-    train_s, val_s, _test_s = group_train_val_test_split(
-        samples, classification_group_of, args.val_frac, args.test_frac, seed=config.SEED
-    )
-    # _test_s is deliberately discarded here: the optimiser must not be able to
-    # read it even by accident.
-    del _test_s
-    summary = split_summary({"train": train_s, "val": val_s}, classification_group_of)
-    print(f"[sfla] optimising on train={len(train_s)} val={len(val_s)} "
-          f"(held-out test excluded) | leak-free={summary['leak_free']}")
+    data = prepare_data(args, load_test=False)
+    assert "test" not in data.arrays, "SFLA must never load the test set"
+    print(f"[sfla] optimising on train={len(data.train)} val={len(data.val)} "
+          f"(test set not loaded) | leak-free={data.summary['leak_free']}")
 
     device = config.DEVICE
+    train_ds = data.dataset("train", augment=True)
+    val_ds = data.dataset("val")
 
     def objective(params: dict) -> float:
-        seed_everything(config.SFLA_SEED)  # same init for every candidate
+        seed_everything(config.SFLA_SEED)  # same init and data order for every candidate
+        t0 = time.perf_counter()
         bs = int(params["batch_size"])
-        train_loader = DataLoader(
-            ClassificationDataset(train_s, spec, augment=True),
-            batch_size=bs, shuffle=True, num_workers=args.workers, drop_last=True,
-        )
-        val_loader = DataLoader(
-            ClassificationDataset(val_s, spec, augment=False),
-            batch_size=bs, shuffle=False, num_workers=args.workers,
-        )
-        model = ConvLSTMClassifier(
-            in_channels=1, num_classes=m1.NUM_CLASSES,
-            base=int(params["base"]), lstm_hidden=int(params["lstm_hidden"]),
-            lstm_steps=int(params["lstm_steps"]), dropout=float(params["dropout"]),
-        ).to(device)
-        criterion = torch.nn.CrossEntropyLoss()
+        train_loader = make_loader(train_ds, bs, True, args.workers)
+        val_loader = make_loader(val_ds, bs, False, args.workers)
+        model = build_model(params, device)
+        criterion, _ = build_criterion(data.train, device)
         optimizer = torch.optim.Adam(
             model.parameters(), lr=float(params["lr"]),
             weight_decay=float(params["weight_decay"]),
@@ -123,10 +104,14 @@ def build_training_objective(args):
         for _ in range(args.proxy_epochs):
             run_epoch(model, train_loader, criterion, optimizer, scaler, True, device)
         _, val_m = run_epoch(model, val_loader, criterion, optimizer, scaler, False, device)
-        print(f"[sfla]   f1={val_m['f1']:.4f} <- {params}")
-        return float(val_m["f1"])
+        f1 = float(val_m["f1"])
+        if not math.isfinite(f1):
+            f1 = 0.0
+        print(f"[sfla]   f1={f1:.4f} acc={val_m['accuracy']:.4f} "
+              f"({time.perf_counter() - t0:.0f}s) <- {params}", flush=True)
+        return f1
 
-    return objective, spec, ds_meta, summary, warnings
+    return objective, data
 
 
 def main() -> int:
@@ -139,18 +124,19 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=config.SFLA_SEED)
     ap.add_argument("--proxy-epochs", type=int, default=3,
                     help="epochs per fitness evaluation (keep small; this runs many times)")
-    ap.add_argument("--workers", type=int, default=config.NUM_WORKERS)
+    ap.add_argument("--workers", type=int, default=0)
     ap.add_argument("--transform", choices=["v1", "v2"], default="v2")
     ap.add_argument("--val-frac", type=float, default=0.15)
     ap.add_argument("--test-frac", type=float, default=0.15)
     ap.add_argument("--data-root", default=None)
+    ap.add_argument("--ignore-official-split", action="store_true")
     ap.add_argument("--dry-run", action="store_true",
                     help="optimise a cheap analytic objective instead of training (no data needed)")
     args = ap.parse_args()
 
     started = time.perf_counter()
     warnings: list[str] = []
-    spec = ds_meta = summary = None
+    data = None
 
     if args.dry_run:
         objective = _dry_run_objective
@@ -161,15 +147,17 @@ def main() -> int:
         )
     else:
         try:
-            objective, spec, ds_meta, summary, warnings = build_training_objective(args)
+            objective, data = build_training_objective(args)
         except Exception as exc:
             print(f"\nERROR: could not build the optimisation objective: {exc}")
             print("Hint: use --dry-run to exercise the optimiser without a dataset.")
             return 1
+        warnings = list(data.warnings)
         objective_name = OBJECTIVE_NAME
 
-    print(f"[sfla] population={args.population} memeplexes={args.memeplexes} "
-          f"iterations={args.iterations} local={args.local_iterations} seed={args.seed}")
+    print(f"[sfla] device={config.DEVICE} population={args.population} "
+          f"memeplexes={args.memeplexes} iterations={args.iterations} "
+          f"local={args.local_iterations} proxy_epochs={args.proxy_epochs} seed={args.seed}")
 
     optimiser = SFLA(
         SEARCH_SPACE, objective,
@@ -179,10 +167,27 @@ def main() -> int:
     )
     result = optimiser.run()
     result.notes = warnings + [
-        "The held-out test split was never loaded during optimisation.",
+        "The test set was never loaded during optimisation.",
         f"Fitness is maximised. Objective: {objective_name}",
     ]
     result.save(m1.SFLA_RESULT_PATH)
+
+    # Context the SFLAResult itself does not carry.
+    saved = json.loads(m1.SFLA_RESULT_PATH.read_text())
+    saved.update({
+        "best_validation_score": result.best_fitness,
+        "fitness_history": [h["best_fitness"] for h in result.history],
+        "proxy_epochs": args.proxy_epochs,
+        "device": str(config.DEVICE),
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "dataset": {
+            "path": str(data.ds_meta["root"]) if data else None,
+            "train": len(data.train) if data else None,
+            "validation": len(data.val) if data else None,
+            "preprocessing": data.spec.to_dict() if data else None,
+        },
+    })
+    m1.SFLA_RESULT_PATH.write_text(json.dumps(saved, indent=2, default=str))
 
     print(f"\n[sfla] best fitness {result.best_fitness:.4f} after "
           f"{result.evaluations} evaluations in {result.duration_s:.1f}s")
@@ -197,11 +202,11 @@ def main() -> int:
         m1.run_card_path("sfla"),
         RunCard(
             method_id=m1.METHOD_ID, stage="sfla",
-            dataset=ds_meta or {"note": "dry run — no dataset"},
-            split_strategy=summary or {"note": "dry run"},
+            dataset=data.ds_meta if data else {"note": "dry run — no dataset"},
+            split_strategy=data.summary if data else {"note": "dry run"},
             random_seed=args.seed,
-            preprocessing=spec.to_dict() if spec else {},
-            image_size=spec.image_size if spec else 0,
+            preprocessing=data.spec.to_dict() if data else {},
+            image_size=data.spec.image_size if data else 0,
             architecture=m1.CLS_ARCHITECTURE,
             model_config={"search_space": SEARCH_SPACE.to_dict()},
             optimizer={"name": "SFLA", "population": result.population,

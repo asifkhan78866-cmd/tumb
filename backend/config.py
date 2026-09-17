@@ -34,7 +34,12 @@ except Exception:  # pragma: no cover
 def _env_path(name: str, default: Path) -> Path:
     """Read a path from the environment, falling back to ``default``."""
     raw = os.getenv(name, "").strip()
-    return Path(raw).expanduser() if raw else default
+    if not raw:
+        return default
+    path = Path(raw).expanduser()
+    # Relative paths in .env mean "relative to the repo root", not to whatever
+    # directory the server or a script happened to be started from.
+    return path if path.is_absolute() else (ROOT_DIR / path).resolve()
 
 
 def _env_bool(name: str, default: bool = False) -> bool:

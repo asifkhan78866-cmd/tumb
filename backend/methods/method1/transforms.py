@@ -190,6 +190,16 @@ def preprocess(img: np.ndarray, spec: TransformSpec = DEFAULT_SPEC) -> np.ndarra
     return scale_to_unit(g)
 
 
+def preprocess_file(args: tuple[str, TransformSpec]) -> np.ndarray:
+    """``preprocess`` on an image path. Module-level so a process pool can pickle it,
+    and in this module so worker processes do not import torch."""
+    path, spec = args
+    img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+    if img is None:
+        raise ValueError(f"Unreadable image: {path}")
+    return preprocess(img, spec)
+
+
 def crop_to_roi(
     img: np.ndarray, mask: np.ndarray, spec: TransformSpec = DEFAULT_SPEC
 ) -> tuple[np.ndarray, bool]:
