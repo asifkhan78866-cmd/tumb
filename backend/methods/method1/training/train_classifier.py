@@ -37,11 +37,7 @@ from backend import config
 from backend.methods.common.checkpoint import build_meta, save_checkpoint
 from backend.methods.common.metrics_store import update_metrics
 from backend.methods.common.runcard import RunCard, write_run_card
-from backend.methods.common.splits import (
-    group_split,
-    group_train_val_test_split,
-    split_summary,
-)
+from backend.methods.common.bri_data import prepare_bri_split
 from backend.methods.method1 import config as m1
 from backend.methods.method1.datasets import (
     CachedClassificationDataset,
@@ -50,12 +46,7 @@ from backend.methods.method1.datasets import (
     build_roi_cache,
     class_distribution,
     class_weights,
-    content_group_of,
-    discover_classification_samples,
-    drop_test_duplicates,
-    file_digest,
     load_preprocessed,
-    partition_by_official_split,
 )
 from backend.methods.method1.models import ConvLSTMClassifier, UNet
 from backend.methods.method1.transforms import M1_V1_LEGACY, M1_V2, TransformSpec
@@ -118,51 +109,15 @@ def prepare_data(args, *, load_test: bool, device=None) -> PreparedData:
     ``load_test=False`` still *identifies* the test files (so leaking training
     copies can be dropped by hash) but never decodes or preprocesses them.
     """
-    warnings: list[str] = []
-    root = args.data_root or m1.BRI_PATH
-    samples, ds_meta = discover_classification_samples(root)
-    warnings.extend(ds_meta.get("warnings", []))
+    split = prepare_bri_split(
+        args.data_root, args.val_frac, args.test_frac, args.ignore_official_split, tag="cls"
+    )
+    warnings = list(split.warnings)
     spec, _ = resolve_spec(args.transform, warnings)
+    train_s, val_s, test_s = split.train, split.val, split.test
 
-    digests = {p: file_digest(p) for p, _ in samples}
-    group_of = content_group_of(digests)
-    removed: list[str] = []
-
-    use_official = ds_meta.get("has_official_split") and not args.ignore_official_split
-    if use_official:
-        train_pool, test_s = partition_by_official_split(samples)
-        train_pool, removed = drop_test_duplicates(train_pool, test_s, digests)
-        if removed:
-            warnings.append(
-                f"Dropped {len(removed)} Training images that are byte-identical to a "
-                f"Testing image, so the test score is not inflated by memorised copies. "
-                f"The Testing set itself was not modified."
-            )
-        train_s, val_s = group_split(
-            train_pool, group_of, [1.0 - args.val_frac, args.val_frac], seed=config.SEED
-        )
-        # Byte-identical copies are additionally kept on one side of train/val
-        # (see the run card's group_key); that is not patient-level separation.
-        split_kind = ("dataset Training/Testing split; validation carved from Training "
-                      "only; image-level split; no patient identifiers")
-    else:
-        train_s, val_s, test_s = group_train_val_test_split(
-            samples, group_of, args.val_frac, args.test_frac, seed=config.SEED
-        )
-        split_kind = "content-hash grouped random three-way split (no Training/Testing folders)"
-
-    summary = split_summary({"train": train_s, "val": val_s, "test": test_s}, group_of)
-    print(f"[cls] split: {split_kind}")
-    print(f"[cls]   counts {summary['counts']} | leak-free={summary['leak_free']}"
-          f" | train copies of test images dropped={len(removed)}")
-    print(f"[cls]   per-class train: {class_distribution(train_s)}")
-    print(f"[cls]   per-class val  : {class_distribution(val_s)}")
-    print(f"[cls]   per-class test : {class_distribution(test_s)}")
-    if not summary["leak_free"]:
-        raise DatasetError(f"split shares images between parts: {summary['group_overlap']}")
-
-    data = PreparedData(spec, ds_meta, split_kind, summary, train_s, val_s, test_s,
-                        removed, warnings)
+    data = PreparedData(spec, split.ds_meta, split.split_kind, split.summary, train_s, val_s,
+                        test_s, split.removed_test_duplicates, warnings)
 
     if spec.roi_crop:
         seg = UNet(m1.SEG_IN_CHANNELS, m1.SEG_OUT_CHANNELS, m1.BASE_FILTERS).to(device or config.DEVICE)

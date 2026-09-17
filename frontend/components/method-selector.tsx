@@ -22,7 +22,7 @@ export function MethodSelector({
 }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {methods.map((m, i) => {
+      {methods.map((m) => {
         const active = m.method_id === selected;
         return (
           <button
@@ -48,7 +48,7 @@ export function MethodSelector({
             )}
             <div className="flex items-start justify-between gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Method {i + 1}
+                Method {m.display_number}
               </span>
               <StatusChip method={m} />
             </div>

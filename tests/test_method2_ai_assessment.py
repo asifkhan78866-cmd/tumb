@@ -179,8 +179,8 @@ def test_ai_result_is_labelled_and_not_passed_off_as_the_dcn(monkeypatch, png_by
     assert r.model_version == "ai:claude-opus-5"
     assert r.details["result_source"] == "ai_assessment"
     assert r.details["ai_assessment"]["likelihoods_are_calibrated"] is False
-    assert any("NOT from Method 2's trained Dense" in w for w in r.warnings)
-    assert any("observed MRI" in w for w in r.warnings)
+    assert any("NOT from this method's trained MRI–SPECT fusion network" in w for w in r.warnings)
+    assert any("No MRI–SPECT fusion was performed" in w for w in r.warnings)
 
 
 def test_indeterminate_ai_answer_reports_no_class(monkeypatch, png_bytes):

@@ -17,36 +17,46 @@ import { Card, CardContent } from "@/components/ui/card";
 const FEATURES = [
   {
     icon: ScanLine,
-    title: "Two independent methods",
-    desc: "Separate weights, datasets, preprocessing and metrics — nothing is shared or averaged between them.",
+    title: "Four independent methods",
+    desc: "Separate models, weights and metrics per method — nothing is shared or averaged between them.",
   },
   {
     icon: Layers,
-    title: "Segmentation + classification",
-    desc: "Binary or multi-class tumour masks feeding a ConvLSTM or a Dense Convolutional Network.",
+    title: "Transfer learning to segmentation",
+    desc: "Fine-tuned pre-trained CNNs, a from-scratch ZFNet, a U-Net + ConvLSTM pipeline and an MRI–SPECT fusion design.",
   },
   {
     icon: Sparkles,
     title: "Explainability & optimization",
-    desc: "Grad-CAM heatmaps for Method 1, plus a real Shuffled Frog Leaping hyper-parameter search.",
+    desc: "Grad-CAM heatmaps, plus real Red Fox and Shuffled Frog Leaping hyper-parameter searches on validation data.",
   },
   {
     icon: Activity,
     title: "Honest metrics",
-    desc: "Patient-level splits, a held-out test set, and \u201cN/A\u201d wherever a metric was never computed.",
+    desc: "One shared split, a test set evaluated once, and \u201cN/A\u201d wherever a metric was never computed.",
   },
 ];
 
 const METHOD_FLOWS = [
   {
     name: "Method 1",
-    subtitle: "U-Net + ConvLSTM + SFLA",
-    steps: ["Input", "Preprocess", "U-Net", "ROI Crop", "ConvLSTM", "SFLA", "Classes"],
+    subtitle: "Deep Learning Pre-trained Models + Transfer Learning",
+    steps: ["Input", "Resize 224", "ImageNet CNNs", "Fine-tune", "Select on Val", "Classes"],
   },
   {
     name: "Method 2",
-    subtitle: "Multi-class Seg + SPECT + DCN",
-    steps: ["Input", "Grayscale/Filtering", "Multi-class Seg", "SPECT Features", "DCN", "Classes"],
+    subtitle: "Red Fox Optimized ZFNet",
+    steps: ["Input", "Resize 224", "ZFNet", "Red Fox Optimization", "Classes"],
+  },
+  {
+    name: "Method 3",
+    subtitle: "3D U-Net–ConvLSTM–SFLA Segmentation & Classification",
+    steps: ["Input", "Preprocess", "U-Net", "ROI Crop", "ConvLSTM", "SFLA", "Classes"],
+  },
+  {
+    name: "Method 4",
+    subtitle: "MRI–SPECT Multimodal Fusion",
+    steps: ["MRI branch", "SPECT branch", "Feature Fusion", "Dense CNN", "Classes"],
   },
 ];
 
@@ -67,11 +77,11 @@ export default function LandingPage() {
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
             Brain Tumor Analysis
             <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Two Methods, One Platform
+              Four Methods, One Platform
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Two independent deep-learning pipelines for brain-tumour analysis, each
+            Four independent deep-learning pipelines for brain-tumour analysis, each
             with its own models, datasets and metrics — and an interface that tells
             you exactly which parts have actually been trained.
           </p>
@@ -157,7 +167,7 @@ export default function LandingPage() {
         ))}
         <div className="text-center">
           <Link href="/compare" className={buttonVariants({ variant: "outline" })}>
-            Compare both methods <ArrowRight className="h-4 w-4" />
+            Compare all methods <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

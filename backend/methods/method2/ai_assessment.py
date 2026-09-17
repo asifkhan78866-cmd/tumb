@@ -205,7 +205,8 @@ def _assess_openrouter(data: str, client=None) -> AIAssessmentResult:
             "json_schema": {"name": "brain_scan_assessment", "strict": True, "schema": ASSESSMENT_JSON_SCHEMA},
         },
         "temperature": 0,
-        "max_tokens": 2000,
+        # Room for reasoning models to think before the JSON; 2000 truncated in practice.
+        "max_tokens": 8000,
     }
     headers = {
         "Authorization": f"Bearer {key}",
@@ -329,6 +330,59 @@ def _assess_anthropic(data: str, client=None) -> AIAssessmentResult:
         request_id=getattr(response, "_request_id", None),
         served_by_fallback=served_by_fallback,
     )
+
+
+def run_ai_assessment(
+    image_bytes: bytes,
+    *,
+    not_from: str,
+    reason: str,
+    allowed_modalities: tuple[str, ...] = ("MRI",),
+) -> tuple[Optional[dict], list[str]]:
+    """Assess an image and describe the result honestly for a method's response.
+
+    ``not_from`` names the trained model this result is *not* from; ``reason``
+    says why the AI is answering instead. Failures become warnings, never a
+    guessed class. The disclaimer is always the first warning.
+    """
+    try:
+        # Looked up on the module at call time so tests can substitute it.
+        res = globals()["assess_image"](image_bytes)
+    except AIAssessmentError as exc:
+        return None, [str(exc)]
+    a = res.assessment
+    details = {
+        "provider": res.provider,
+        "model": res.model,
+        "served_by_fallback_model": res.served_by_fallback,
+        "request_id": res.request_id,
+        "elapsed_s": res.elapsed_s,
+        "reason": reason,
+        "predicted_class": a.predicted_class,
+        "likelihoods": normalised_likelihoods(a),
+        "likelihoods_are_calibrated": False,
+        "image_is_brain_scan": a.image_is_brain_scan,
+        "observed_modality": a.observed_modality,
+        "image_quality": a.image_quality,
+        "key_findings": list(a.key_findings),
+        "rationale": a.rationale,
+    }
+    warnings = [
+        f"AI ASSESSMENT: this result comes from a general-purpose AI model ({res.model}) "
+        f"reading the image, NOT from {not_from}. It has no measured accuracy on this "
+        f"project's data, its percentages are the model's own uncalibrated estimates, and "
+        f"it is not a diagnosis.",
+    ]
+    if not a.image_is_brain_scan:
+        warnings.append("The AI model judged that this image is not a brain scan.")
+    if a.observed_modality not in allowed_modalities:
+        warnings.append(
+            f"The AI model observed {a.observed_modality} imaging; this method is specified "
+            f"for {' and '.join(allowed_modalities)}."
+        )
+    if a.image_quality != "good":
+        warnings.append(f"The AI model rated image quality as {a.image_quality}.")
+    return details, warnings
 
 
 def normalised_likelihoods(assessment: AIAssessment) -> dict[str, float]:

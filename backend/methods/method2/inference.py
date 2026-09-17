@@ -292,49 +292,23 @@ class Method2Engine:
     # ------------------------------------------------------------------ #
     @staticmethod
     def _ai_assessment(image_bytes: bytes) -> tuple[Optional[dict], list[str]]:
-        """Run the Claude assessment; failures become warnings, never a guessed class."""
-        from backend.methods.method2.ai_assessment import (
-            AIAssessmentError,
-            assess_image,
-            normalised_likelihoods,
-        )
+        from backend.methods.method2.ai_assessment import run_ai_assessment
 
-        try:
-            res = assess_image(image_bytes)
-        except AIAssessmentError as exc:
-            return None, [str(exc)]
-        a = res.assessment
-        details = {
-            "provider": res.provider,
-            "model": res.model,
-            "served_by_fallback_model": res.served_by_fallback,
-            "request_id": res.request_id,
-            "elapsed_s": res.elapsed_s,
-            "predicted_class": a.predicted_class,
-            "likelihoods": normalised_likelihoods(a),
-            "likelihoods_are_calibrated": False,
-            "image_is_brain_scan": a.image_is_brain_scan,
-            "observed_modality": a.observed_modality,
-            "image_quality": a.image_quality,
-            "key_findings": list(a.key_findings),
-            "rationale": a.rationale,
-        }
-        warnings = [
-            f"AI ASSESSMENT: this result comes from a general-purpose AI model "
-            f"({res.model}) reading the image, NOT from Method 2's trained Dense "
-            f"Convolutional Network. It has no measured accuracy on this project's "
-            f"data, its percentages are the model's own uncalibrated estimates, and "
-            f"it is not a diagnosis.",
-        ]
-        if not a.image_is_brain_scan:
-            warnings.append("The AI model judged that this image is not a brain scan.")
-        if a.observed_modality != m2.MODALITY:
+        details, warnings = run_ai_assessment(
+            image_bytes,
+            not_from="this method's trained MRI–SPECT fusion network (which is not trained)",
+            reason=(
+                "This method's MRI–SPECT fusion network is not trained (no paired MRI and "
+                "SPECT scans exist to train it), so this single image was read by an AI model. "
+                "No fusion was performed."
+            ),
+            allowed_modalities=("MRI", "SPECT"),
+        )
+        if details is not None:
             warnings.append(
-                f"The AI model observed {a.observed_modality} imaging, not "
-                f"{m2.MODALITY}; Method 2 is specified for {m2.MODALITY}."
+                "No MRI–SPECT fusion was performed: a single image was assessed. Fusion needs "
+                "paired MRI and SPECT scans of the same patient and a trained fusion network."
             )
-        if a.image_quality != "good":
-            warnings.append(f"The AI model rated image quality as {a.image_quality}.")
         return details, warnings
 
     @staticmethod

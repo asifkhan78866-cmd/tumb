@@ -15,6 +15,15 @@ backend/weights/method1/*
 !backend/weights/method1/best_classifier.pth
 !backend/weights/method1/best_classifier.pth.meta.json
 !backend/weights/method1/model_metadata.json
+# ...and the transfer-learning and Red Fox ZFNet classifiers.
+backend/weights/method3/*
+!backend/weights/method3/best_classifier.pth
+!backend/weights/method3/best_classifier.pth.meta.json
+!backend/weights/method3/model_metadata.json
+backend/weights/method4/*
+!backend/weights/method4/best_classifier.pth
+!backend/weights/method4/best_classifier.pth.meta.json
+!backend/weights/method4/model_metadata.json
 backend/dataset/*
 !backend/dataset/.gitkeep
 backend/uploads/*
@@ -41,6 +50,18 @@ backend/logs/*
 !backend/logs/method1/
 backend/logs/method1/*
 !backend/logs/method1/sfla_results.json
+!backend/logs/method3_metrics.json
+!backend/logs/method3_classification_runcard.json
+!backend/logs/method3_cls_confusion_matrix.png
+!backend/logs/method3_cls_roc.png
+!backend/logs/method4_metrics.json
+!backend/logs/method4_classification_runcard.json
+!backend/logs/method4_rfo_runcard.json
+!backend/logs/method4_cls_confusion_matrix.png
+!backend/logs/method4_cls_roc.png
+!backend/logs/method4/
+backend/logs/method4/*
+!backend/logs/method4/rfo_results.json
 *.nii
 *.nii.gz
 

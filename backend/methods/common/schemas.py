@@ -98,6 +98,9 @@ class MethodSummary(BaseModel):
     classifier_trained_at: Optional[str] = None
     # True when uploads get an AI model's assessment instead of a trained classifier.
     ai_assessment_available: bool = False
+    # Position in the numbered method list (1-4); ids are stable, numbers are display.
+    display_number: int = 0
+    has_segmentation_stage: bool = True
     warnings: list[str] = Field(default_factory=list)
 
 

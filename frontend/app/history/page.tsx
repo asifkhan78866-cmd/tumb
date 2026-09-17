@@ -12,21 +12,27 @@ import {
   assetUrl,
   errorMessage,
   getHistory,
+  getMethods,
   reportUrl,
   type HistoryItem,
   type MethodId,
+  type MethodSummary,
 } from "@/lib/api";
 
-const FILTERS: { id: MethodId | "all"; label: string }[] = [
-  { id: "all", label: "All methods" },
-  { id: "method1", label: "Method 1" },
-  { id: "method2", label: "Method 2" },
-];
-
 export default function HistoryPage() {
+  const [methods, setMethods] = useState<MethodSummary[]>([]);
   const [items, setItems] = useState<HistoryItem[] | null>(null);
   const [filter, setFilter] = useState<MethodId | "all">("all");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getMethods().then(setMethods).catch(() => setMethods([]));
+  }, []);
+
+  const FILTERS: { id: MethodId | "all"; label: string }[] = [
+    { id: "all", label: "All methods" },
+    ...methods.map((m) => ({ id: m.method_id, label: `Method ${m.display_number}` })),
+  ];
 
   useEffect(() => {
     let active = true;
@@ -112,7 +118,7 @@ export default function HistoryPage() {
                       )}
                     </CardTitle>
                     <span className="block text-[11px] text-muted-foreground">
-                      {item.method_name ?? "Method 1"}
+                      {item.method_name ?? "U-Net + ConvLSTM + SFLA"}
                     </span>
                   </div>
                   {item.confidence !== null && item.confidence !== undefined && (

@@ -6,15 +6,22 @@ import pytest
 from backend.methods.registry import METHOD_IDS, METHODS, get_method, list_methods
 
 
-def test_exactly_two_methods_registered():
-    assert set(METHOD_IDS) == {"method1", "method2"}
-    assert len(list_methods()) == 2
+def test_four_methods_registered_in_project_order():
+    assert set(METHOD_IDS) == {"method1", "method2", "method3", "method4"}
+    ordered = list_methods()
+    assert [m.display_number for m in ordered] == [1, 2, 3, 4]
+    assert [m.method_id for m in ordered] == ["method3", "method4", "method1", "method2"]
+    titles = [m.display_name for m in ordered]
+    assert "Transfer Learning" in titles[0]
+    assert "Red Fox" in titles[1] and "ZFNet" in titles[1]
+    assert "U-Net" in titles[2] and "ConvLSTM" in titles[2] and "SFLA" in titles[2]
+    assert "MRI–SPECT" in titles[3] and "Fusion" in titles[3]
 
 
 def test_unknown_method_raises_with_a_useful_message():
     with pytest.raises(KeyError) as exc:
-        get_method("method3")
-    assert "method1" in str(exc.value) and "method2" in str(exc.value)
+        get_method("method9")
+    assert all(m in str(exc.value) for m in ("method1", "method2", "method3", "method4"))
 
 
 @pytest.mark.parametrize("method_id", METHOD_IDS)
@@ -28,14 +35,16 @@ def test_every_method_is_fully_described(method_id):
     assert spec.training_entrypoints
     assert spec.metrics_filename
     assert spec.weights, "a method must declare its weight roles"
-    assert {w.role for w in spec.weights} == {"segmentation", "classification"}
+    roles = {w.role for w in spec.weights}
+    assert "classification" in roles and roles <= {"segmentation", "classification"}
 
 
 def test_methods_do_not_share_weights_or_metrics_files():
-    m1, m2 = get_method("method1"), get_method("method2")
-    assert m1.metrics_filename != m2.metrics_filename
-    assert {w.path_attr for w in m1.weights}.isdisjoint({w.path_attr for w in m2.weights})
-    assert {w.architecture for w in m1.weights}.isdisjoint({w.architecture for w in m2.weights})
+    specs = list_methods()
+    assert len({s.metrics_filename for s in specs}) == len(specs)
+    paths = [w.path_attr for s in specs for w in s.weights]
+    archs = [w.architecture for s in specs for w in s.weights]
+    assert len(set(paths)) == len(paths) and len(set(archs)) == len(archs)
 
 
 def test_method1_class_order_is_frozen():
@@ -46,7 +55,7 @@ def test_method1_class_order_is_frozen():
 
 def test_method2_declares_spect_not_pect():
     spec = get_method("method2")
-    assert spec.modality == "SPECT"
+    assert spec.modality == "MRI + SPECT"
     assert any("PECT" in n for n in spec.notes), "the SPECT/PECT distinction must be recorded"
 
 

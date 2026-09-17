@@ -83,6 +83,9 @@ CLS_WEIGHTS_PATH = _method1_weight(
     "METHOD1_CONVLSTM_WEIGHTS", "best_classifier.pth", "best_classifier.pth"
 )
 METHOD1_METADATA_PATH = METHOD1_WEIGHTS_DIR / "model_metadata.json"
+# Transfer-learning (method3) and Red Fox ZFNet (method4) weights.
+M3_WEIGHTS_PATH = _env_path("METHOD3_WEIGHTS", WEIGHTS_DIR / "method3" / "best_classifier.pth")
+M4_WEIGHTS_PATH = _env_path("METHOD4_WEIGHTS", WEIGHTS_DIR / "method4" / "best_classifier.pth")
 # Method 2 weights.
 M2_SEG_WEIGHTS_PATH = _env_path("METHOD2_SEGMENTATION_WEIGHTS", WEIGHTS_DIR / "method2_segmentation.pth")
 M2_DCN_WEIGHTS_PATH = _env_path("METHOD2_DCN_WEIGHTS", WEIGHTS_DIR / "method2_dcn.pth")

@@ -103,6 +103,8 @@ def list_all_methods() -> list[MethodSummary]:
                 classifier_available=status["classifier_available"],
                 **_classifier_fields(status),
                 ai_assessment_available=status["ai_assessment_available"],
+                display_number=spec.display_number,
+                has_segmentation_stage=status["has_segmentation_stage"],
                 warnings=status["warnings"] + list(spec.notes),
             )
         )
@@ -156,6 +158,8 @@ def method_detail(method_id: str = PathParam(..., description=f"one of {METHOD_I
         classifier_available=status["classifier_available"],
         **_classifier_fields(status),
         ai_assessment_available=status["ai_assessment_available"],
+        display_number=spec.display_number,
+        has_segmentation_stage=status["has_segmentation_stage"],
         warnings=status["warnings"] + list(spec.notes),
         pipeline_stages=[
             {"id": s.id, "label": s.label, "kind": s.kind, "description": s.description}
@@ -267,18 +271,20 @@ def train(method_id: str, stage: str = "classification") -> TrainRequestResponse
     """
     spec = _spec_or_404(method_id)
     module_stage = {"classification": "train_classifier", "segmentation": "train_segmentation",
-                    "sfla": "optimization.run_sfla"}.get(stage)
+                    "sfla": "optimization.run_sfla", "rfo": "optimization.run_rfo"}.get(stage)
     if module_stage is None:
         raise HTTPException(
             status_code=400,
-            detail=f"Unknown stage '{stage}'. Use: classification, segmentation, sfla.",
+            detail=f"Unknown stage '{stage}'. Use: classification, segmentation, sfla, rfo.",
         )
-    if stage == "sfla" and spec.optimization is None:
-        raise HTTPException(status_code=400, detail=f"{spec.short_name} has no optimisation stage.")
+    # A method only offers the stages it has a run card for (SFLA belongs to the
+    # U-Net–ConvLSTM method, Red Fox to ZFNet, segmentation to methods that segment).
+    if stage not in spec.run_card_filenames:
+        raise HTTPException(status_code=400, detail=f"{spec.short_name} has no '{stage}' stage.")
 
     module = (
         f"backend.methods.{method_id}.{module_stage}"
-        if stage == "sfla"
+        if stage in ("sfla", "rfo")
         else f"backend.methods.{method_id}.training.{module_stage}"
     )
     command = f"{sys.executable} -m {module}"

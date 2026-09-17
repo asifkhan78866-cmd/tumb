@@ -101,10 +101,12 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
               label={
                 result.segmentation_available
                   ? "Segmentation Mask"
-                  : "Segmentation (unavailable)"
+                  : result.details?.segmentation_in_method === false
+                    ? "Segmentation"
+                    : "Segmentation (unavailable)"
               }
               src={result.segmentation_mask_url}
-              unavailableReason="Segmentation model not trained"
+              unavailableReason={result.details?.segmentation_note ?? "Segmentation model not trained"}
             />
             <ImagePanel
               label="Grad-CAM"
@@ -189,8 +191,8 @@ function AIAssessmentBanner({ ai }: { ai: Record<string, any> }) {
           AI assessment — not a trained model result
         </p>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Method 2&apos;s Dense Convolutional Network is not trained, so this image was
-          read by a general-purpose AI model ({ai.model}). It has no measured accuracy
+          {ai.reason ?? "This method's model is not trained, so the image was read by an AI model."}{" "}
+          Model: {ai.model}. It has no measured accuracy
           on this project&apos;s data, the percentages are its own uncalibrated
           estimates, and it is not a diagnosis.
         </p>
@@ -222,7 +224,7 @@ function AIFindings({ ai }: { ai: Record<string, any> }) {
   );
 }
 
-/** Method 2's modality-specific descriptor, shown so the stage is inspectable. */
+/** The SPECT branch's modality-specific descriptor, shown so the stage is inspectable. */
 function FeatureStage({ details }: { details: Record<string, any> }) {
   const stage = details.feature_stage;
   const top: [string, number][] = (stage.names as string[])

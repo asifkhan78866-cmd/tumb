@@ -34,7 +34,7 @@ import {
 
 export default function MetricsPage() {
   const [methods, setMethods] = useState<MethodSummary[] | null>(null);
-  const [selected, setSelected] = useState<MethodId>("method1");
+  const [selected, setSelected] = useState<MethodId>("method3");
   const [metrics, setMetrics] = useState<MethodMetrics | null>(null);
   const [detail, setDetail] = useState<MethodDetail | null>(null);
   const [health, setHealth] = useState<Health | null>(null);
