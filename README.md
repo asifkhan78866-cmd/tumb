@@ -130,6 +130,26 @@ All live in `.env` (git-ignored). Full documentation is in `.env.example`.
 
 ## 📦 Datasets
 
+### MRI dataset for Methods 1–3 (not stored in this repository)
+
+The images (Kaggle *Brain Tumor MRI Dataset*, 7,023 JPGs, ~165 MB) are **not
+committed**: they are third-party data with their own redistribution terms. Get
+them with one command once a Kaggle API token is configured
+(https://www.kaggle.com/settings → *Create New API Token*; put `KAGGLE_USERNAME`
+and `KAGGLE_KEY` in `.env`, or `kaggle.json` in `~/.kaggle/`):
+
+```bash
+scripts/download_dataset.sh
+```
+
+It downloads `masoudnickparvar/brain-tumor-mri-dataset`, places it at
+`data/bri/archive/{Training,Testing}/{glioma,meningioma,notumor,pituitary}`
+(the default `BRI_DATASET_PATH`), verifies both splits and all four classes, and
+prints the inventory. `--dry-run` shows what would happen; an existing copy is
+never replaced without `--force`. Expected counts: 5,712 Training / 1,311 Testing.
+
+### All datasets
+
 Nothing downloads implicitly. Ask for it:
 
 ```bash

@@ -75,7 +75,7 @@ def bri_patient_id(path: str | Path) -> str:
 
 BRI_GROUPING_WARNING = (
     "The Kaggle brain-MRI classification dataset carries no patient identifiers, "
-    "so samples can only be grouped by image identity (Method 1 training groups "
+    "so samples can only be grouped by image identity (training groups "
     "byte-identical copies together). Scores from this dataset may "
     "still be optimistic if the same patient appears under unrelated filenames."
 )
