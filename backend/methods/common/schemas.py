@@ -96,6 +96,8 @@ class MethodSummary(BaseModel):
     classifier_checkpoint: Optional[str] = None
     classifier_model_version: Optional[str] = None
     classifier_trained_at: Optional[str] = None
+    # True when uploads get an AI model's assessment instead of a trained classifier.
+    ai_assessment_available: bool = False
     warnings: list[str] = Field(default_factory=list)
 
 

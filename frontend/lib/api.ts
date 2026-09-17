@@ -50,6 +50,8 @@ export interface MethodSummary {
   classifier_checkpoint?: string | null;
   classifier_model_version?: string | null;
   classifier_trained_at?: string | null;
+  /** Uploads are assessed by an AI model because no classifier is trained. */
+  ai_assessment_available?: boolean;
   warnings: string[];
 }
 

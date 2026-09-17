@@ -213,6 +213,31 @@ class Method2Engine:
         else:
             warnings.append("No classification result: Method 2's DCN is not trained.")
 
+        # --- AI assessment (only while the DCN is untrained) --------------- #
+        result_source = "dcn" if self.cls_weights_loaded else "none"
+        model_version = self.model_version
+        ai_details = None
+        if not self.cls_weights_loaded and config.method2_ai_available():
+            ai_details, ai_warnings = self._ai_assessment(image_bytes)
+            # First, so truncated renderings (the PDF shows six) keep the disclaimer.
+            warnings[:0] = ai_warnings
+            if ai_details and ai_details["predicted_class"] in m2.CLASS_NAMES:
+                result_source = "ai_assessment"
+                model_version = f"ai:{ai_details['model']}"
+                prediction_key = ai_details["predicted_class"]
+                prediction = m2.CLASS_LABELS[prediction_key]
+                probabilities = {
+                    m2.CLASS_LABELS[k]: v for k, v in ai_details["likelihoods"].items()
+                }
+                confidence = probabilities[prediction]
+            elif ai_details:
+                result_source = "ai_assessment"
+                model_version = f"ai:{ai_details['model']}"
+                warnings.append(
+                    "The AI assessment was indeterminate, so no class is reported. "
+                    "See its findings for the reason."
+                )
+
         elapsed = time.perf_counter() - started
 
         original_path = config.PREDICTIONS_DIR / f"{pid}_m2_original.png"
@@ -240,9 +265,11 @@ class Method2Engine:
             mask_path=mask_path,
             overlay_path=None,  # Method 2 has no Grad-CAM stage in its specification
             inference_time_s=round(elapsed, 4),
-            model_version=self.model_version,
+            model_version=model_version,
             warnings=warnings,
             details={
+                "result_source": result_source,
+                "ai_assessment": ai_details,
                 "transform": self.transform.to_dict(),
                 "modality": m2.MODALITY,
                 "spec_modality_label": m2.SPEC_MODALITY_LABEL,
@@ -263,6 +290,53 @@ class Method2Engine:
         )
 
     # ------------------------------------------------------------------ #
+    @staticmethod
+    def _ai_assessment(image_bytes: bytes) -> tuple[Optional[dict], list[str]]:
+        """Run the Claude assessment; failures become warnings, never a guessed class."""
+        from backend.methods.method2.ai_assessment import (
+            AIAssessmentError,
+            assess_image,
+            normalised_likelihoods,
+        )
+
+        try:
+            res = assess_image(image_bytes)
+        except AIAssessmentError as exc:
+            return None, [str(exc)]
+        a = res.assessment
+        details = {
+            "provider": res.provider,
+            "model": res.model,
+            "served_by_fallback_model": res.served_by_fallback,
+            "request_id": res.request_id,
+            "elapsed_s": res.elapsed_s,
+            "predicted_class": a.predicted_class,
+            "likelihoods": normalised_likelihoods(a),
+            "likelihoods_are_calibrated": False,
+            "image_is_brain_scan": a.image_is_brain_scan,
+            "observed_modality": a.observed_modality,
+            "image_quality": a.image_quality,
+            "key_findings": list(a.key_findings),
+            "rationale": a.rationale,
+        }
+        warnings = [
+            f"AI ASSESSMENT: this result comes from a general-purpose AI model "
+            f"({res.model}) reading the image, NOT from Method 2's trained Dense "
+            f"Convolutional Network. It has no measured accuracy on this project's "
+            f"data, its percentages are the model's own uncalibrated estimates, and "
+            f"it is not a diagnosis.",
+        ]
+        if not a.image_is_brain_scan:
+            warnings.append("The AI model judged that this image is not a brain scan.")
+        if a.observed_modality != m2.MODALITY:
+            warnings.append(
+                f"The AI model observed {a.observed_modality} imaging, not "
+                f"{m2.MODALITY}; Method 2 is specified for {m2.MODALITY}."
+            )
+        if a.image_quality != "good":
+            warnings.append(f"The AI model rated image quality as {a.image_quality}.")
+        return details, warnings
+
     @staticmethod
     def _render_mask(image: np.ndarray, label_map: np.ndarray) -> np.ndarray:
         base = cv2.cvtColor((image * 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)

@@ -102,6 +102,7 @@ def list_all_methods() -> list[MethodSummary]:
                 segmentation_available=status["segmentation_available"],
                 classifier_available=status["classifier_available"],
                 **_classifier_fields(status),
+                ai_assessment_available=status["ai_assessment_available"],
                 warnings=status["warnings"] + list(spec.notes),
             )
         )
@@ -154,6 +155,7 @@ def method_detail(method_id: str = PathParam(..., description=f"one of {METHOD_I
         segmentation_available=status["segmentation_available"],
         classifier_available=status["classifier_available"],
         **_classifier_fields(status),
+        ai_assessment_available=status["ai_assessment_available"],
         warnings=status["warnings"] + list(spec.notes),
         pipeline_stages=[
             {"id": s.id, "label": s.label, "kind": s.kind, "description": s.description}

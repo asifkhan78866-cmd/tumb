@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Activity, Clock, Download, EyeOff } from "lucide-react";
+import { Activity, Bot, Clock, Download, EyeOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -60,6 +60,7 @@ function ImagePanel({
 
 export function PredictionCard({ result }: { result: MethodPrediction }) {
   const hasPrediction = result.prediction !== null;
+  const ai = result.details?.result_source === "ai_assessment" ? result.details.ai_assessment : null;
   // Compare against the stable class key, not the display label.
   const badgeVariant = result.prediction_key === "notumor" || result.prediction_key === "normal"
     ? "success"
@@ -92,6 +93,8 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {ai && <AIAssessmentBanner ai={ai} />}
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <ImagePanel label="Original" src={result.original_image_url} />
             <ImagePanel
@@ -115,7 +118,9 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
           {hasPrediction ? (
             <div className="flex flex-col items-center gap-6 rounded-xl border bg-muted/30 p-6 sm:flex-row sm:justify-between">
               <div className="flex flex-col items-center gap-2 sm:items-start">
-                <span className="text-sm text-muted-foreground">Predicted Class</span>
+                <span className="text-sm text-muted-foreground">
+                  {ai ? "AI model's assessment" : "Predicted Class"}
+                </span>
                 <Badge variant={badgeVariant} className="px-4 py-1 text-base">
                   {result.prediction}
                 </Badge>
@@ -130,15 +135,18 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
             <div className="rounded-xl border border-dashed bg-muted/30 p-6 text-center">
               <p className="font-semibold">No classification produced</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                This method has no trained classifier, so no class is reported. See the
-                caveats below for the training command.
+                {ai
+                  ? "The AI model's assessment was indeterminate, so no class is reported."
+                  : "This method has no trained classifier, so no class is reported. See the caveats below for the training command."}
               </p>
             </div>
           )}
 
           {Object.keys(result.class_probabilities).length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold">Class Probabilities</h4>
+              <h4 className="text-sm font-semibold">
+                {ai ? "AI-estimated likelihoods (uncalibrated)" : "Class Probabilities"}
+              </h4>
               {Object.entries(result.class_probabilities).map(([name, prob]) => (
                 <div key={name} className="space-y-1">
                   <div className="flex justify-between text-sm">
@@ -153,6 +161,8 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
             </div>
           )}
 
+          {ai && <AIFindings ai={ai} />}
+
           {result.details?.feature_stage && (
             <FeatureStage details={result.details} />
           )}
@@ -166,6 +176,49 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
         </CardContent>
       </Card>
     </motion.div>
+  );
+}
+
+/** Shown first on any AI-assessed result so it cannot be mistaken for the DCN. */
+function AIAssessmentBanner({ ai }: { ai: Record<string, any> }) {
+  return (
+    <div className="flex gap-3 rounded-xl border border-violet-500/40 bg-violet-500/10 p-4">
+      <Bot className="mt-0.5 h-5 w-5 shrink-0 text-violet-600 dark:text-violet-400" />
+      <div className="space-y-1 text-sm">
+        <p className="font-semibold text-violet-700 dark:text-violet-300">
+          AI assessment — not a trained model result
+        </p>
+        <p className="text-xs leading-relaxed text-muted-foreground">
+          Method 2&apos;s Dense Convolutional Network is not trained, so this image was
+          read by a general-purpose AI model ({ai.model}). It has no measured accuracy
+          on this project&apos;s data, the percentages are its own uncalibrated
+          estimates, and it is not a diagnosis.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function AIFindings({ ai }: { ai: Record<string, any> }) {
+  return (
+    <div className="rounded-xl border bg-muted/20 p-4 text-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <h4 className="font-semibold">AI model findings</h4>
+        <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+          observed {ai.observed_modality} · quality {ai.image_quality}
+        </span>
+      </div>
+      {ai.key_findings?.length > 0 && (
+        <ul className="mt-2 list-disc space-y-0.5 pl-5 text-xs">
+          {ai.key_findings.map((f: string, i: number) => (
+            <li key={i}>{f}</li>
+          ))}
+        </ul>
+      )}
+      {ai.rationale && (
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{ai.rationale}</p>
+      )}
+    </div>
   );
 }
 
