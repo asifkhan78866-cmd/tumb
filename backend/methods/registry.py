@@ -219,9 +219,9 @@ METHOD2 = MethodSpec(
     summary=(
         "Multimodal design: an MRI branch (grayscale, filtering, multi-class tumour "
         "segmentation) and a SPECT branch (uptake features) fused before a densely "
-        "connected classifier. No paired MRI–SPECT dataset is available, so the fusion "
-        "network is not trained; uploads are read by an AI vision model instead and "
-        "labelled as such."
+        "connected classifier. The MRI branch's dense network is trained on the shared MRI "
+        "split; no paired MRI–SPECT dataset exists, so the SPECT branch and fusion are not "
+        "trained and no fusion is performed."
     ),
     modality="MRI + SPECT",
     class_names=METHOD2_CLASS_NAMES,
@@ -292,9 +292,9 @@ METHOD2 = MethodSpec(
         "classification": "method2_classification_runcard.json",
     },
     notes=(
-        "The fusion network ships untrained: fusion needs MRI and SPECT scans of the same "
-        "patients, and no such paired dataset is available. No checkpoint and no metrics "
-        "are included; any result comes from the AI assessment and says so.",
+        "Only the MRI branch is trained. Fusion needs MRI and SPECT scans of the same "
+        "patients and no such paired dataset is available, so the SPECT branch and fusion "
+        "step are untrained; metrics describe MRI classification, not fusion.",
         "The reference diagram writes 'PECT'; the dataset and this implementation "
         "are SPECT. See METHOD2_MODALITY in .env.example.",
     ),

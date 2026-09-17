@@ -110,6 +110,15 @@ def preprocess(img: np.ndarray, spec: M2Transform = DEFAULT_SPEC) -> np.ndarray:
     return g.astype(np.float32)
 
 
+def preprocess_file(args) -> np.ndarray:
+    """``(path, spec_dict)`` -> ``preprocess`` output. Module-level for the process pool."""
+    path, key = args
+    img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+    if img is None:
+        raise ValueError(f"Unreadable image: {path}")
+    return preprocess(img, get_spec(key["id"]))
+
+
 def decode_image_bytes(data: bytes) -> np.ndarray:
     arr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_UNCHANGED)

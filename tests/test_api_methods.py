@@ -93,13 +93,23 @@ def test_switching_methods_does_not_mix_results(client, png_bytes):
     assert a["model_version"] != b["model_version"]
 
 
-def test_metrics_are_never_shared_between_methods(client):
+def test_metrics_are_never_shared_between_methods(client, tmp_path, monkeypatch):
+    import json
+
+    from backend import config
+
+    # Each method reads only its own file: write one method's metrics and check
+    # no other method picks them up.
+    monkeypatch.setattr(config, "LOGS_DIR", tmp_path)
+    (tmp_path / "method1_metrics.json").write_text(json.dumps(
+        {"method_id": "method1", "classification": {"accuracy": 0.9, "f1": 0.9, "split": "x"}}))
     m1 = client.get("/api/metrics/method1").json()
-    m2 = client.get("/api/metrics/method2").json()
-    assert m1["method_id"] == "method1" and m2["method_id"] == "method2"
-    assert m2["evaluated"] is False
-    for key in ("accuracy", "dice", "f1", "auc"):
-        assert m2[key] is None, f"untrained method2 must not report {key}"
+    assert m1["method_id"] == "method1" and m1["accuracy"] == 0.9
+    for other in ("method2", "method3", "method4"):
+        m = client.get(f"/api/metrics/{other}").json()
+        assert m["method_id"] == other and m["evaluated"] is False
+        for key in ("accuracy", "dice", "f1", "auc"):
+            assert m[key] is None, f"{other} must not report {key} from another method's file"
 
 
 def test_metrics_list_endpoint_returns_one_row_per_method(client):

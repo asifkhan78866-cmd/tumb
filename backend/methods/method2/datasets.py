@@ -166,6 +166,34 @@ class SpectClassificationDataset(Dataset):
         )
 
 
+class CachedSpectClassificationDataset(Dataset):
+    """Like :class:`SpectClassificationDataset`, over pre-filtered cached images.
+
+    Used when no segmentation model exists, so the region map is all background
+    (recorded by the caller). Augmentation is seeded; the descriptor is computed
+    after augmentation, exactly as the uncached dataset does.
+    """
+
+    def __init__(self, images: np.ndarray, labels: Sequence[int], augment: bool = False, seed: int = 42):
+        self.images = images
+        self.labels = np.asarray(labels, dtype=np.int64)
+        self.aug = Augmentor(vflip=0.0, seed=seed) if augment else None
+
+    def __len__(self) -> int:
+        return len(self.labels)
+
+    def __getitem__(self, idx: int):
+        image = self.images[idx]
+        if self.aug is not None:
+            image = self.aug((image * 255).astype(np.uint8)).astype(np.float32) / 255.0
+        channels, descriptor = build_inputs(image, np.zeros_like(image, dtype=np.uint8), m2.NUM_REGIONS)
+        return (
+            torch.from_numpy(np.ascontiguousarray(channels)).float(),
+            torch.from_numpy(np.ascontiguousarray(descriptor)).float(),
+            int(self.labels[idx]),
+        )
+
+
 # --------------------------------------------------------------------------- #
 # Multi-class segmentation (BraTS)
 # --------------------------------------------------------------------------- #
