@@ -1,0 +1,35 @@
+{
+  "format": 2,
+  "method_id": "method2",
+  "architecture": "DenseConvNetClassifier",
+  "role": "classification",
+  "class_names": [
+    "normal",
+    "glioma",
+    "meningioma",
+    "pituitary"
+  ],
+  "image_size": 128,
+  "transform_id": "m2-v1",
+  "model_version": "20260917-154328",
+  "created_at": "2026-09-17T15:43:28+00:00",
+  "extra": {
+    "hyperparameters": {
+      "growth_rate": 12,
+      "block_config": [
+        6,
+        12,
+        16
+      ],
+      "num_init_features": 24,
+      "compression": 0.5,
+      "dropout": 0.2
+    },
+    "modality": "MRI",
+    "branch": "MRI",
+    "fusion_trained": false,
+    "feature_stage_active": false
+  },
+  "epoch": 30,
+  "val_f1": 0.9269925398789154
+}
