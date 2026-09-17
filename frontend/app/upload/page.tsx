@@ -65,7 +65,9 @@ export default function UploadPage() {
     try {
       const res = await predictWithMethod(selected, file, setProgress);
       setResult(res);
-      if (res.prediction) {
+      if (res.prediction && res.details?.result_source === "ai_assessment") {
+        toast.warning(`AI assessment (not a trained model): ${res.prediction}`);
+      } else if (res.prediction) {
         toast.success(
           `${res.method_name.split("—")[0].trim()}: ${res.prediction}` +
             (res.confidence !== null ? ` (${res.confidence.toFixed(1)}%)` : "")

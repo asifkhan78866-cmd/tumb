@@ -21,6 +21,8 @@ reportlab>=4.1.0
 # Tests
 pytest>=8.0.0
 httpx>=0.27.0             # fastapi TestClient
+# Method 2 AI assessment (optional; needs ANTHROPIC_API_KEY)
+anthropic>=1.6.0
 # Dataset download / config
 kaggle>=1.6.0
 python-dotenv>=1.0.0

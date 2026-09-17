@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, CircleSlash } from "lucide-react";
+import { AlertTriangle, Bot, CheckCircle2, CircleSlash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MethodId, MethodSummary } from "@/lib/api";
 
@@ -78,6 +78,16 @@ function StatusChip({ method }: { method: MethodSummary }) {
         className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
       >
         <CheckCircle2 className="h-3 w-3" /> Classifier trained
+      </span>
+    );
+  }
+  if (method.ai_assessment_available) {
+    return (
+      <span
+        title="No trained classifier; uploads are assessed by an AI model"
+        className="inline-flex items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-semibold text-violet-600 dark:text-violet-400"
+      >
+        <Bot className="h-3 w-3" /> AI assessment
       </span>
     );
   }

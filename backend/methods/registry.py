@@ -382,6 +382,10 @@ def runtime_status(spec: MethodSpec) -> dict[str, Any]:
         "segmentation_available": seg_ok,
         "classifier_available": cls_ok,
         "trained": seg_ok and cls_ok,
+        # Method 2 only: an AI model can assess uploads while the DCN is untrained.
+        "ai_assessment_available": (
+            spec.method_id == "method2" and not cls_ok and config.method2_ai_available()
+        ),
         "warnings": warnings,
     }
 

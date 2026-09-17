@@ -55,6 +55,13 @@ export function ModelStatusCard({ method, index }: { method: MethodDetail; index
             )}
           </Item>
           <Item label="Classes">{method.class_labels.join(" · ")}</Item>
+          {method.ai_assessment_available && (
+            <Item label="Results from">
+              <span className="font-semibold text-violet-600 dark:text-violet-400">
+                AI model assessment — unvalidated
+              </span>
+            </Item>
+          )}
         </dl>
 
         <div>

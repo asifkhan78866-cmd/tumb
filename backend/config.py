@@ -189,6 +189,48 @@ SEED = int(os.getenv("RANDOM_SEED", 42))
 METHOD2_MODALITY = os.getenv("METHOD2_MODALITY", "SPECT").strip().upper() or "SPECT"
 METHOD2_SPEC_MODALITY_LABEL = os.getenv("METHOD2_SPEC_MODALITY_LABEL", "PECT").strip()
 
+# Method 2 AI assessment. While Method 2's DCN has no trained checkpoint, an
+# upload can instead be assessed by a vision-language model. That result is an
+# AI model's opinion — not the DCN, not validated, no measured accuracy — and
+# is labelled as such everywhere it appears. The API key is read from the
+# environment and never leaves the backend.
+#
+# METHOD2_AI_PROVIDER=openrouter (default) uses OPENROUTER_API_KEY and a free
+# model with cheap fallbacks; =anthropic uses ANTHROPIC_API_KEY and Claude.
+METHOD2_AI_ENABLED = _env_bool("METHOD2_AI_ENABLED", False)
+METHOD2_AI_PROVIDER = os.getenv("METHOD2_AI_PROVIDER", "openrouter").strip().lower() or "openrouter"
+_AI_DEFAULT_MODELS = {"openrouter": "nex-agi/nex-n2.5-pro:free", "anthropic": "claude-opus-5"}
+METHOD2_AI_MODEL = (
+    os.getenv("METHOD2_AI_MODEL", "").strip()
+    or _AI_DEFAULT_MODELS.get(METHOD2_AI_PROVIDER, "nex-agi/nex-n2.5-pro:free")
+)
+# OpenRouter tries these in order when the primary model is rate-limited or
+# unavailable. All free by default: on a free-tier key with no credits, a paid
+# model anywhere in the chain turns an upstream 429 into a 402. Add a cheap paid
+# model (e.g. google/gemini-2.5-flash-lite, ~$0.0003/scan) once credits exist.
+METHOD2_AI_FALLBACK_MODELS = [
+    m.strip()
+    for m in os.getenv(
+        "METHOD2_AI_FALLBACK_MODELS",
+        "inclusionai/ling-3.0-flash-vl:free,google/gemma-4-31b-it:free",
+    ).split(",")
+    if m.strip()
+]
+METHOD2_AI_TIMEOUT_S = float(os.getenv("METHOD2_AI_TIMEOUT_S", 90))
+
+
+def method2_ai_available() -> bool:
+    """True when AI assessment is switched on and the chosen provider has a key."""
+    if not METHOD2_AI_ENABLED:
+        return False
+    if METHOD2_AI_PROVIDER == "openrouter":
+        return bool(os.getenv("OPENROUTER_API_KEY", "").strip())
+    if METHOD2_AI_PROVIDER == "anthropic":
+        return bool(
+            os.getenv("ANTHROPIC_API_KEY", "").strip() or os.getenv("ANTHROPIC_AUTH_TOKEN", "").strip()
+        )
+    return False
+
 # --------------------------------------------------------------------------- #
 # SFLA (Shuffled Frog Leaping Algorithm) — Method 1 hyper-parameter search
 # --------------------------------------------------------------------------- #

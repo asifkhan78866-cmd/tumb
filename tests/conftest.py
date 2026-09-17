@@ -1,12 +1,17 @@
 """Shared fixtures. Torch-dependent tests skip cleanly when torch is absent."""
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# The suite must never call a paid external API, whatever .env says. load_dotenv
+# does not override variables already set, so this wins over the .env value.
+os.environ["METHOD2_AI_ENABLED"] = "false"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
