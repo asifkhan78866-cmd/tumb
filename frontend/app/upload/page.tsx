@@ -27,7 +27,7 @@ import {
 
 export default function UploadPage() {
   const [methods, setMethods] = useState<MethodSummary[] | null>(null);
-  const [selected, setSelected] = useState<MethodId>("method1");
+  const [selected, setSelected] = useState<MethodId>("method3");
   const [detail, setDetail] = useState<MethodDetail | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,8 @@ export default function UploadPage() {
   }, []);
 
   // Fetch the selected method's detail, and drop any result belonging to the
-  // method we just switched away from — showing Method 1's mask under a
-  // Method 2 heading would be exactly the kind of mixing this UI must prevent.
+  // method we just switched away from — showing one method's mask under another
+  // method's heading would be exactly the kind of mixing this UI must prevent.
   useEffect(() => {
     let active = true;
     setDetail(null);
@@ -143,7 +143,7 @@ export default function UploadPage() {
             )}
           </Button>
 
-          {detail && !detail.trained && (
+          {detail && !detail.trained && !detail.ai_assessment_available && (
             <WarningList
               warnings={detail.warnings}
               title="This method is not fully trained"
@@ -154,10 +154,7 @@ export default function UploadPage() {
 
       {detail ? (
         <>
-          <ModelStatusCard
-            method={detail}
-            index={(methods?.findIndex((m) => m.method_id === detail.method_id) ?? 0) + 1}
-          />
+          <ModelStatusCard method={detail} />
           <ArchitectureCard method={detail} />
         </>
       ) : (

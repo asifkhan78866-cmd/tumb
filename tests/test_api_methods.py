@@ -14,11 +14,15 @@ REQUIRED_PREDICTION_FIELDS = {
 }
 
 
-def test_list_methods_returns_both(client):
+def test_list_methods_returns_all_four_in_display_order(client):
     r = client.get("/api/methods")
     assert r.status_code == 200
-    ids = [m["method_id"] for m in r.json()]
-    assert ids == ["method1", "method2"]
+    rows = r.json()
+    # ids are stable (baked into checkpoints); display numbers follow the project's list.
+    assert [m["method_id"] for m in rows] == ["method3", "method4", "method1", "method2"]
+    assert [m["display_number"] for m in rows] == [1, 2, 3, 4]
+    seg = {m["method_id"]: m["has_segmentation_stage"] for m in rows}
+    assert seg == {"method3": False, "method4": False, "method1": True, "method2": True}
 
 
 def test_method_detail_includes_pipeline_and_datasets(client):
@@ -29,9 +33,10 @@ def test_method_detail_includes_pipeline_and_datasets(client):
     assert body["optimization"] and "SFLA" in body["optimization"]
 
 
-def test_method2_detail_reports_spect_and_no_optimization(client):
+def test_method2_detail_reports_fusion_modalities_and_no_optimization(client):
     body = client.get("/api/methods/method2").json()
-    assert body["modality"] == "SPECT"
+    assert body["modality"] == "MRI + SPECT"
+    assert "Fusion" in body["display_name"]
     assert body["optimization"] is None
     assert "DenseNet" in body["classifier_model"] or "Dense" in body["classifier_model"]
 
@@ -43,7 +48,7 @@ def test_unknown_method_is_404_everywhere(client):
 
 
 # --- 2 & 3: response schemas ------------------------------------------- #
-@pytest.mark.parametrize("method_id", ["method1", "method2"])
+@pytest.mark.parametrize("method_id", ["method1", "method2", "method3", "method4"])
 def test_prediction_response_uses_the_shared_schema(client, png_bytes, method_id):
     r = client.post(f"/api/predict/{method_id}", files={"file": ("s.png", png_bytes, "image/png")})
     assert r.status_code == 200
@@ -67,8 +72,8 @@ def test_method1_response_carries_method1_identity(client, png_bytes):
 def test_method2_response_carries_its_own_modality_and_feature_stage(client, png_bytes):
     body = client.post("/api/predict/method2",
                        files={"file": ("s.png", png_bytes, "image/png")}).json()
-    assert body["modality"] == "SPECT"
-    assert body["details"]["modality"] == "SPECT"
+    assert body["modality"] == "MRI + SPECT"
+    assert body["details"]["modality"] == "SPECT"  # the SPECT branch's own feature stage
     assert body["details"]["spec_modality_label"] == "PECT"
     feature = body["details"]["feature_stage"]
     assert feature["dimension"] == len(feature["values"]) == len(feature["names"])
@@ -99,7 +104,7 @@ def test_metrics_are_never_shared_between_methods(client):
 
 def test_metrics_list_endpoint_returns_one_row_per_method(client):
     rows = client.get("/api/metrics").json()
-    assert [r["method_id"] for r in rows] == ["method1", "method2"]
+    assert [r["method_id"] for r in rows] == ["method3", "method4", "method1", "method2"]
 
 
 # --- uploads ------------------------------------------------------------ #
@@ -140,6 +145,14 @@ def test_training_endpoint_rejects_an_unknown_stage(client):
 
 def test_method2_has_no_sfla_stage(client):
     assert client.post("/api/train/method2?stage=sfla").status_code == 400
+
+
+def test_optimisation_stages_belong_to_their_own_methods(client):
+    assert client.post("/api/train/method4?stage=sfla").status_code == 400
+    assert client.post("/api/train/method1?stage=rfo").status_code == 400
+    body = client.post("/api/train/method4?stage=rfo").json()
+    assert body["started"] is False and "method4.optimization.run_rfo" in body["command"]
+    assert client.post("/api/train/method3?stage=segmentation").status_code == 400
 
 
 def test_history_can_be_filtered_by_method(client, png_bytes):

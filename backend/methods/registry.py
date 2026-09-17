@@ -83,6 +83,9 @@ class MethodSpec:
     run_card_filenames: dict[str, str]
     optimization_result_filename: Optional[str] = None
     notes: tuple[str, ...] = ()
+    # Position in the project's numbered method list (1-4). Independent of
+    # method_id, which is baked into checkpoints and must never change.
+    display_number: int = 0
 
     @property
     def num_classes(self) -> int:
@@ -116,8 +119,9 @@ METHOD1_CLASS_LABELS = {
 
 METHOD1 = MethodSpec(
     method_id="method1",
-    display_name="Method 1 — 3D/2D U-Net Segmentation + ConvLSTM Classification + SFLA Optimization",
+    display_name="3D U-Net–ConvLSTM–SFLA-Based Anomaly Segmentation & Classification",
     short_name="U-Net + ConvLSTM + SFLA",
+    display_number=3,
     summary=(
         "Binary tumour segmentation with a 2D U-Net, mask-driven ROI extraction, "
         "then four-class typing with a ConvLSTM classifier whose hyper-parameters "
@@ -163,7 +167,10 @@ METHOD1 = MethodSpec(
         WeightSpec("segmentation", "SEG_WEIGHTS_PATH", "UNet", "METHOD1_UNET_WEIGHTS"),
         WeightSpec("classification", "CLS_WEIGHTS_PATH", "ConvLSTMClassifier", "METHOD1_CONVLSTM_WEIGHTS"),
     ),
-    segmentation_model="2D U-Net (encoder/decoder, skip connections, BatchNorm, dropout)",
+    segmentation_model=(
+        "U-Net (encoder/decoder, skip connections, BatchNorm, dropout). Implemented in 2D on "
+        "slices; a volumetric 3D U-Net needs BraTS volumes and is not trained."
+    ),
     classifier_model="ConvLSTM (Conv+BN feature stack → ConvLSTM cell → dense → softmax)",
     optimization="SFLA (Shuffled Frog Leaping Algorithm) over classifier hyper-parameters",
     engine_module="backend.methods.method1.inference",
@@ -206,15 +213,17 @@ METHOD2_SEG_CLASSES = ("background", "necrotic_core", "edema", "enhancing_tumor"
 
 METHOD2 = MethodSpec(
     method_id="method2",
-    display_name="Method 2 — Multi-class Segmentation + SPECT Feature Stage + Dense Convolutional Network (DCN)",
-    short_name="Multi-class Seg + SPECT + DCN",
+    display_name="MRI–SPECT Multimodal Fusion-Based Brain Tumor Classification",
+    short_name="MRI–SPECT Fusion",
+    display_number=4,
     summary=(
-        "Grayscale conversion and filtering, multi-class tumour segmentation into "
-        "background/necrotic core/edema/enhancing tumour, a modality-specific "
-        "SPECT feature representation, then classification with a densely "
-        "connected convolutional network."
+        "Multimodal design: an MRI branch (grayscale, filtering, multi-class tumour "
+        "segmentation) and a SPECT branch (uptake features) fused before a densely "
+        "connected classifier. No paired MRI–SPECT dataset is available, so the fusion "
+        "network is not trained; uploads are read by an AI vision model instead and "
+        "labelled as such."
     ),
-    modality="SPECT",
+    modality="MRI + SPECT",
     class_names=METHOD2_CLASS_NAMES,
     class_labels=METHOD2_CLASS_LABELS,
     pipeline=(
@@ -283,15 +292,116 @@ METHOD2 = MethodSpec(
         "classification": "method2_classification_runcard.json",
     },
     notes=(
-        "Ships untrained. No checkpoint and no metrics are included, and the API "
-        "reports this explicitly rather than emitting placeholder numbers.",
+        "The fusion network ships untrained: fusion needs MRI and SPECT scans of the same "
+        "patients, and no such paired dataset is available. No checkpoint and no metrics "
+        "are included; any result comes from the AI assessment and says so.",
         "The reference diagram writes 'PECT'; the dataset and this implementation "
         "are SPECT. See METHOD2_MODALITY in .env.example.",
     ),
 )
 
 
-METHODS: dict[str, MethodSpec] = {m.method_id: m for m in (METHOD1, METHOD2)}
+# --------------------------------------------------------------------------- #
+# Method 3 id — displayed #1: pre-trained CNNs + transfer learning
+# --------------------------------------------------------------------------- #
+_BRI_CLASSIFICATION = DatasetSpec(
+    key="bri",
+    name="Brain Tumor MRI Dataset (BRI)",
+    role="classification",
+    source="kaggle:masoudnickparvar/brain-tumor-mri-dataset",
+    path_attr="BRI_DATASET_PATH",
+    notes=(
+        "Same split as every MRI method: the dataset's Training/Testing folders, validation "
+        "from Training only, exact duplicates of test images removed from training. "
+        "Image-level; no patient identifiers."
+    ),
+)
+
+METHOD3 = MethodSpec(
+    method_id="method3",
+    display_name="Deep Learning Pre-trained Models + Transfer Learning-Based Brain Tumor Classification",
+    short_name="Pre-trained CNNs + Transfer Learning",
+    display_number=1,
+    summary=(
+        "ImageNet-pretrained CNN backbones (EfficientNet-B0 and ResNet-50) are "
+        "fine-tuned on brain MRI with a new four-class head. The backbone with the best "
+        "validation macro-F1 is selected, then evaluated once on the held-out test set."
+    ),
+    modality="MRI",
+    class_names=METHOD1_CLASS_NAMES,
+    class_labels=METHOD1_CLASS_LABELS,
+    pipeline=(
+        PipelineStage("input", "Input MRI", "input", "Single MRI slice (PNG/JPG/TIFF)."),
+        PipelineStage("preprocess", "Preprocessing", "preprocess", "Grayscale, resize to 224×224, replicate to 3 channels, ImageNet normalisation."),
+        PipelineStage("pretrained", "Pre-trained backbones", "feature", "EfficientNet-B0 and ResNet-50 with ImageNet weights."),
+        PipelineStage("transfer", "Transfer learning", "classifier", "Head warm-up with the backbone frozen, then full fine-tuning at a lower learning rate."),
+        PipelineStage("select", "Model selection", "optimization", "Backbone chosen by validation macro-F1 (test set untouched)."),
+        PipelineStage("predict", "Prediction", "output", "Glioma / Meningioma / No Tumor / Pituitary."),
+        PipelineStage("gradcam", "Grad-CAM", "output", "Heatmap over the last convolutional stage."),
+        PipelineStage("evaluate", "Performance evaluation", "eval", "Accuracy, precision, recall, specificity, F1, AUC on the held-out test set."),
+    ),
+    datasets=(_BRI_CLASSIFICATION,),
+    weights=(
+        WeightSpec("classification", "M3_WEIGHTS_PATH", "TransferLearningCNN", "METHOD3_WEIGHTS"),
+    ),
+    segmentation_model="Not part of this method (whole-image classification)",
+    classifier_model="ImageNet-pretrained CNN (EfficientNet-B0 or ResNet-50, chosen on validation), fine-tuned",
+    optimization="Backbone selection by validation macro-F1",
+    engine_module="backend.methods.method3.inference",
+    transforms_module="backend.methods.method3.transforms",
+    training_entrypoints=("python -m backend.methods.method3.training.train_classifier",),
+    metrics_filename="method3_metrics.json",
+    run_card_filenames={"classification": "method3_classification_runcard.json"},
+)
+
+# --------------------------------------------------------------------------- #
+# Method 4 id — displayed #2: Red Fox Optimization + ZFNet
+# --------------------------------------------------------------------------- #
+METHOD4 = MethodSpec(
+    method_id="method4",
+    display_name="Red Fox Optimized ZFNet-Based Brain Tumor Classification",
+    short_name="Red Fox Optimized ZFNet",
+    display_number=2,
+    summary=(
+        "A ZFNet convolutional network trained from scratch on brain MRI, with its "
+        "hyper-parameters chosen by Red Fox Optimization (RFO), a metaheuristic that "
+        "searches using validation macro-F1 as fitness."
+    ),
+    modality="MRI",
+    class_names=METHOD1_CLASS_NAMES,
+    class_labels=METHOD1_CLASS_LABELS,
+    pipeline=(
+        PipelineStage("input", "Input MRI", "input", "Single MRI slice (PNG/JPG/TIFF)."),
+        PipelineStage("preprocess", "Preprocessing", "preprocess", "Grayscale, resize to 224×224, normalise."),
+        PipelineStage("zfnet", "ZFNet", "classifier", "7×7/2 conv stem, 5×5/2 conv, three 3×3 convs, two fully connected layers."),
+        PipelineStage("rfo", "Red Fox Optimization", "optimization", "Global search, local search and habitat reproduction over learning rate, weight decay, dropout, FC width and batch size (train/val only)."),
+        PipelineStage("predict", "Prediction", "output", "Glioma / Meningioma / No Tumor / Pituitary."),
+        PipelineStage("gradcam", "Grad-CAM", "output", "Heatmap over the last convolutional layer."),
+        PipelineStage("evaluate", "Performance evaluation", "eval", "Accuracy, precision, recall, specificity, F1, AUC on the held-out test set."),
+    ),
+    datasets=(_BRI_CLASSIFICATION,),
+    weights=(WeightSpec("classification", "M4_WEIGHTS_PATH", "ZFNet", "METHOD4_WEIGHTS"),),
+    segmentation_model="Not part of this method (whole-image classification)",
+    classifier_model="ZFNet (Zeiler & Fergus 2014) with BatchNorm, single-channel input",
+    optimization="Red Fox Optimization (Połap & Woźniak 2021) over ZFNet hyper-parameters",
+    engine_module="backend.methods.method4.inference",
+    transforms_module="backend.methods.method4.transforms",
+    training_entrypoints=(
+        "python -m backend.methods.method4.optimization.run_rfo",
+        "python -m backend.methods.method4.training.train_classifier",
+    ),
+    metrics_filename="method4_metrics.json",
+    run_card_filenames={
+        "classification": "method4_classification_runcard.json",
+        "rfo": "method4_rfo_runcard.json",
+    },
+    optimization_result_filename="method4/rfo_results.json",
+)
+
+
+METHODS: dict[str, MethodSpec] = {
+    m.method_id: m for m in sorted((METHOD1, METHOD2, METHOD3, METHOD4), key=lambda m: m.display_number)
+}
 METHOD_IDS: tuple[str, ...] = tuple(METHODS)
 
 
@@ -362,10 +472,12 @@ def runtime_status(spec: MethodSpec) -> dict[str, Any]:
             }
         )
 
+    roles = {w.role for w in spec.weights}
+    has_seg = "segmentation" in roles
     seg_ok = weights.get("segmentation", {}).get("present", False)
     cls_ok = weights.get("classification", {}).get("present", False)
     warnings: list[str] = []
-    if not seg_ok:
+    if has_seg and not seg_ok:
         warnings.append(
             f"{spec.short_name}: no segmentation checkpoint at "
             f"{weights.get('segmentation', {}).get('path', '?')} — segmentation is unavailable."
@@ -381,10 +493,13 @@ def runtime_status(spec: MethodSpec) -> dict[str, Any]:
         "datasets": datasets,
         "segmentation_available": seg_ok,
         "classifier_available": cls_ok,
-        "trained": seg_ok and cls_ok,
-        # Method 2 only: an AI model can assess uploads while the DCN is untrained.
+        "trained": cls_ok and (seg_ok or not has_seg),
+        "has_segmentation_stage": has_seg,
+        # An AI model assesses uploads for methods whose classifier is not trained
+        # (the fusion method, and the new methods until their training finishes).
         "ai_assessment_available": (
-            spec.method_id == "method2" and not cls_ok and config.method2_ai_available()
+            spec.method_id in ("method2", "method3", "method4")
+            and not cls_ok and config.method2_ai_available()
         ),
         "warnings": warnings,
     }

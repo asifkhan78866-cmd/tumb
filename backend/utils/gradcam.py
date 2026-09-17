@@ -18,17 +18,19 @@ class GradCAM:
         self.activations = None
         self.gradients = None
         self._fwd = target_layer.register_forward_hook(self._save_activation)
-        self._bwd = target_layer.register_full_backward_hook(self._save_gradient)
 
     def _save_activation(self, module, inp, out):
         self.activations = out.detach()
+        # A tensor hook rather than a module full-backward hook: the latter
+        # breaks on layers followed by in-place ReLUs (torchvision ResNet/DenseNet).
+        if out.requires_grad:
+            out.register_hook(self._save_gradient)
 
-    def _save_gradient(self, module, grad_in, grad_out):
-        self.gradients = grad_out[0].detach()
+    def _save_gradient(self, grad):
+        self.gradients = grad.detach()
 
     def remove(self):
         self._fwd.remove()
-        self._bwd.remove()
 
     def __call__(self, x: torch.Tensor, class_idx: int | None = None) -> np.ndarray:
         self.model.zero_grad()

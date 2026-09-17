@@ -11,7 +11,7 @@ export const API_BASE =
 // Backend host used to resolve relative image URLs (/predictions/...).
 export const ASSET_BASE = API_BASE;
 
-export type MethodId = "method1" | "method2";
+export type MethodId = "method1" | "method2" | "method3" | "method4";
 
 export interface PipelineStage {
   id: string;
@@ -52,6 +52,10 @@ export interface MethodSummary {
   classifier_trained_at?: string | null;
   /** Uploads are assessed by an AI model because no classifier is trained. */
   ai_assessment_available?: boolean;
+  /** Position in the numbered method list (1-4). Ids are stable; numbers are display only. */
+  display_number: number;
+  /** False for whole-image classifiers that have no segmentation stage by design. */
+  has_segmentation_stage: boolean;
   warnings: string[];
 }
 
@@ -148,7 +152,8 @@ export interface Health {
 /** Requests abort after this long so a hung backend surfaces instead of spinning. */
 export const REQUEST_TIMEOUT_MS = 10_000;
 /** Inference is slower than a plain GET, so uploads get their own budget. */
-export const UPLOAD_TIMEOUT_MS = 120_000;
+// AI assessments on free models can take ~2 minutes; trained models answer in under a second.
+export const UPLOAD_TIMEOUT_MS = 240_000;
 
 const UNREACHABLE = (where: string) =>
   `Cannot reach the backend at ${API_BASE}. Is it running? Start it from the repo root with:\n` +

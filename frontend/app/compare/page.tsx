@@ -10,6 +10,7 @@ import {
   errorMessage,
   getAllMetrics,
   getMethod,
+  getMethods,
   pct,
   seconds,
   type MethodDetail,
@@ -44,7 +45,7 @@ export default function ComparePage() {
   useEffect(() => {
     Promise.all([
       getAllMetrics(),
-      Promise.all([getMethod("method1"), getMethod("method2")]),
+      getMethods().then((ms) => Promise.all(ms.map((m) => getMethod(m.method_id)))),
     ])
       .then(([m, d]) => {
         setMetrics(m);
@@ -79,8 +80,9 @@ export default function ComparePage() {
     );
   }
 
+  const numberOf = (id: string) => details.find((d) => d.method_id === id)?.display_number;
   const allWarnings = metrics.flatMap((m) =>
-    m.warnings.map((w) => `${m.method_id}: ${w}`)
+    m.warnings.map((w) => `Method ${numberOf(m.method_id)}: ${w}`)
   );
 
   return (
@@ -91,7 +93,7 @@ export default function ComparePage() {
           Compare Methods
         </h1>
         <p className="mt-2 max-w-3xl text-muted-foreground">
-          The two pipelines side by side. This page reports facts only — it does not
+          All four pipelines side by side. This page reports facts only — it does not
           rank the methods or pick a winner.
         </p>
       </div>
@@ -99,9 +101,9 @@ export default function ComparePage() {
       <div className="flex items-start gap-3 rounded-xl border bg-muted/30 p-4 text-sm">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <p className="leading-relaxed text-muted-foreground">
-          The methods are evaluated on <strong>different datasets, different
-          modalities and different splits</strong>, so their numbers are not directly
-          comparable and are never aggregated into a single score. A metric that has
+          Methods 1, 2 and 3 are trained and tested on <strong>the same MRI split</strong>
+          (same test images), so their measured numbers can be read side by side. Method 4
+          has no trained model and no metrics. Nothing is aggregated into a single score. A metric that has
           not been computed shows as <strong>N/A</strong> rather than zero.
         </p>
       </div>
@@ -117,13 +119,16 @@ export default function ComparePage() {
           <CardTitle>Measured metrics</CardTitle>
         </CardHeader>
         <CardContent className="overflow-x-auto">
-          <table className="w-full min-w-[540px] border-collapse text-sm">
+          <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr className="border-b">
                 <th className="py-2 text-left font-semibold">Metric</th>
                 {metrics.map((m) => (
                   <th key={m.method_id} className="py-2 text-left font-semibold">
-                    {m.method_id === "method1" ? "Method 1" : "Method 2"}
+                    Method {details.find((d) => d.method_id === m.method_id)?.display_number}
+                    <span className="block text-[11px] font-normal">
+                      {details.find((d) => d.method_id === m.method_id)?.short_name}
+                    </span>
                     <span className="block text-[11px] font-normal text-muted-foreground">
                       {m.evaluated ? m.split : "not evaluated"}
                     </span>

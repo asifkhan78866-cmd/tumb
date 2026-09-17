@@ -34,34 +34,51 @@ export default function AboutPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <GitCompareArrows className="h-5 w-5 text-primary" /> The two methods
+            <GitCompareArrows className="h-5 w-5 text-primary" /> The four methods
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm">
           <div>
-            <p className="font-semibold">Method 1 — U-Net + ConvLSTM + SFLA</p>
+            <p className="font-semibold">
+              Method 1 — Deep Learning Pre-trained Models + Transfer Learning-Based Brain Tumor Classification
+            </p>
             <p className="text-muted-foreground">
-              A 2D U-Net produces a binary whole-tumour mask; the mask&apos;s bounding box
-              is cropped and passed to a ConvLSTM classifier for four-way typing
-              (Normal / Glioma / Meningioma / Pituitary). Classifier hyper-parameters are
-              selected by a Shuffled Frog Leaping Algorithm search that reads only the
-              training and validation splits. Grad-CAM explains each prediction.
+              ImageNet-pretrained EfficientNet-B0 and ResNet-50 are each
+              fine-tuned on brain MRI (head warm-up, then full fine-tuning). The backbone with
+              the best validation macro-F1 becomes the model and is tested once.
             </p>
           </div>
           <div>
-            <p className="font-semibold">Method 2 — Multi-class segmentation + SPECT + DCN</p>
+            <p className="font-semibold">Method 2 — Red Fox Optimized ZFNet-Based Brain Tumor Classification</p>
             <p className="text-muted-foreground">
-              Grayscale conversion and median/bilateral filtering feed a four-way
-              segmentation (background, necrotic core, edema, enhancing tumour). A
-              modality-specific feature stage turns those regions into per-region uptake
-              statistics and an intensity histogram, which a densely connected
-              convolutional network uses alongside the image channels.
+              A ZFNet trained from scratch on single-channel MRI. Red Fox Optimization (global
+              search, local search, habitat reproduction) chooses its learning rate, weight
+              decay, dropout, fully connected width and batch size using validation data only.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold">Method 3 — 3D U-Net–ConvLSTM–SFLA-Based Anomaly Segmentation &amp; Classification</p>
+            <p className="text-muted-foreground">
+              A U-Net segments the tumour, its bounding box is cropped, and a ConvLSTM
+              classifies it; a Shuffled Frog Leaping Algorithm tunes the classifier. The U-Net
+              is implemented in 2D on slices; a volumetric 3D U-Net needs BraTS volumes and is
+              not trained, so the classifier currently runs on whole slices.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold">Method 4 — MRI–SPECT Multimodal Fusion-Based Brain Tumor Classification</p>
+            <p className="text-muted-foreground">
+              An MRI branch and a SPECT branch whose features are fused before a densely
+              connected classifier. Fusion needs MRI and SPECT scans of the same patients; no
+              such paired dataset is available, so the fusion network is not trained. Uploads
+              are read by an AI vision model instead, and every such result is labelled as an
+              unvalidated AI assessment.
             </p>
           </div>
           <p className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
-            The two methods share no weights, no datasets, no preprocessing and no
-            metrics. The Compare page shows them side by side without ranking them,
-            because they are evaluated on different data and different splits.
+            Methods 1–3 are trained and tested on the same MRI split, so their test numbers
+            describe the same images. The methods share no weights, and nothing is averaged
+            into a single score.
           </p>
         </CardContent>
       </Card>
@@ -74,7 +91,7 @@ export default function AboutPage() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p>
-            The reference diagram for Method 2 labels its modality stage{" "}
+            The reference diagram for the SPECT branch (Method 4) labels its modality stage{" "}
             <em>Photon Emission Computed Tomography (PECT)</em>, while the dataset
             actually used is <strong>SPECT</strong> (Single Photon Emission Computed
             Tomography).
@@ -98,17 +115,17 @@ export default function AboutPage() {
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>
             <strong className="text-foreground">BraTS 2023 / 2020 mirror</strong> — the only
-            source here with real multi-region tumour annotation. Used for Method 1&apos;s
-            binary segmentation and Method 2&apos;s multi-class head.
+            source here with real multi-region tumour annotation. Needed for Method 3&apos;s
+            U-Net and Method 4&apos;s segmentation head; not downloaded yet.
           </p>
           <p>
             <strong className="text-foreground">Brain Tumor MRI Dataset (BRI)</strong> —
-            genuinely four-class, used for Method 1&apos;s classifier. Binary
+            genuinely four-class, used by Methods 1, 2 and 3 with one shared split. Binary
             tumour/no-tumour datasets are rejected rather than remapped onto four labels.
           </p>
           <p>
-            <strong className="text-foreground">SPECT study set</strong> — drives Method
-            2&apos;s modality branch. Its class folders are discovered at training time and
+            <strong className="text-foreground">SPECT study set</strong> — would drive Method
+            4&apos;s SPECT branch. Its class folders are discovered at training time and
             must match the configured class list; they are never assumed.
           </p>
         </CardContent>
@@ -123,21 +140,21 @@ export default function AboutPage() {
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <ul className="list-inside list-disc space-y-1.5">
             <li>
-              Method 2 ships <strong>untrained</strong>. No checkpoint and no metrics are
-              included, and the interface says so rather than showing placeholder numbers.
+              Method 4&apos;s fusion network is <strong>untrained</strong> (no paired MRI–SPECT
+              data). Its results come from an AI vision model and are labelled as such; it has
+              no metrics.
             </li>
             <li>
               A stage without trained weights reports itself unavailable. Masks from an
               untrained network are never presented as results.
             </li>
             <li>
-              The BRI dataset carries no patient identifiers, so its split groups by
-              filename stem only; scores from it may still be optimistic.
+              The BRI dataset carries no patient identifiers, so its split is image-level;
+              exact duplicates are handled, but scores may still be optimistic.
             </li>
             <li>
-              Method 2&apos;s segmentation head trains on BraTS MRI because it is the only
-              multi-region annotated source, while its classifier may run on SPECT. That
-              cross-modality step is recorded in the checkpoint, not hidden.
+              Method 3&apos;s U-Net is 2D and untrained, so its classifier runs on whole
+              slices rather than tumour crops. The title&apos;s 3D U-Net needs volumetric data.
             </li>
             <li>
               Metrics that were never computed display as <strong>N/A</strong>, never as 0.

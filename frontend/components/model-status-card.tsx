@@ -11,7 +11,7 @@ import { getMethodMetrics, pct, type MethodDetail, type MethodMetrics } from "@/
  * the checkpoint file, and — only once a held-out evaluation has been written by
  * training — the measured test metrics. Nothing here is a hard-coded number.
  */
-export function ModelStatusCard({ method, index }: { method: MethodDetail; index: number }) {
+export function ModelStatusCard({ method }: { method: MethodDetail }) {
   const [metrics, setMetrics] = useState<MethodMetrics | null>(null);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export function ModelStatusCard({ method, index }: { method: MethodDetail; index
     <Card>
       <CardHeader className="pb-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Method {index}
+          Method {method.display_number}
         </p>
         <CardTitle className="flex items-center gap-2 text-base">
           <Cpu className="h-4 w-4 text-primary" />
@@ -44,7 +44,11 @@ export function ModelStatusCard({ method, index }: { method: MethodDetail; index
             <Status ok={method.classifier_available} />
           </Item>
           <Item label="Segmentation status">
-            <Status ok={method.segmentation_available} />
+            {method.has_segmentation_stage ? (
+              <Status ok={method.segmentation_available} />
+            ) : (
+              <span className="text-muted-foreground">Not part of this method</span>
+            )}
           </Item>
           <Item label="Checkpoint">
             <span className="font-mono">{method.classifier_checkpoint ?? "—"}</span>
