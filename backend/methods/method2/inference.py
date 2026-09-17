@@ -120,6 +120,7 @@ class Method2Engine:
 
         self.cls_weights_loaded = False
         self.cls_meta = {}
+        self.trained_branch = None
         try:
             meta, warns = load_checkpoint(
                 model, m2.DCN_WEIGHTS_PATH,
@@ -132,7 +133,14 @@ class Method2Engine:
             self.cls_weights_loaded = True
             self.load_warnings.extend(warns)
             trained_modality = str(meta.get("extra", {}).get("modality", m2.MODALITY))
-            if trained_modality.upper() != m2.MODALITY.upper():
+            self.trained_branch = trained_modality.upper()
+            if self.trained_branch == "MRI":
+                self.load_warnings.append(
+                    "This result comes from the trained MRI branch of the MRI–SPECT fusion "
+                    "model. The SPECT branch and the fusion step are not trained (no paired "
+                    "MRI–SPECT data), so no fusion is performed."
+                )
+            elif self.trained_branch != m2.MODALITY.upper():
                 self.load_warnings.append(
                     f"The DCN checkpoint was trained on {trained_modality} data but "
                     f"METHOD2_MODALITY is {m2.MODALITY}. Predictions are being made "
@@ -269,6 +277,8 @@ class Method2Engine:
             warnings=warnings,
             details={
                 "result_source": result_source,
+                "trained_branch": self.trained_branch if self.cls_weights_loaded else None,
+                "fusion_performed": False,
                 "ai_assessment": ai_details,
                 "transform": self.transform.to_dict(),
                 "modality": m2.MODALITY,

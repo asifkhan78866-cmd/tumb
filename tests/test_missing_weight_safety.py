@@ -35,23 +35,30 @@ def test_any_image_returned_without_weights_is_labelled_a_placeholder(client, pn
         assert any("placeholder" in w.lower() for w in body["warnings"])
 
 
-def test_untrained_method_returns_no_prediction_rather_than_a_guess(client, png_bytes):
-    body = client.post("/api/predict/method2",
-                       files={"file": ("s.png", png_bytes, "image/png")}).json()
-    assert body["prediction"] is None
-    assert body["confidence"] is None
-    assert body["class_probabilities"] == {}
-    assert body["model_version"] == "untrained"
-    assert any("not trained" in w.lower() for w in body["warnings"])
+def test_untrained_method_returns_no_prediction_rather_than_a_guess(png_bytes, tmp_path, monkeypatch):
+    from backend.methods.method2 import config as m2
+    from backend.methods.method2.inference import Method2Engine
+
+    monkeypatch.setattr(m2, "DCN_WEIGHTS_PATH", tmp_path / "missing.pth")
+    r = Method2Engine().predict(png_bytes)
+    assert r.prediction is None and r.confidence is None and r.probabilities == {}
+    assert r.model_version == "untrained"
+    assert any("not trained" in w.lower() for w in r.warnings)
 
 
-def test_untrained_method_reports_no_metrics(client):
+def test_untrained_method_reports_no_metrics(client, tmp_path, monkeypatch):
+    from backend import config
+
+    monkeypatch.setattr(config, "LOGS_DIR", tmp_path)  # no metrics file written yet
     body = client.get("/api/metrics/method2").json()
     assert body["evaluated"] is False
     assert all(body[k] is None for k in ("accuracy", "dice", "iou", "f1", "auc", "precision"))
 
 
-def test_methods_listing_advertises_untrained_state(client):
+def test_methods_listing_advertises_untrained_state(client, tmp_path, monkeypatch):
+    from backend import config
+
+    monkeypatch.setattr(config, "M2_DCN_WEIGHTS_PATH", tmp_path / "missing.pth")
     rows = {m["method_id"]: m for m in client.get("/api/methods").json()}
     assert rows["method2"]["trained"] is False
     assert rows["method2"]["classifier_available"] is False

@@ -15,6 +15,9 @@ backend/weights/method1/*
 !backend/weights/method1/best_classifier.pth
 !backend/weights/method1/best_classifier.pth.meta.json
 !backend/weights/method1/model_metadata.json
+# ...the MRI-SPECT fusion method's trained MRI branch...
+!backend/weights/method2_dcn.pth
+!backend/weights/method2_model_metadata.json
 # ...and the transfer-learning and Red Fox ZFNet classifiers.
 backend/weights/method3/*
 !backend/weights/method3/best_classifier.pth
@@ -50,6 +53,10 @@ backend/logs/*
 !backend/logs/method1/
 backend/logs/method1/*
 !backend/logs/method1/sfla_results.json
+!backend/logs/method2_metrics.json
+!backend/logs/method2_classification_runcard.json
+!backend/logs/method2_cls_confusion_matrix.png
+!backend/logs/method2_cls_roc.png
 !backend/logs/method3_metrics.json
 !backend/logs/method3_classification_runcard.json
 !backend/logs/method3_cls_confusion_matrix.png

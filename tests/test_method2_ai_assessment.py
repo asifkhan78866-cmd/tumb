@@ -162,6 +162,10 @@ def _predict_with(monkeypatch, png_bytes, assessment=None, error=None):
     from backend.methods.method2.inference import Method2Engine
 
     monkeypatch.setattr(config, "method2_ai_available", lambda: True)
+    # The AI path only runs while the DCN is untrained; simulate that regardless of disk state.
+    from backend.methods.method2 import config as m2
+
+    monkeypatch.setattr(m2, "DCN_WEIGHTS_PATH", config.LOGS_DIR / "__no_such_checkpoint__.pth")
 
     def fake_assess(_bytes):
         if error:
@@ -196,6 +200,9 @@ def test_api_failure_becomes_a_warning_not_a_guess(monkeypatch, png_bytes):
     assert "AI assessment failed: could not reach the API." in r.warnings
 
 
-def test_ai_assessment_never_writes_metrics(monkeypatch, png_bytes, client):
+def test_ai_assessment_never_writes_metrics(monkeypatch, png_bytes, tmp_path):
+    from backend import config
+
+    monkeypatch.setattr(config, "LOGS_DIR", tmp_path)
     _predict_with(monkeypatch, png_bytes, assessment=_assessment())
-    assert client.get("/api/metrics/method2").json()["evaluated"] is False
+    assert not any(tmp_path.iterdir()), "the AI assessment must not write any metrics file"
