@@ -1,0 +1,243 @@
+{
+  "method_id": "method2",
+  "stage": "classification",
+  "dataset": {
+    "root": "/Users/syedasif/tumb/data/bri/archive",
+    "num_samples": 7023,
+    "classes_found": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "official_split_counts": {
+      "testing": 1311,
+      "training": 5712
+    },
+    "has_official_split": true,
+    "respect_official_split": true,
+    "per_class_split": {
+      "glioma": {
+        "train": 1321,
+        "test": 300
+      },
+      "meningioma": {
+        "train": 1339,
+        "test": 306
+      },
+      "notumor": {
+        "train": 1595,
+        "test": 405
+      },
+      "pituitary": {
+        "train": 1457,
+        "test": 300
+      }
+    },
+    "counts": {
+      "train_pool": 5712,
+      "test": 1311,
+      "unassigned": 0
+    },
+    "grouping": "filename-stem (no patient ids in this dataset)",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic."
+    ],
+    "modality": "MRI",
+    "class_counts": {
+      "normal": 1267,
+      "glioma": 1107,
+      "meningioma": 1132,
+      "pituitary": 1235
+    }
+  },
+  "split_strategy": {
+    "type": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "counts": {
+      "train": 4741,
+      "val": 837,
+      "test": 1311
+    },
+    "group_counts": {
+      "train": 4605,
+      "val": 837,
+      "test": 1284
+    },
+    "group_overlap": {},
+    "leak_free": true
+  },
+  "random_seed": 42,
+  "preprocessing": {
+    "id": "m2-v1",
+    "image_size": 128,
+    "order": "resize_then_filter",
+    "median_ksize": 3,
+    "bilateral_d": 5,
+    "bilateral_sigma_color": 50.0,
+    "bilateral_sigma_space": 50.0,
+    "description": "Grayscale \u2192 resize \u2192 median(3) \u2192 bilateral(5) \u2192 min-max scale."
+  },
+  "image_size": 128,
+  "architecture": "DenseConvNetClassifier",
+  "model_config": {
+    "growth_rate": 12,
+    "block_config": [
+      6,
+      12,
+      16
+    ],
+    "num_init_features": 24,
+    "compression": 0.5,
+    "dropout": 0.2,
+    "in_channels": 4,
+    "feature_dim": 34
+  },
+  "optimizer": {
+    "name": "Adam",
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "scheduler": "CosineAnnealingLR",
+    "batch_size": 32
+  },
+  "epochs": 38,
+  "best_epoch": 30,
+  "metrics": {
+    "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "dataset": "/Users/syedasif/tumb/data/bri/archive (MRI)",
+    "modality": "MRI",
+    "branch": "MRI branch of the MRI\u2013SPECT fusion model",
+    "accuracy": 0.8909,
+    "precision": 0.8891,
+    "recall": 0.8862,
+    "sensitivity": 0.8862,
+    "specificity": 0.9635,
+    "f1": 0.8871,
+    "weighted": {
+      "precision": 0.8904,
+      "recall": 0.8909,
+      "specificity": 0.9629,
+      "f1": 0.8901
+    },
+    "auc": 0.9788,
+    "avg_inference_time_s": 0.002897,
+    "total_eval_time_s": 4.155,
+    "confusion_matrix": [
+      [
+        385,
+        8,
+        12,
+        0
+      ],
+      [
+        0,
+        251,
+        45,
+        4
+      ],
+      [
+        38,
+        8,
+        243,
+        17
+      ],
+      [
+        0,
+        9,
+        2,
+        289
+      ]
+    ],
+    "class_order": [
+      "normal",
+      "glioma",
+      "meningioma",
+      "pituitary"
+    ],
+    "per_class": {
+      "precision": [
+        0.9102,
+        0.9094,
+        0.8046,
+        0.9323
+      ],
+      "recall": [
+        0.9506,
+        0.8367,
+        0.7941,
+        0.9633
+      ],
+      "f1": [
+        0.93,
+        0.8715,
+        0.7993,
+        0.9475
+      ],
+      "specificity": [
+        0.9581,
+        0.9753,
+        0.9413,
+        0.9792
+      ]
+    },
+    "per_class_detail": {
+      "normal": {
+        "precision": 0.9102,
+        "recall": 0.9506,
+        "sensitivity": 0.9506,
+        "specificity": 0.9581,
+        "f1": 0.93,
+        "support": 405
+      },
+      "glioma": {
+        "precision": 0.9094,
+        "recall": 0.8367,
+        "sensitivity": 0.8367,
+        "specificity": 0.9753,
+        "f1": 0.8715,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.8046,
+        "recall": 0.7941,
+        "sensitivity": 0.7941,
+        "specificity": 0.9413,
+        "f1": 0.7993,
+        "support": 306
+      },
+      "pituitary": {
+        "precision": 0.9323,
+        "recall": 0.9633,
+        "sensitivity": 0.9633,
+        "specificity": 0.9792,
+        "f1": 0.9475,
+        "support": 300
+      }
+    },
+    "model_version": "20260917-154328",
+    "feature_stage_active": false,
+    "warnings": [
+      "Trained on MRI only: this is the MRI branch of the MRI\u2013SPECT fusion model. No SPECT data and no paired MRI\u2013SPECT scans exist, so the SPECT branch and the fusion step are not trained, and these metrics describe MRI classification, not multimodal fusion.",
+      "No Method 2 segmentation checkpoint (/Users/syedasif/tumb/backend/weights/method2_segmentation.pth: checkpoint not found.). The DCN is being trained with all-background region maps, so every per-region SPECT descriptor is zero and the feature stage contributes nothing. Train the segmentation head first for the full pipeline.",
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+    ]
+  },
+  "checkpoint_path": "/Users/syedasif/tumb/backend/weights/method2_dcn.pth",
+  "inference_time_s": 0.002897,
+  "train_duration_s": 1790.0,
+  "model_version": "20260917-154328",
+  "created_at": "2026-09-17T15:43:32+00:00",
+  "git_revision": "dd1f242",
+  "device": "mps",
+  "python": "3.13.7",
+  "warnings": [
+    "Trained on MRI only: this is the MRI branch of the MRI\u2013SPECT fusion model. No SPECT data and no paired MRI\u2013SPECT scans exist, so the SPECT branch and the fusion step are not trained, and these metrics describe MRI classification, not multimodal fusion.",
+    "No Method 2 segmentation checkpoint (/Users/syedasif/tumb/backend/weights/method2_segmentation.pth: checkpoint not found.). The DCN is being trained with all-background region maps, so every per-region SPECT descriptor is zero and the feature stage contributes nothing. Train the segmentation head first for the full pipeline.",
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+  ]
+}

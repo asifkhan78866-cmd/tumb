@@ -17,28 +17,29 @@ behind one FastAPI backend and one Next.js dashboard.
 | 1 | Deep Learning Pre-trained Models + Transfer Learning-Based Brain Tumor Classification | `method3` | ImageNet-pretrained EfficientNet-B0 and ResNet-50, fine-tuned; best on validation kept | backbone selection on validation macro-F1 |
 | 2 | Red Fox Optimized ZFNet-Based Brain Tumor Classification | `method4` | ZFNet (BatchNorm, 1-channel) trained from scratch | Red Fox Optimization over lr, weight decay, dropout, FC width, batch size |
 | 3 | 3D U-Net–ConvLSTM–SFLA-Based Anomaly Segmentation & Classification | `method1` | U-Net (2D, untrained) → ROI → ConvLSTM | Shuffled Frog Leaping Algorithm |
-| 4 | MRI–SPECT Multimodal Fusion-Based Brain Tumor Classification | `method2` | MRI + SPECT branches → fusion → dense CNN (**untrained**) | — |
+| 4 | MRI–SPECT Multimodal Fusion-Based Brain Tumor Classification | `method2` | MRI + SPECT branches → fusion → dense CNN (**MRI branch trained; SPECT branch and fusion untrained**) | — |
 
 Internal ids never change because they are recorded inside checkpoints; the UI
 shows the numbers above.
 
-### Results (Methods 1–3 share one split and the same 1,311 test images)
+### Results (all four share one split and the same 1,311 test images)
 
 | | Method 1 · Transfer learning | Method 2 · RFO ZFNet | Method 3 · U-Net–ConvLSTM–SFLA | Method 4 · Fusion |
 |---|---|---|---|---|
-| Selected model | ResNet-50 (val macro-F1 0.992 vs EfficientNet-B0 0.980) | ZFNet, RFO params | ConvLSTM, SFLA params | — |
-| Test accuracy | **98.70 %** | **97.18 %** | **96.41 %** | not evaluated |
-| Macro precision | 98.62 % | 97.07 % | 96.39 % | — |
-| Macro recall / sensitivity | 98.78 % | 97.20 % | 96.59 % | — |
-| Macro specificity | 99.58 % | 99.07 % | 98.82 % | — |
-| Macro F1 | 98.69 % | 97.12 % | 96.43 % | — |
-| Macro AUC (one-vs-rest) | 99.85 % | 99.82 % | 99.70 % | — |
+| Selected model | ResNet-50 (val macro-F1 0.992 vs EfficientNet-B0 0.980) | ZFNet, RFO params | ConvLSTM, SFLA params | DCN, MRI branch only |
+| Test accuracy | **98.70 %** | **97.18 %** | **96.41 %** | **89.09 %** |
+| Macro precision | 98.62 % | 97.07 % | 96.39 % | 88.91 % |
+| Macro recall / sensitivity | 98.78 % | 97.20 % | 96.59 % | 88.62 % |
+| Macro specificity | 99.58 % | 99.07 % | 98.82 % | 96.35 % |
+| Macro F1 | 98.69 % | 97.12 % | 96.43 % | 88.71 % |
+| Macro AUC (one-vs-rest) | 99.85 % | 99.82 % | 99.70 % | 97.88 % |
 
 Each test set was evaluated **once**, after model selection on validation. The
 split is the dataset's own `Training/`/`Testing/` folders with validation carved
 from `Training/`; exact copies of test images were removed from training. It is
 an **image-level** split — the dataset has no patient identifiers — so these
-numbers do not demonstrate patient-level generalisation.
+numbers do not demonstrate patient-level generalisation. Method 4's number is
+MRI-only classification by its MRI branch; it says nothing about MRI–SPECT fusion.
 
 ### What is and is not trained
 
@@ -48,7 +49,8 @@ numbers do not demonstrate patient-level generalisation.
 | Method 2 (`weights/method4/best_classifier.pth`, ZFNet) | Trained (57 MB). |
 | Method 3 classifier (`weights/method1/best_classifier.pth`) | Trained, committed. Whole-slice geometry. |
 | Method 3 U-Net | **Not trained.** Needs BraTS; segmentation reports itself unavailable. |
-| Method 4 fusion network | **Not trained** — no paired MRI–SPECT data. Uploads are read by an AI vision model (OpenRouter, `METHOD2_AI_ENABLED`), labelled as an unvalidated AI assessment with no metrics. |
+| Method 4 MRI branch (`weights/method2_dcn.pth`, DenseNet-BC style DCN) | Trained on the shared MRI split (2.3 MB). |
+| Method 4 SPECT branch and fusion | **Not trained** — no SPECT or paired MRI–SPECT data. No fusion is performed; results say so. The AI assessment is only used if the MRI-branch checkpoint is absent. |
 
 An untrained method never returns a guessed class. A number that was not
 measured shows as `null` in the API and **N/A** in the UI.
