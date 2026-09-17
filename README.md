@@ -1,7 +1,7 @@
-# 🧠 NeuroSeg AI — Two-Method Brain Tumor Analysis
+# 🧠 NeuroSeg AI — Four-Method Brain Tumor Analysis
 
-A full-stack research platform running **two independent deep-learning methods**
-for brain-tumor analysis behind one FastAPI backend and one Next.js dashboard.
+A full-stack research platform running **four brain-tumour classification methods**
+behind one FastAPI backend and one Next.js dashboard.
 
 > ⚠️ **Research / decision-support only.** This is not a certified medical device,
 > it has not been clinically validated, and it must not be used to diagnose, treat,
@@ -10,34 +10,48 @@ for brain-tumor analysis behind one FastAPI backend and one Next.js dashboard.
 
 ---
 
-## The two methods
+## The four methods
 
-| | **Method 1** | **Method 2** |
-|---|---|---|
-| **Name** | 3D/2D U-Net Segmentation + ConvLSTM Classification + SFLA Optimization | Multi-class Segmentation + SPECT Feature Stage + Dense Convolutional Network |
-| **Pipeline** | Input → Preprocess → U-Net → ROI Crop → ConvLSTM → SFLA → Classes → Grad-CAM | Input → Grayscale/Filtering → Multi-class Segmentation → SPECT Features → DCN → Classes |
-| **Modality** | MRI | SPECT |
-| **Segmentation** | 2D U-Net, binary whole-tumour mask | Multi-class U-Net: background / necrotic core / edema / enhancing tumour |
-| **Classifier** | ConvLSTM (Conv+BN → ConvLSTM cell → dense) | `DenseConvNetClassifier` — DenseNet-BC style dense blocks |
-| **Optimization** | SFLA over classifier hyper-parameters | — |
-| **Explainability** | Grad-CAM | not part of this method's specification |
-| **Datasets** | BraTS (segmentation) + BRI 4-class (classification) | SPECT (classification) + BraTS (segmentation head) |
-| **Ships trained?** | classifier only (see below) | **no** — untrained by design |
+| # | Method | Internal id | Model | Optimisation |
+|---|---|---|---|---|
+| 1 | Deep Learning Pre-trained Models + Transfer Learning-Based Brain Tumor Classification | `method3` | ImageNet-pretrained EfficientNet-B0 and ResNet-50, fine-tuned; best on validation kept | backbone selection on validation macro-F1 |
+| 2 | Red Fox Optimized ZFNet-Based Brain Tumor Classification | `method4` | ZFNet (BatchNorm, 1-channel) trained from scratch | Red Fox Optimization over lr, weight decay, dropout, FC width, batch size |
+| 3 | 3D U-Net–ConvLSTM–SFLA-Based Anomaly Segmentation & Classification | `method1` | U-Net (2D, untrained) → ROI → ConvLSTM | Shuffled Frog Leaping Algorithm |
+| 4 | MRI–SPECT Multimodal Fusion-Based Brain Tumor Classification | `method2` | MRI + SPECT branches → fusion → dense CNN (**untrained**) | — |
 
-**They share nothing.** Separate weights, datasets, preprocessing, class lists,
-metrics files and entry points. Loading one method's checkpoint into the other
-fails loudly instead of silently producing garbage.
+Internal ids never change because they are recorded inside checkpoints; the UI
+shows the numbers above.
 
-### What is and is not trained in this repository
+### Results (Methods 1–3 share one split and the same 1,311 test images)
+
+| | Method 1 · Transfer learning | Method 2 · RFO ZFNet | Method 3 · U-Net–ConvLSTM–SFLA | Method 4 · Fusion |
+|---|---|---|---|---|
+| Selected model | ResNet-50 (val macro-F1 0.992 vs EfficientNet-B0 0.980) | ZFNet, RFO params | ConvLSTM, SFLA params | — |
+| Test accuracy | **98.70 %** | **97.18 %** | **96.41 %** | not evaluated |
+| Macro precision | 98.62 % | 97.07 % | 96.39 % | — |
+| Macro recall / sensitivity | 98.78 % | 97.20 % | 96.59 % | — |
+| Macro specificity | 99.58 % | 99.07 % | 98.82 % | — |
+| Macro F1 | 98.69 % | 97.12 % | 96.43 % | — |
+| Macro AUC (one-vs-rest) | 99.85 % | 99.82 % | 99.70 % | — |
+
+Each test set was evaluated **once**, after model selection on validation. The
+split is the dataset's own `Training/`/`Testing/` folders with validation carved
+from `Training/`; exact copies of test images were removed from training. It is
+an **image-level** split — the dataset has no patient identifiers — so these
+numbers do not demonstrate patient-level generalisation.
+
+### What is and is not trained
 
 | Component | State |
 |---|---|
-| Method 1 classifier (`weights/method1/best_classifier.pth`) | Trained locally with SFLA-selected hyper-parameters; 96.4% accuracy on the dataset's own `Testing/` folder (image-level split, whole-slice geometry — see caveats). Not committed; the legacy flat `weights/best_classifier.pth` is only used when it is absent. |
-| Method 1 U-Net (`best_unet.pth`) | **Not included.** Segmentation reports itself unavailable until you train it. |
-| Method 2 segmentation + DCN | **Not included.** The API returns `prediction: null` with warnings rather than inventing an answer. |
+| Method 1 (`weights/method3/best_classifier.pth`, ResNet-50) | Trained (94 MB). |
+| Method 2 (`weights/method4/best_classifier.pth`, ZFNet) | Trained (57 MB). |
+| Method 3 classifier (`weights/method1/best_classifier.pth`) | Trained, committed. Whole-slice geometry. |
+| Method 3 U-Net | **Not trained.** Needs BraTS; segmentation reports itself unavailable. |
+| Method 4 fusion network | **Not trained** — no paired MRI–SPECT data. Uploads are read by an AI vision model (OpenRouter, `METHOD2_AI_ENABLED`), labelled as an unvalidated AI assessment with no metrics. |
 
-No placeholder metric is ever emitted. A number that was not measured shows as
-`null` in the API and **N/A** in the UI.
+An untrained method never returns a guessed class. A number that was not
+measured shows as `null` in the API and **N/A** in the UI.
 
 ---
 
@@ -172,7 +186,7 @@ with an explicit error if they do not match, rather than guessing.
 
 ## 🏋️ Training
 
-### Method 1
+### Method 3 — U-Net–ConvLSTM–SFLA (id `method1`)
 
 ```bash
 # 1. Segmentation (volume-level splits, held-out test set)
@@ -200,7 +214,28 @@ Without U-Net weights the classifier trains and serves the whole-slice geometry
 denoise. Training copies byte-identical to a `Testing/` image (134 in the Kaggle
 release) are dropped from the training pool; `Testing/` itself is untouched.
 
-### Method 2
+### Method 1 — transfer learning (id `method3`)
+
+```bash
+python -m backend.methods.method3.training.train_classifier            # EfficientNet-B0 + ResNet-50
+python -m backend.methods.method3.training.train_classifier --skip-test # validation only
+```
+
+Head warm-up with the backbone frozen, then cosine fine-tuning; each backbone's
+best weights are saved as soon as it finishes, and an identical rerun reuses them.
+
+### Method 2 — Red Fox Optimized ZFNet (id `method4`)
+
+```bash
+python -m backend.methods.method4.optimization.run_rfo --population 6 --iterations 3 --proxy-epochs 2
+python -m backend.methods.method4.training.train_classifier --epochs 40 --patience 8
+```
+
+The search reads train/validation only and writes `backend/logs/method4/rfo_results.json`,
+which training then uses.
+
+### Method 4 — MRI–SPECT fusion (id `method2`)
+
 
 ```bash
 # 1. Multi-class segmentation head (BraTS — the only real multi-region masks)

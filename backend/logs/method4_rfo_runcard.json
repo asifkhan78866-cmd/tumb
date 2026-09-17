@@ -1,0 +1,143 @@
+{
+  "method_id": "method4",
+  "stage": "rfo",
+  "dataset": {
+    "root": "/Users/syedasif/tumb/data/bri/archive",
+    "num_samples": 7023,
+    "classes_found": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "official_split_counts": {
+      "testing": 1311,
+      "training": 5712
+    },
+    "has_official_split": true,
+    "respect_official_split": true,
+    "per_class_split": {
+      "glioma": {
+        "train": 1321,
+        "test": 300
+      },
+      "meningioma": {
+        "train": 1339,
+        "test": 306
+      },
+      "notumor": {
+        "train": 1595,
+        "test": 405
+      },
+      "pituitary": {
+        "train": 1457,
+        "test": 300
+      }
+    },
+    "counts": {
+      "train_pool": 5712,
+      "test": 1311,
+      "unassigned": 0
+    },
+    "grouping": "filename-stem (no patient ids in this dataset)",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic."
+    ]
+  },
+  "split_strategy": {
+    "counts": {
+      "train": 4741,
+      "val": 837,
+      "test": 1311
+    },
+    "group_counts": {
+      "train": 4605,
+      "val": 837,
+      "test": 1284
+    },
+    "group_overlap": {},
+    "leak_free": true
+  },
+  "random_seed": 42,
+  "preprocessing": {},
+  "image_size": 0,
+  "architecture": "ZFNet",
+  "model_config": {
+    "search_space": [
+      {
+        "name": "lr",
+        "kind": "float",
+        "low": 3e-05,
+        "high": 0.003,
+        "log": true
+      },
+      {
+        "name": "weight_decay",
+        "kind": "float",
+        "low": 1e-05,
+        "high": 0.005,
+        "log": true
+      },
+      {
+        "name": "dropout",
+        "kind": "float",
+        "low": 0.2,
+        "high": 0.7,
+        "log": false
+      },
+      {
+        "name": "fc_units",
+        "kind": "choice",
+        "choices": [
+          1024,
+          2048,
+          4096
+        ]
+      },
+      {
+        "name": "batch_size",
+        "kind": "choice",
+        "choices": [
+          32,
+          64
+        ]
+      }
+    ]
+  },
+  "optimizer": {
+    "name": "Red Fox Optimization",
+    "population": 6,
+    "iterations": 3,
+    "replace_fraction": 0.25
+  },
+  "epochs": 2,
+  "best_epoch": 0,
+  "metrics": {
+    "best_fitness": 0.8888848487810266,
+    "best_parameters": {
+      "lr": 9.415354729990893e-05,
+      "weight_decay": 0.0001926813116738516,
+      "dropout": 0.21991416442896075,
+      "fc_units": 1024,
+      "batch_size": 64
+    },
+    "evaluations": 43
+  },
+  "checkpoint_path": "/Users/syedasif/tumb/backend/logs/method4/rfo_results.json",
+  "inference_time_s": null,
+  "train_duration_s": 5330.3,
+  "model_version": "20260917-062215",
+  "created_at": "2026-09-17T06:22:14+00:00",
+  "git_revision": "3357c6b",
+  "device": "mps",
+  "python": "3.13.7",
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+    "The test set was never loaded during optimisation.",
+    "Fitness is maximised. Objective: validation macro-F1 after a short proxy training run (test split untouched)"
+  ]
+}

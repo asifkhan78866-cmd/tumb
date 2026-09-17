@@ -1,0 +1,255 @@
+{
+  "method_id": "method3",
+  "method_name": "Deep Learning Pre-trained Models + Transfer Learning-Based Brain Tumor Classification",
+  "architecture": "TransferLearningCNN (resnet50, ImageNet-pretrained)",
+  "class_order": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "dataset_path": "/Users/syedasif/tumb/data/bri/archive",
+  "dataset_counts": {
+    "train": {
+      "glioma": 1107,
+      "meningioma": 1132,
+      "notumor": 1267,
+      "pituitary": 1235
+    },
+    "validation": {
+      "glioma": 214,
+      "meningioma": 205,
+      "notumor": 203,
+      "pituitary": 215
+    },
+    "test": {
+      "glioma": 300,
+      "meningioma": 306,
+      "notumor": 405,
+      "pituitary": 300
+    },
+    "train_copies_of_test_images_dropped": 134
+  },
+  "split_strategy": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+  "preprocessing": {
+    "id": "m3-gray224-rgb-imagenet",
+    "image_size": 224,
+    "channels": 3,
+    "normalisation": "ImageNet mean/std",
+    "description": "Grayscale, resize to 224\u00d7224 (area interpolation when shrinking), replicate to 3 channels, ImageNet normalisation. Training adds GPU augmentation only."
+  },
+  "augmentation": "train only, on GPU: hflip, rotate \u00b115\u00b0, scale 0.9\u20131.1, translate \u00b16%, brightness/contrast; no vflip",
+  "loss": "CrossEntropyLoss (inverse-frequency class weights, label smoothing 0.1)",
+  "optimizer": "AdamW; head warm-up then cosine fine-tuning",
+  "hyperparameters": {
+    "backbone": "resnet50",
+    "epochs": 15,
+    "warmup_epochs": 2,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "head_lr": 0.001,
+    "weight_decay": 0.0001,
+    "dropout": 0.3,
+    "label_smoothing": 0.1
+  },
+  "model_selection": {
+    "metric": "validation macro-F1",
+    "candidates": [
+      {
+        "backbone": "resnet50",
+        "val_macro_f1": 0.9917,
+        "val_accuracy": 0.9916,
+        "best_epoch": 14,
+        "epochs_run": 15,
+        "train_time_s": 4198.5
+      },
+      {
+        "backbone": "efficientnet_b0",
+        "val_macro_f1": 0.9798,
+        "val_accuracy": 0.9797,
+        "best_epoch": 14,
+        "epochs_run": 15,
+        "train_time_s": 3322.6
+      }
+    ]
+  },
+  "best_epoch": 14,
+  "epochs_run": 15,
+  "training_time_s": 4210.9,
+  "random_seed": 42,
+  "device": "mps",
+  "model_version": "20260917-133000",
+  "checkpoint_path": "/Users/syedasif/tumb/backend/weights/method3/best_classifier.pth",
+  "training_timestamp": "2026-09-17T13:30:00+00:00",
+  "validation_metrics": {
+    "accuracy": 0.9916,
+    "precision": 0.9917,
+    "recall": 0.9917,
+    "sensitivity": 0.9917,
+    "specificity": 0.9972,
+    "f1": 0.9917,
+    "weighted": {
+      "precision": 0.9918,
+      "recall": 0.9916,
+      "specificity": 0.9972,
+      "f1": 0.9917
+    },
+    "auc": 0.9982,
+    "avg_inference_time_s": 0.011018,
+    "total_eval_time_s": 9.412,
+    "confusion_matrix": [
+      [
+        211,
+        2,
+        0,
+        1
+      ],
+      [
+        0,
+        204,
+        0,
+        1
+      ],
+      [
+        0,
+        1,
+        202,
+        0
+      ],
+      [
+        0,
+        2,
+        0,
+        213
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "glioma": {
+        "precision": 1.0,
+        "recall": 0.986,
+        "sensitivity": 0.986,
+        "specificity": 1.0,
+        "f1": 0.9929,
+        "support": 214
+      },
+      "meningioma": {
+        "precision": 0.9761,
+        "recall": 0.9951,
+        "sensitivity": 0.9951,
+        "specificity": 0.9921,
+        "f1": 0.9855,
+        "support": 205
+      },
+      "notumor": {
+        "precision": 1.0,
+        "recall": 0.9951,
+        "sensitivity": 0.9951,
+        "specificity": 1.0,
+        "f1": 0.9975,
+        "support": 203
+      },
+      "pituitary": {
+        "precision": 0.9907,
+        "recall": 0.9907,
+        "sensitivity": 0.9907,
+        "specificity": 0.9968,
+        "f1": 0.9907,
+        "support": 215
+      }
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.987,
+    "precision": 0.9862,
+    "recall": 0.9878,
+    "sensitivity": 0.9878,
+    "specificity": 0.9958,
+    "f1": 0.9869,
+    "weighted": {
+      "precision": 0.9872,
+      "recall": 0.987,
+      "specificity": 0.9961,
+      "f1": 0.987
+    },
+    "auc": 0.9985,
+    "avg_inference_time_s": 0.011243,
+    "total_eval_time_s": 15.216,
+    "confusion_matrix": [
+      [
+        295,
+        4,
+        0,
+        1
+      ],
+      [
+        0,
+        304,
+        0,
+        2
+      ],
+      [
+        4,
+        4,
+        396,
+        1
+      ],
+      [
+        0,
+        1,
+        0,
+        299
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "glioma": {
+        "precision": 0.9866,
+        "recall": 0.9833,
+        "sensitivity": 0.9833,
+        "specificity": 0.996,
+        "f1": 0.985,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.9712,
+        "recall": 0.9935,
+        "sensitivity": 0.9935,
+        "specificity": 0.991,
+        "f1": 0.9822,
+        "support": 306
+      },
+      "notumor": {
+        "precision": 1.0,
+        "recall": 0.9778,
+        "sensitivity": 0.9778,
+        "specificity": 1.0,
+        "f1": 0.9888,
+        "support": 405
+      },
+      "pituitary": {
+        "precision": 0.9868,
+        "recall": 0.9967,
+        "sensitivity": 0.9967,
+        "specificity": 0.996,
+        "f1": 0.9917,
+        "support": 300
+      }
+    }
+  },
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+  ]
+}

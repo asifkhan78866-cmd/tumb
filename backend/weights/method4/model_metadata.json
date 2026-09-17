@@ -1,0 +1,402 @@
+{
+  "method_id": "method4",
+  "method_name": "Red Fox Optimized ZFNet-Based Brain Tumor Classification",
+  "architecture": "ZFNet (BatchNorm, single-channel input)",
+  "class_order": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "dataset_path": "/Users/syedasif/tumb/data/bri/archive",
+  "dataset_counts": {
+    "train": {
+      "glioma": 1107,
+      "meningioma": 1132,
+      "notumor": 1267,
+      "pituitary": 1235
+    },
+    "validation": {
+      "glioma": 214,
+      "meningioma": 205,
+      "notumor": 203,
+      "pituitary": 215
+    },
+    "test": {
+      "glioma": 300,
+      "meningioma": 306,
+      "notumor": 405,
+      "pituitary": 300
+    },
+    "train_copies_of_test_images_dropped": 134
+  },
+  "split_strategy": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+  "preprocessing": {
+    "id": "m4-gray224",
+    "image_size": 224,
+    "channels": 1,
+    "normalisation": "(x - 0.5) / 0.25",
+    "description": "Grayscale, resize to 224\u00d7224 (area interpolation when shrinking), single channel, fixed standardisation. Training adds GPU augmentation only."
+  },
+  "augmentation": "train only, on GPU: hflip, rotate \u00b115\u00b0, scale 0.9\u20131.1, translate \u00b16%, brightness/contrast; no vflip",
+  "loss": "CrossEntropyLoss (inverse-frequency class weights)",
+  "optimizer": "AdamW + ReduceLROnPlateau (val macro-F1)",
+  "hyperparameters": {
+    "lr": 9.415354729990893e-05,
+    "weight_decay": 0.0001926813116738516,
+    "dropout": 0.21991416442896075,
+    "fc_units": 1024,
+    "batch_size": 64
+  },
+  "red_fox_optimization": {
+    "population": 6,
+    "iterations": 3,
+    "evaluations": 43,
+    "seed": 42,
+    "best_fitness": 0.8888848487810266,
+    "objective": "validation macro-F1 after a short proxy training run (test split untouched)",
+    "proxy_epochs": 2,
+    "result_file": "/Users/syedasif/tumb/backend/logs/method4/rfo_results.json"
+  },
+  "best_epoch": 22,
+  "epochs_run": 30,
+  "training_time_s": 2680.9,
+  "random_seed": 42,
+  "device": "mps",
+  "model_version": "20260917-130430",
+  "checkpoint_path": "/Users/syedasif/tumb/backend/weights/method4/best_classifier.pth",
+  "training_timestamp": "2026-09-17T13:04:30+00:00",
+  "history": {
+    "train_loss": [
+      0.7554970242687173,
+      0.451222062715002,
+      0.3569425529724843,
+      0.2903390353595888,
+      0.27376575616968646,
+      0.20948609347279007,
+      0.1906366279801807,
+      0.15196289081831235,
+      0.15082289751719785,
+      0.12489572134674401,
+      0.12123953168456619,
+      0.11357295616353685,
+      0.1027614169728917,
+      0.10054132030219645,
+      0.06753777986946138,
+      0.05936494289670844,
+      0.05465141534050171,
+      0.04181702710480455,
+      0.03966847816293405,
+      0.03827789134182338,
+      0.03448085114989128,
+      0.03317908507872473,
+      0.028030496480799205,
+      0.025283614451984397,
+      0.02498474793282111,
+      0.026802409059569442,
+      0.02073516256201106,
+      0.023469399792972852,
+      0.021361965900035324,
+      0.02067429950221668
+    ],
+    "train_acc": [
+      0.6974239864864865,
+      0.8241131756756757,
+      0.8682432432432432,
+      0.893581081081081,
+      0.8982263513513513,
+      0.9244087837837838,
+      0.9279983108108109,
+      0.9442567567567568,
+      0.9438344594594594,
+      0.9550253378378378,
+      0.9577702702702703,
+      0.957347972972973,
+      0.9628378378378378,
+      0.9647381756756757,
+      0.9780405405405406,
+      0.979518581081081,
+      0.9809966216216216,
+      0.9860641891891891,
+      0.9875422297297297,
+      0.9877533783783784,
+      0.988597972972973,
+      0.9894425675675675,
+      0.9930320945945946,
+      0.9919763513513513,
+      0.9917652027027027,
+      0.9913429054054054,
+      0.9940878378378378,
+      0.9932432432432432,
+      0.9934543918918919,
+      0.9955658783783784
+    ],
+    "val_acc": [
+      0.7526881720430108,
+      0.8912783751493429,
+      0.8088410991636799,
+      0.8112305854241338,
+      0.8745519713261649,
+      0.9127837514934289,
+      0.9163679808841099,
+      0.9247311827956989,
+      0.9498207885304659,
+      0.96415770609319,
+      0.966547192353644,
+      0.9307048984468339,
+      0.948626045400239,
+      0.942652329749104,
+      0.953405017921147,
+      0.961768219832736,
+      0.948626045400239,
+      0.980884109916368,
+      0.9713261648745519,
+      0.974910394265233,
+      0.980884109916368,
+      0.982078853046595,
+      0.9713261648745519,
+      0.977299880525687,
+      0.9796893667861409,
+      0.977299880525687,
+      0.9796893667861409,
+      0.980884109916368,
+      0.982078853046595,
+      0.980884109916368
+    ],
+    "val_f1": [
+      0.7478702961904582,
+      0.8888848487810266,
+      0.7853465065106614,
+      0.7823233585330875,
+      0.8743920500680018,
+      0.9088523678812901,
+      0.9168431920481628,
+      0.9240491483171429,
+      0.9491353959058535,
+      0.9639700202590912,
+      0.9663925756687167,
+      0.9307541473762662,
+      0.9480042785546415,
+      0.9434694886074947,
+      0.952550651442663,
+      0.9616235368275932,
+      0.9480868088794462,
+      0.981071759992667,
+      0.9711531958743186,
+      0.9750931997467769,
+      0.980993747315164,
+      0.9822011107253739,
+      0.9713472508283829,
+      0.977245483799039,
+      0.9798199890195741,
+      0.9773232011642898,
+      0.9796863997781349,
+      0.9808993371797372,
+      0.9821160576124872,
+      0.9809247196653865
+    ],
+    "lr": [
+      9.415354729990893e-05,
+      9.415354729990893e-05,
+      9.415354729990893e-05,
+      9.415354729990893e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      4.7076773649954465e-05,
+      2.3538386824977232e-05,
+      2.3538386824977232e-05,
+      2.3538386824977232e-05,
+      1.1769193412488616e-05,
+      1.1769193412488616e-05,
+      1.1769193412488616e-05,
+      1.1769193412488616e-05,
+      5.884596706244308e-06,
+      5.884596706244308e-06,
+      5.884596706244308e-06,
+      5.884596706244308e-06,
+      2.942298353122154e-06,
+      2.942298353122154e-06,
+      2.942298353122154e-06,
+      1.471149176561077e-06,
+      1.471149176561077e-06,
+      1.471149176561077e-06
+    ]
+  },
+  "validation_metrics": {
+    "accuracy": 0.9821,
+    "precision": 0.9826,
+    "recall": 0.9821,
+    "sensitivity": 0.9821,
+    "specificity": 0.994,
+    "f1": 0.9822,
+    "weighted": {
+      "precision": 0.9825,
+      "recall": 0.9821,
+      "specificity": 0.994,
+      "f1": 0.9821
+    },
+    "auc": 0.9989,
+    "avg_inference_time_s": 0.004386,
+    "total_eval_time_s": 3.794,
+    "confusion_matrix": [
+      [
+        207,
+        5,
+        0,
+        2
+      ],
+      [
+        0,
+        199,
+        0,
+        6
+      ],
+      [
+        0,
+        0,
+        202,
+        1
+      ],
+      [
+        0,
+        1,
+        0,
+        214
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "glioma": {
+        "precision": 1.0,
+        "recall": 0.9673,
+        "sensitivity": 0.9673,
+        "specificity": 1.0,
+        "f1": 0.9834,
+        "support": 214
+      },
+      "meningioma": {
+        "precision": 0.9707,
+        "recall": 0.9707,
+        "sensitivity": 0.9707,
+        "specificity": 0.9905,
+        "f1": 0.9707,
+        "support": 205
+      },
+      "notumor": {
+        "precision": 1.0,
+        "recall": 0.9951,
+        "sensitivity": 0.9951,
+        "specificity": 1.0,
+        "f1": 0.9975,
+        "support": 203
+      },
+      "pituitary": {
+        "precision": 0.9596,
+        "recall": 0.9953,
+        "sensitivity": 0.9953,
+        "specificity": 0.9855,
+        "f1": 0.9772,
+        "support": 215
+      }
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.9718,
+    "precision": 0.9707,
+    "recall": 0.972,
+    "sensitivity": 0.972,
+    "specificity": 0.9907,
+    "f1": 0.9712,
+    "weighted": {
+      "precision": 0.9719,
+      "recall": 0.9718,
+      "specificity": 0.991,
+      "f1": 0.9718
+    },
+    "auc": 0.9982,
+    "avg_inference_time_s": 0.003931,
+    "total_eval_time_s": 5.485,
+    "confusion_matrix": [
+      [
+        290,
+        8,
+        0,
+        2
+      ],
+      [
+        1,
+        292,
+        5,
+        8
+      ],
+      [
+        6,
+        6,
+        393,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        299
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "glioma": {
+        "precision": 0.9764,
+        "recall": 0.9667,
+        "sensitivity": 0.9667,
+        "specificity": 0.9931,
+        "f1": 0.9715,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.9511,
+        "recall": 0.9542,
+        "sensitivity": 0.9542,
+        "specificity": 0.9851,
+        "f1": 0.9527,
+        "support": 306
+      },
+      "notumor": {
+        "precision": 0.9874,
+        "recall": 0.9704,
+        "sensitivity": 0.9704,
+        "specificity": 0.9945,
+        "f1": 0.9788,
+        "support": 405
+      },
+      "pituitary": {
+        "precision": 0.9676,
+        "recall": 0.9967,
+        "sensitivity": 0.9967,
+        "specificity": 0.9901,
+        "f1": 0.9819,
+        "support": 300
+      }
+    }
+  },
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+  ]
+}

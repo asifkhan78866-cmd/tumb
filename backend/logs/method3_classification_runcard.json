@@ -1,0 +1,242 @@
+{
+  "method_id": "method3",
+  "stage": "classification",
+  "dataset": {
+    "root": "/Users/syedasif/tumb/data/bri/archive",
+    "num_samples": 7023,
+    "classes_found": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "official_split_counts": {
+      "testing": 1311,
+      "training": 5712
+    },
+    "has_official_split": true,
+    "respect_official_split": true,
+    "per_class_split": {
+      "glioma": {
+        "train": 1321,
+        "test": 300
+      },
+      "meningioma": {
+        "train": 1339,
+        "test": 306
+      },
+      "notumor": {
+        "train": 1595,
+        "test": 405
+      },
+      "pituitary": {
+        "train": 1457,
+        "test": 300
+      }
+    },
+    "counts": {
+      "train_pool": 5712,
+      "test": 1311,
+      "unassigned": 0
+    },
+    "grouping": "filename-stem (no patient ids in this dataset)",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic."
+    ],
+    "name": "Brain Tumor MRI Dataset (BRI)"
+  },
+  "split_strategy": {
+    "type": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "counts": {
+      "train": 4741,
+      "val": 837,
+      "test": 1311
+    },
+    "group_counts": {
+      "train": 4605,
+      "val": 837,
+      "test": 1284
+    },
+    "group_overlap": {},
+    "leak_free": true
+  },
+  "random_seed": 42,
+  "preprocessing": {
+    "id": "m3-gray224-rgb-imagenet",
+    "image_size": 224,
+    "channels": 3,
+    "normalisation": "ImageNet mean/std",
+    "description": "Grayscale, resize to 224\u00d7224 (area interpolation when shrinking), replicate to 3 channels, ImageNet normalisation. Training adds GPU augmentation only."
+  },
+  "image_size": 224,
+  "architecture": "TransferLearningCNN (resnet50, ImageNet-pretrained)",
+  "model_config": {
+    "backbone": "resnet50",
+    "epochs": 15,
+    "warmup_epochs": 2,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "head_lr": 0.001,
+    "weight_decay": 0.0001,
+    "dropout": 0.3,
+    "label_smoothing": 0.1,
+    "candidates": [
+      {
+        "backbone": "resnet50",
+        "val_macro_f1": 0.9917,
+        "val_accuracy": 0.9916,
+        "best_epoch": 14,
+        "epochs_run": 15,
+        "train_time_s": 4198.5
+      },
+      {
+        "backbone": "efficientnet_b0",
+        "val_macro_f1": 0.9798,
+        "val_accuracy": 0.9797,
+        "best_epoch": 14,
+        "epochs_run": 15,
+        "train_time_s": 3322.6
+      }
+    ]
+  },
+  "optimizer": {
+    "name": "AdamW"
+  },
+  "epochs": 15,
+  "best_epoch": 14,
+  "metrics": {
+    "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "dataset": "/Users/syedasif/tumb/data/bri/archive",
+    "accuracy": 0.987,
+    "precision": 0.9862,
+    "recall": 0.9878,
+    "sensitivity": 0.9878,
+    "specificity": 0.9958,
+    "f1": 0.9869,
+    "weighted": {
+      "precision": 0.9872,
+      "recall": 0.987,
+      "specificity": 0.9961,
+      "f1": 0.987
+    },
+    "auc": 0.9985,
+    "avg_inference_time_s": 0.011243,
+    "total_eval_time_s": 15.216,
+    "confusion_matrix": [
+      [
+        295,
+        4,
+        0,
+        1
+      ],
+      [
+        0,
+        304,
+        0,
+        2
+      ],
+      [
+        4,
+        4,
+        396,
+        1
+      ],
+      [
+        0,
+        1,
+        0,
+        299
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "precision": [
+        0.9866,
+        0.9712,
+        1.0,
+        0.9868
+      ],
+      "recall": [
+        0.9833,
+        0.9935,
+        0.9778,
+        0.9967
+      ],
+      "f1": [
+        0.985,
+        0.9822,
+        0.9888,
+        0.9917
+      ],
+      "specificity": [
+        0.996,
+        0.991,
+        1.0,
+        0.996
+      ]
+    },
+    "per_class_detail": {
+      "glioma": {
+        "precision": 0.9866,
+        "recall": 0.9833,
+        "sensitivity": 0.9833,
+        "specificity": 0.996,
+        "f1": 0.985,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.9712,
+        "recall": 0.9935,
+        "sensitivity": 0.9935,
+        "specificity": 0.991,
+        "f1": 0.9822,
+        "support": 306
+      },
+      "notumor": {
+        "precision": 1.0,
+        "recall": 0.9778,
+        "sensitivity": 0.9778,
+        "specificity": 1.0,
+        "f1": 0.9888,
+        "support": 405
+      },
+      "pituitary": {
+        "precision": 0.9868,
+        "recall": 0.9967,
+        "sensitivity": 0.9967,
+        "specificity": 0.996,
+        "f1": 0.9917,
+        "support": 300
+      }
+    },
+    "test_size": 1311,
+    "backbone": "resnet50",
+    "model_version": "20260917-133000",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+    ]
+  },
+  "checkpoint_path": "/Users/syedasif/tumb/backend/weights/method3/best_classifier.pth",
+  "inference_time_s": 0.011243,
+  "train_duration_s": 4210.9,
+  "model_version": "20260917-133000",
+  "created_at": "2026-09-17T13:30:16+00:00",
+  "git_revision": "3357c6b",
+  "device": "mps",
+  "python": "3.13.7",
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+  ]
+}
