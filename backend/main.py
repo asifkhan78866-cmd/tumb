@@ -21,6 +21,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend import config  # noqa: E402
+from backend.api.gallery_routes import router as gallery_router  # noqa: E402
 from backend.api.methods_routes import router as methods_router  # noqa: E402
 from backend.api.routes import router  # noqa: E402
 
@@ -63,6 +64,7 @@ app.mount("/uploads", StaticFiles(directory=str(config.UPLOADS_DIR)), name="uplo
 
 app.include_router(router)
 app.include_router(methods_router)
+app.include_router(gallery_router)
 
 
 @app.get("/", tags=["system"])
