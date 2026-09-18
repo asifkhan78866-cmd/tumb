@@ -181,7 +181,12 @@ def list_dataset_samples(
         dataset="Brain Tumor MRI Dataset (BRI)",
         path=str(root),
         present=bool(samples),
-        note=note if samples else "Dataset not present on this machine — run scripts/download_dataset.sh.",
+        note=note if samples else (
+            f"No dataset images found. Looked in {root}. Put the dataset's Training/ and "
+            f"Testing/ folders in one of: "
+            f"{', '.join(config.BRI_CANDIDATE_PATHS)} (relative to the project), set "
+            f"BRI_DATASET_PATH in .env to its location, or run scripts/download_dataset.sh."
+        ),
         images=samples,
     )
 

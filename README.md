@@ -158,6 +158,15 @@ and `KAGGLE_KEY` in `.env`, or `kaggle.json` in `~/.kaggle/`):
 scripts/download_dataset.sh
 ```
 
+**Already have the images?** You do not need to move or rename anything. With
+`BRI_DATASET_PATH` unset, the backend looks for a folder that directly contains
+`Training/` and `Testing/` (each with the four class folders) in, in order:
+`data/bri/archive`, `data/bri`, `data/archive`, `archive`, `dataset/archive`,
+`backend/dataset/brain-tumor-mri-dataset`. An unzipped `archive/` in the project
+root is found automatically. Set `BRI_DATASET_PATH` only to point elsewhere — an
+explicit value is always obeyed, so a wrong path fails loudly instead of training
+on a directory nobody chose.
+
 It downloads `masoudnickparvar/brain-tumor-mri-dataset`, places it at
 `data/bri/archive/{Training,Testing}/{glioma,meningioma,notumor,pituitary}`
 (the default `BRI_DATASET_PATH`), verifies both splits and all four classes, and
