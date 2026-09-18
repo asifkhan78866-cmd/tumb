@@ -121,5 +121,17 @@
       "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
     ]
   },
-  "updated_at": "2026-09-16T22:19:54+00:00"
+  "updated_at": "2026-09-18T17:59:49+00:00",
+  "segmentation": {
+    "split": "patient-grouped held-out test",
+    "dataset": "data/figshare",
+    "dice": 0.6558,
+    "dice_on_tumour_slices": 0.662,
+    "tumour_slices_in_test": 459,
+    "iou": 0.5696,
+    "avg_inference_time_s": 0.00097,
+    "model_version": "20260918-175949",
+    "mask_source": "figshare (Cheng) radiologist tumour masks, contrast-enhanced T1",
+    "warnings": []
+  }
 }

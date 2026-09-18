@@ -1,0 +1,19 @@
+{
+  "format": 2,
+  "method_id": "method1",
+  "architecture": "UNet",
+  "role": "segmentation",
+  "class_names": [],
+  "image_size": 128,
+  "transform_id": "m1-v2-roi",
+  "model_version": "20260918-175949",
+  "created_at": "2026-09-18T17:59:49+00:00",
+  "extra": {
+    "test_dice": 0.6558485945065816,
+    "mask_source": "figshare (Cheng) radiologist tumour masks, contrast-enhanced T1",
+    "ground_truth_masks": true,
+    "trained_on": "data/figshare"
+  },
+  "epoch": 15,
+  "val_dice": 0.700357653265414
+}

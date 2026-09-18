@@ -15,6 +15,8 @@ backend/weights/method1/*
 !backend/weights/method1/best_classifier.pth
 !backend/weights/method1/best_classifier.pth.meta.json
 !backend/weights/method1/model_metadata.json
+!backend/weights/method1/best_unet.pth
+!backend/weights/method1/best_unet.pth.meta.json
 # ...the MRI-SPECT fusion method's trained MRI branch...
 !backend/weights/method2_dcn.pth
 !backend/weights/method2_model_metadata.json
@@ -53,6 +55,9 @@ backend/logs/*
 !backend/logs/method1/
 backend/logs/method1/*
 !backend/logs/method1/sfla_results.json
+!backend/logs/method1_segmentation_runcard.json
+!backend/logs/method1_seg_dice.png
+!backend/logs/method1_seg_loss.png
 !backend/logs/method2_metrics.json
 !backend/logs/method2_classification_runcard.json
 !backend/logs/method2_cls_confusion_matrix.png
