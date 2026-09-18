@@ -235,6 +235,7 @@ METHOD2 = MethodSpec(
         PipelineStage("features", "SPECT feature stage", "feature", "Modality-specific descriptors: per-region uptake statistics and intensity histogram."),
         PipelineStage("dcn", "Dense Convolutional Network", "classifier", "DenseNet-BC style densely connected blocks with transition layers."),
         PipelineStage("predict", "Multi-class classification", "output", "Normal / Glioma / Meningioma / Pituitary."),
+        PipelineStage("gradcam", "Grad-CAM", "output", "Heatmap over the DCN's last dense block."),
         PipelineStage("evaluate", "Performance evaluation", "eval", "Per-class Dice/IoU for segmentation; accuracy/precision/recall/F1 for classification."),
     ),
     datasets=(

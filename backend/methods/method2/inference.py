@@ -204,6 +204,7 @@ class Method2Engine:
         prediction = prediction_key = None
         confidence = None
         probabilities: dict[str, float] = {}
+        overlay: Optional[np.ndarray] = None
 
         if self.cls_weights_loaded:
             xc = torch.from_numpy(channels).float().unsqueeze(0).to(self.device)
@@ -218,6 +219,7 @@ class Method2Engine:
                 m2.CLASS_LABELS[m2.CLASS_NAMES[i]]: round(float(p) * 100, 2)
                 for i, p in enumerate(probs)
             }
+            overlay = self._gradcam(xc, fv, idx, image)
         else:
             warnings.append("No classification result: Method 2's DCN is not trained.")
 
@@ -264,6 +266,11 @@ class Method2Engine:
             mask_path, shared_details, shared_warnings = shared_mask(image_bytes, pid, "method2")
             warnings.extend(shared_warnings)
 
+        overlay_path = None
+        if overlay is not None:
+            overlay_path = config.PREDICTIONS_DIR / f"{pid}_m2_overlay.png"
+            cv2.imwrite(str(overlay_path), overlay)
+
         region_areas = None
         if label_map is not None:
             region_areas = {
@@ -279,7 +286,7 @@ class Method2Engine:
             segmentation_available=label_map is not None,
             original_path=original_path,
             mask_path=mask_path,
-            overlay_path=None,  # Method 2 has no Grad-CAM stage in its specification
+            overlay_path=overlay_path,
             inference_time_s=round(elapsed, 4),
             model_version=model_version,
             warnings=warnings,
@@ -303,12 +310,46 @@ class Method2Engine:
                 "dataset_context": dataset_context(METHOD2),
                 "segmentation_model": METHOD2.segmentation_model,
                 "classifier_model": METHOD2.classifier_model,
-                "explainability": "Grad-CAM is not part of the Method 2 specification.",
+                "explainability": (
+                    "Grad-CAM over the last dense block of the DCN."
+                    if overlay is not None else
+                    "No Grad-CAM: the classifier did not run."
+                ),
             },
             prediction_id=pid,
         )
 
     # ------------------------------------------------------------------ #
+    def _gradcam(self, xc, fv, class_idx: int, image: np.ndarray) -> Optional[np.ndarray]:
+        """Heatmap over the DCN's last dense block.
+
+        The classifier takes two inputs (image channels and the modality feature
+        vector), so it is wrapped to present the single-argument signature
+        :class:`GradCAM` expects; the feature vector is held fixed.
+        """
+        from backend.utils.gradcam import GradCAM, overlay_heatmap
+
+        class _ImageOnly(torch.nn.Module):
+            def __init__(self, model, features):
+                super().__init__()
+                self.model, self.features = model, features
+
+            def forward(self, x):
+                return self.model(x, self.features)
+
+        try:
+            wrapped = _ImageOnly(self.cls_model, fv)
+            cam_engine = GradCAM(wrapped, self.cls_model.blocks)
+            try:
+                cam = cam_engine(xc.clone().requires_grad_(True), class_idx)
+            finally:
+                cam_engine.remove()
+                self.cls_model.zero_grad(set_to_none=True)
+            return overlay_heatmap(image, cam)
+        except Exception as exc:  # pragma: no cover - explainability is best-effort
+            print(f"[method2] Grad-CAM failed: {exc}")
+            return None
+
     @staticmethod
     def _ai_assessment(image_bytes: bytes) -> tuple[Optional[dict], list[str]]:
         from backend.methods.method2.ai_assessment import run_ai_assessment
