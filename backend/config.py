@@ -58,9 +58,50 @@ for _p in (WEIGHTS_DIR, DATASET_DIR, UPLOADS_DIR, PREDICTIONS_DIR, LOGS_DIR, MOD
 
 # Per-dataset roots. Each defaults to a sub-directory of DATA_ROOT so a plain
 # checkout keeps working, but any of them can point somewhere else entirely.
-# The BRI default matches the documented layout (data/bri/archive/{Training,Testing}),
-# which is also where `python -m backend.utils.dataset_download --kind classification` puts it.
-BRI_DATASET_PATH = _env_path("BRI_DATASET_PATH", ROOT_DIR / "data" / "bri" / "archive")
+# Where the Kaggle classification set may sit. The documented layout is
+# data/bri/archive/{Training,Testing}, but a copy extracted anywhere obvious
+# inside the checkout works too: a clone that already has the images should not
+# have to move folders or edit .env to make the app see them.
+BRI_CANDIDATE_PATHS = (
+    "data/bri/archive", "data/bri", "data/archive", "archive",
+    "dataset/archive", "backend/dataset/brain-tumor-mri-dataset",
+)
+
+
+def looks_like_bri(path: Path) -> bool:
+    """True when ``path`` directly contains the dataset's own Training/Testing split."""
+    try:
+        names = {p.name.lower(): p for p in path.iterdir() if p.is_dir()}
+    except (OSError, AttributeError):
+        return False
+    train, test = names.get("training"), names.get("testing")
+    if train is None or test is None:
+        return False
+    classes = {"glioma", "meningioma", "notumor", "pituitary"}
+    return all(
+        classes <= {d.name.lower() for d in split.iterdir() if d.is_dir()}
+        for split in (train, test)
+    )
+
+
+def resolve_bri_path(root: Path, configured: str = "") -> Path:
+    """Pick the dataset root: an explicit setting wins, otherwise search the usual places.
+
+    An explicit ``BRI_DATASET_PATH`` is always honoured, even when it does not
+    exist yet — silently training from somewhere the operator did not name would
+    be worse than a clear "not found".
+    """
+    if configured.strip():
+        path = Path(configured.strip()).expanduser()
+        return path if path.is_absolute() else (root / path).resolve()
+    for candidate in BRI_CANDIDATE_PATHS:
+        path = (root / candidate).resolve()
+        if looks_like_bri(path):
+            return path
+    return (root / BRI_CANDIDATE_PATHS[0]).resolve()
+
+
+BRI_DATASET_PATH = resolve_bri_path(ROOT_DIR, os.getenv("BRI_DATASET_PATH", ""))
 BRATS_DATASET_PATH = _env_path("BRATS_DATASET_PATH", DATASET_DIR / "brats2020-training-data")
 SPECT_DATASET_PATH = _env_path("SPECT_DATASET_PATH", DATASET_DIR / "spect")
 
