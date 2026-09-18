@@ -115,6 +115,29 @@ export interface MethodMetrics {
   warnings: string[];
 }
 
+/** A training/evaluation plot a method has actually produced. */
+export interface PlotImage {
+  key: string;
+  label: string;
+  description: string;
+  url: string;
+}
+
+export interface SampleImage {
+  class_key: string;
+  class_label: string;
+  url: string;
+}
+
+export interface DatasetSamples {
+  dataset: string;
+  path: string;
+  present: boolean;
+  split: string;
+  note: string;
+  images: SampleImage[];
+}
+
 export interface HistoryItem {
   prediction_id: string;
   method_id?: MethodId;
@@ -221,6 +244,9 @@ export const getMethods = () => req<MethodSummary[]>("/api/methods");
 export const getMethod = (id: MethodId) => req<MethodDetail>(`/api/methods/${id}`);
 export const getMethodMetrics = (id: MethodId) => req<MethodMetrics>(`/api/metrics/${id}`);
 export const getAllMetrics = () => req<MethodMetrics[]>("/api/metrics");
+export const getMethodPlots = (id: MethodId) => req<PlotImage[]>(`/api/gallery/${id}/plots`);
+export const getDatasetSamples = (id: MethodId, perClass = 3) =>
+  req<DatasetSamples>(`/api/gallery/${id}/dataset?per_class=${perClass}`);
 export const getHealth = () => req<Health>("/health");
 export const getTrainStatus = () => req<TrainStatus>("/train-status");
 export const getHistory = (limit = 50, methodId?: MethodId) =>

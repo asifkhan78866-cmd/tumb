@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatCard } from "@/components/stat-card";
 import { MethodSelector } from "@/components/method-selector";
+import { MethodGallery } from "@/components/method-gallery";
 import { WarningList } from "@/components/warning-list";
 import {
   errorMessage,
@@ -218,6 +219,8 @@ export default function MetricsPage() {
               ))}
             </CardContent>
           </Card>
+
+          <MethodGallery methodId={selected} />
 
           <WarningList warnings={metrics.warnings} title="How to read these numbers" />
         </>
