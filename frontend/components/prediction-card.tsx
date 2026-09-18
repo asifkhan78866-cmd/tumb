@@ -101,9 +101,10 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
               label={
                 result.segmentation_available
                   ? "Segmentation Mask"
-                  : result.details?.segmentation_in_method === false
-                    ? "Segmentation"
-                    : "Segmentation (unavailable)"
+                  : (result.details?.segmentation_label as string | undefined) ??
+                    (result.details?.segmentation_in_method === false
+                      ? "Segmentation"
+                      : "Segmentation (unavailable)")
               }
               src={result.segmentation_mask_url}
               unavailableReason={result.details?.segmentation_note ?? "Segmentation model not trained"}

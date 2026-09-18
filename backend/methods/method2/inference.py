@@ -252,9 +252,17 @@ class Method2Engine:
         cv2.imwrite(str(original_path), (image * 255).astype(np.uint8))
 
         mask_path = None
+        shared_details: dict = {}
         if label_map is not None:
             mask_path = config.PREDICTIONS_DIR / f"{pid}_m2_mask.png"
             cv2.imwrite(str(mask_path), self._render_mask(image, label_map))
+        else:
+            # This method's own multi-class segmenter is untrained; borrow the other
+            # method's binary U-Net for display only, clearly attributed.
+            from backend.methods.common.shared_segmentation import shared_mask
+
+            mask_path, shared_details, shared_warnings = shared_mask(image_bytes, pid, "method2")
+            warnings.extend(shared_warnings)
 
         region_areas = None
         if label_map is not None:
@@ -276,6 +284,7 @@ class Method2Engine:
             model_version=model_version,
             warnings=warnings,
             details={
+                **shared_details,
                 "result_source": result_source,
                 "trained_branch": self.trained_branch if self.cls_weights_loaded else None,
                 "fusion_performed": False,

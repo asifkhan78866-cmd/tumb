@@ -96,6 +96,7 @@ class Method1Engine:
         model = UNet(m1.SEG_IN_CHANNELS, m1.SEG_OUT_CHANNELS, m1.BASE_FILTERS).to(self.device)
         self.seg_weights_loaded = False
         self.seg_meta = {}
+        self.seg_mask_source = None
         try:
             meta, warns = load_checkpoint(
                 model,
@@ -107,6 +108,27 @@ class Method1Engine:
             self.seg_meta = meta
             self.seg_weights_loaded = True
             self.load_warnings.extend(warns)
+            extra = meta.get("extra") or {}
+            self.seg_mask_source = str(extra.get("mask_source") or "unknown")
+            # Trained on one sequence; on others it often outlines nothing at all,
+            # which is a silent failure unless it is said out loud.
+            trained_sequence = ("FLAIR" if "FLAIR" in self.seg_mask_source
+                                else "contrast-enhanced T1" if "contrast-enhanced T1" in self.seg_mask_source
+                                else None)
+            if trained_sequence:
+                other = "contrast-enhanced T1" if trained_sequence == "FLAIR" else "FLAIR"
+                self.load_warnings.append(
+                    f"The segmentation model was trained on {self.seg_mask_source}. On a "
+                    f"different sequence ({other}, for example) it may outline nothing or "
+                    f"outline the wrong region."
+                )
+            if not extra.get("ground_truth_masks", False):
+                self.load_warnings.append(
+                    f"The segmentation model was trained on {self.seg_mask_source} masks, "
+                    f"not radiologist annotation: it learned to reproduce a brightness "
+                    f"heuristic, so the outline marks bright regions and is not a validated "
+                    f"tumour boundary. Train on BraTS for ground-truth segmentation."
+                )
         except CheckpointError as exc:
             self.load_warnings.append(
                 f"Segmentation unavailable: {exc} Train it with "
@@ -247,6 +269,10 @@ class Method1Engine:
             details={
                 "transform": self.transform.to_dict(),
                 "roi_crop_applied": roi_applied,
+                "segmentation_mask_source": self.seg_mask_source,
+                "segmentation_is_ground_truth_trained": bool(
+                    (self.seg_meta.get("extra") or {}).get("ground_truth_masks", False)
+                ),
                 "tumor_pixel_fraction": (
                     round(float((mask > 0).mean()), 4) if mask is not None else None
                 ),
