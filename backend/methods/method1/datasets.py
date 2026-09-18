@@ -525,7 +525,7 @@ class SegmentationDataset(Dataset):
 
     def __init__(self, samples: Sequence, kind: str, spec: TransformSpec, augment: bool = False):
         self.samples = list(samples)
-        self.kind = kind  # "h5" | "nifti" | "image"
+        self.kind = kind  # "cjdata" | "pairs" | "h5" | "nifti" | "image"
         self.spec = spec
         self.aug = Augmentor(vflip=0.0, seed=None) if augment else None
         self._nib = None
@@ -539,6 +539,22 @@ class SegmentationDataset(Dataset):
 
     def _load(self, idx: int) -> tuple[np.ndarray, np.ndarray]:
         s = self.samples[idx]
+        if self.kind == "cjdata":
+            image, mask, _, _ = read_cjdata(s[0])
+            return image, mask
+        if self.kind == "pairs":
+            image_path, mask_path = s
+            img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+            msk = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+            if img is None or msk is None:
+                size = self.spec.image_size
+                return np.zeros((size, size), np.uint8), np.zeros((size, size), np.uint8)
+            # LGG slices stack three sequences; the masks annotate the FLAIR
+            # abnormality, so the FLAIR channel is the one the model should see.
+            if img.ndim == 3 and img.shape[2] >= 2:
+                img = img[..., 1]
+            img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+            return img, ((msk > 0).astype(np.uint8) * 255)
         if self.kind == "h5":
             import h5py
 
@@ -583,10 +599,68 @@ class SegmentationDataset(Dataset):
         return x, y
 
 
+def discover_mask_pairs(root: Path) -> list[tuple[str, str]]:
+    """Find ``(image, mask)`` pairs written as ``<name>.tif`` / ``<name>_mask.tif``.
+
+    This is the LGG MRI Segmentation layout (one folder per patient, one mask per
+    slice). Only pairs where both files exist are returned.
+    """
+    pairs: list[tuple[str, str]] = []
+    for mask in sorted(Path(root).rglob("*_mask.*")):
+        image = mask.with_name(mask.name.replace("_mask", ""))
+        if image.exists() and image.suffix.lower() in IMAGE_EXTS + (".tif", ".tiff"):
+            pairs.append((str(image), str(mask)))
+    return pairs
+
+
+def lgg_patient_id(path: str) -> str:
+    """Patient id for an LGG slice: its folder name (``TCGA_CS_4941_19960909``)."""
+    return Path(path).parent.name.lower()
+
+
+def read_cjdata(path: str) -> tuple[np.ndarray, np.ndarray, str, int]:
+    """Read one figshare (Cheng) ``.mat`` slice: image, tumour mask, patient id, label.
+
+    The files are MATLAB v7.3 (HDF5) and store arrays column-major, so both the
+    image and the mask come back transposed. The patient id is a char array; it
+    is what makes a patient-level split possible on this dataset.
+    """
+    import h5py
+
+    with h5py.File(path, "r") as h:
+        g = h["cjdata"]
+        image = np.array(g["image"]).T.astype(np.float32)
+        mask = np.array(g["tumorMask"]).T.astype(np.uint8)
+        pid = "".join(chr(int(c)) for c in np.array(g["PID"]).flatten())
+        label = int(np.array(g["label"]).flatten()[0])
+    image = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    return image, (mask > 0).astype(np.uint8) * 255, pid.strip(), label
+
+
+def discover_cjdata_samples(root: Path) -> list[tuple[str, str]]:
+    """Find figshare ``.mat`` slices as ``(path, patient_id)`` pairs."""
+    out: list[tuple[str, str]] = []
+    for path in sorted(Path(root).rglob("*.mat")):
+        if path.name.lower() == "cvind.mat":   # the dataset's own fold indices
+            continue
+        try:
+            _, _, pid, _ = read_cjdata(str(path))
+        except Exception:
+            continue
+        out.append((str(path), pid))
+    return out
+
+
 def discover_segmentation_samples(root: Path) -> tuple[list, str, list[str]]:
     """Return ``(samples, kind, warnings)`` preferring real masks over weak ones."""
     root = Path(root)
     warnings: list[str] = []
+    cjdata = discover_cjdata_samples(root)
+    if cjdata:
+        return cjdata, "cjdata", warnings
+    pairs = discover_mask_pairs(root)
+    if pairs:
+        return pairs, "pairs", warnings
     h5 = discover_brats_h5(root)
     if h5:
         return h5, "h5", warnings

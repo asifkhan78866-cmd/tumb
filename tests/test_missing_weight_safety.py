@@ -13,26 +13,42 @@ from tests.conftest import requires_api, requires_torch
 pytestmark = requires_api
 
 
-def test_no_segmentation_weights_means_no_segmentation_claim(client, png_bytes):
+def _engine_without_segmentation(monkeypatch, tmp_path):
+    """A Method 1 engine that cannot find a U-Net, whatever is on this machine."""
+    from backend.methods.method1 import config as m1
+    from backend.methods.method1.inference import Method1Engine
+
+    monkeypatch.setattr(m1, "SEG_WEIGHTS_PATH", tmp_path / "missing_unet.pth")
+    return Method1Engine()
+
+
+def test_no_segmentation_weights_means_no_segmentation_claim(png_bytes, tmp_path, monkeypatch):
+    r = _engine_without_segmentation(monkeypatch, tmp_path).predict(png_bytes)
+    assert r.segmentation_available is False
+    assert any("segmentation" in w.lower() for w in r.warnings)
+
+
+def test_any_image_returned_without_weights_is_labelled_a_placeholder(png_bytes, tmp_path, monkeypatch):
+    r = _engine_without_segmentation(monkeypatch, tmp_path).predict(png_bytes)
+    if r.mask_path is not None:
+        assert "placeholder" in r.mask_path.name.lower()
+        assert any("placeholder" in w.lower() for w in r.warnings)
+
+
+def test_segmentation_trained_on_weak_masks_says_so(client, png_bytes):
+    """A U-Net trained on Otsu masks must never pass as tumour annotation."""
     from backend import config
 
-    assert not config.SEG_WEIGHTS_PATH.exists(), (
-        "this test asserts behaviour when weights are absent; a trained "
-        "best_unet.pth is present, so re-point METHOD1_UNET_WEIGHTS to run it"
-    )
+    if not config.SEG_WEIGHTS_PATH.exists():
+        import pytest as _pytest
+
+        _pytest.skip("no segmentation checkpoint on this machine")
     body = client.post("/api/predict/method1",
                        files={"file": ("s.png", png_bytes, "image/png")}).json()
-    assert body["segmentation_available"] is False
-    assert any("segmentation" in w.lower() for w in body["warnings"])
-
-
-def test_any_image_returned_without_weights_is_labelled_a_placeholder(client, png_bytes):
-    body = client.post("/api/predict/method1",
-                       files={"file": ("s.png", png_bytes, "image/png")}).json()
-    url = body["segmentation_mask_url"]
-    if url is not None:
-        assert "placeholder" in url.lower()
-        assert any("placeholder" in w.lower() for w in body["warnings"])
+    details = body["details"]
+    if details.get("segmentation_is_ground_truth_trained") is False:
+        assert details["segmentation_mask_source"]
+        assert any("not radiologist annotation" in w for w in body["warnings"])
 
 
 def test_untrained_method_returns_no_prediction_rather_than_a_guess(png_bytes, tmp_path, monkeypatch):
@@ -65,7 +81,13 @@ def test_methods_listing_advertises_untrained_state(client, tmp_path, monkeypatc
     assert rows["method2"]["warnings"]
 
 
-def test_health_surfaces_the_missing_weights(client):
+def test_health_surfaces_the_missing_weights(client, monkeypatch):
+    from backend.methods.method1.inference import engine
+
+    # /health reports the live engine, so simulate the missing U-Net on it.
+    monkeypatch.setattr(engine, "seg_weights_loaded", False)
+    monkeypatch.setattr(engine, "load_warnings", ["Segmentation unavailable: checkpoint not found."])
+    monkeypatch.setattr(engine, "_loaded", True)
     body = client.get("/health").json()
     assert body["seg_weights_loaded"] is False
     assert body["warnings"]

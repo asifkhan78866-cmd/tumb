@@ -20,6 +20,7 @@ import torch.nn.functional as F
 
 from backend import config
 from backend.methods.common.checkpoint import CheckpointError, load_checkpoint, peek_meta
+from backend.methods.common.shared_segmentation import shared_mask
 from backend.methods.registry import MethodSpec, dataset_context
 from backend.utils.gradcam import GradCAM, overlay_heatmap
 
@@ -193,12 +194,18 @@ class WholeImageClassifierEngine:
                     else:
                         warnings.append("The AI assessment was indeterminate, so no class is reported.")
 
+        # A borrowed mask is display only: computed after the class above, never fed
+        # to the classifier, and attributed in the response.
+        mask_path, shared_details, shared_warnings = shared_mask(image_bytes, pid, self.method_id)
+        warnings.extend(shared_warnings)
+
         return ClassifierResult(
             prediction=prediction,
             prediction_key=prediction_key,
             confidence=confidence,
             probabilities=probabilities,
-            segmentation_available=False,
+            segmentation_available=False,  # this method has no segmentation stage
+            mask_path=mask_path,
             original_path=original_path,
             overlay_path=overlay_path,
             inference_time_s=round(time.perf_counter() - started, 4),
@@ -208,7 +215,12 @@ class WholeImageClassifierEngine:
                 "result_source": result_source,
                 "ai_assessment": ai_details,
                 "segmentation_in_method": False,
-                "segmentation_note": "Not part of this method (whole-image classification)",
+                "segmentation_note": (
+                    "Not part of this method (whole-image classification)"
+                    if mask_path is None else
+                    "Shown from the U-Net + ConvLSTM method; not part of this method"
+                ),
+                **shared_details,
                 "input_size": self.image_size,
                 "dataset_context": dataset_context(self.spec),
                 "classifier_model": self.spec.classifier_model,

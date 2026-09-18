@@ -28,6 +28,7 @@ from backend.methods.method1 import config as m1
 from backend.methods.method1.datasets import (
     SegmentationDataset,
     discover_segmentation_samples,
+    lgg_patient_id,
     segmentation_group_of,
 )
 from backend.methods.method1.models import UNet
@@ -68,8 +69,16 @@ def run_epoch(model, loader, criterion, optimizer, scaler, train: bool, device):
 
 @torch.no_grad()
 def evaluate(model, loader, device):
+    """Return ``(dice, iou, seconds/image, dice_on_tumour_slices, n_tumour_slices)``.
+
+    Dice is reported twice on purpose. A slice with no tumour that is correctly
+    predicted empty scores 1.0, and most slices of a brain volume contain no
+    tumour, so the overall mean is dominated by easy negatives. The second
+    figure — computed only over slices whose ground truth actually contains a
+    tumour — is the one that describes how well the tumour is outlined.
+    """
     model.eval()
-    dices, ious, times = [], [], []
+    dices, ious, times, tumour_dices = [], [], [], []
     for x, y in loader:
         x, y = x.to(device), y.to(device)
         t0 = time.perf_counter()
@@ -77,9 +86,13 @@ def evaluate(model, loader, device):
         times.append((time.perf_counter() - t0) / max(1, x.size(0)))
         dices.append(dice_coefficient(logits.float(), y))
         ious.append(iou_score(logits.float(), y))
+        has_tumour = y.view(y.size(0), -1).sum(dim=1) > 0
+        for i in torch.nonzero(has_tumour, as_tuple=False).flatten().tolist():
+            tumour_dices.append(dice_coefficient(logits[i : i + 1].float(), y[i : i + 1]))
     if not dices:
-        return None, None, None
-    return float(np.mean(dices)), float(np.mean(ious)), float(np.mean(times))
+        return None, None, None, None, 0
+    tumour_dice = float(np.mean(tumour_dices)) if tumour_dices else None
+    return float(np.mean(dices)), float(np.mean(ious)), float(np.mean(times)), tumour_dice, len(tumour_dices)
 
 
 def main() -> int:
@@ -110,7 +123,14 @@ def main() -> int:
     print(f"[seg] {len(samples)} samples ({kind}) from {root}")
 
     spec = M1_V2.resized(m1.IMAGE_SIZE)
-    group_of = segmentation_group_of if kind in ("h5", "nifti") else (lambda s: str(s))
+    if kind == "cjdata":
+        group_of = lambda s: s[1]  # noqa: E731 - patient id read from the .mat file
+    elif kind == "pairs":
+        group_of = lambda s: lgg_patient_id(s[0])  # noqa: E731 - one folder per patient
+    elif kind in ("h5", "nifti"):
+        group_of = segmentation_group_of
+    else:
+        group_of = lambda s: str(s)  # noqa: E731
     if kind == "image":
         warnings.append(
             "Samples carry no volume identifier, so the split is per-file and may "
@@ -121,8 +141,10 @@ def main() -> int:
         samples, group_of, args.val_frac, args.test_frac, seed=config.SEED
     )
     summary = split_summary({"train": train_s, "val": val_s, "test": test_s}, group_of)
-    print(f"[seg] split (volume-grouped): {summary['counts']} | "
-          f"volumes {summary['group_counts']} | leak-free={summary['leak_free']}")
+    level = ("patient" if kind in ("pairs", "cjdata")
+             else "volume" if kind in ("h5", "nifti") else "file")
+    print(f"[seg] split ({level}-grouped): {summary['counts']} | "
+          f"groups {summary['group_counts']} | leak-free={summary['leak_free']}")
     if not summary["leak_free"]:
         print("ERROR: split produced overlapping volumes; refusing to train.")
         return 1
@@ -172,12 +194,16 @@ def main() -> int:
         return 1
     model.load_state_dict(best_state)
 
-    test_dice, test_iou, avg_time = evaluate(model, loaders["test"], device)
+    test_dice, test_iou, avg_time, tumour_dice, n_tumour = evaluate(model, loaders["test"], device)
     save_curve(hist["train_loss"], "Segmentation Loss", config.LOGS_DIR / "method1_seg_loss.png",
                second=hist["val_loss"])
     save_curve(hist["train_dice"], "Dice Coefficient", config.LOGS_DIR / "method1_seg_dice.png",
                second=hist["val_dice"])
 
+    mask_source = {"h5": "BraTS ground truth", "nifti": "BraTS ground truth",
+                   "cjdata": "figshare (Cheng) radiologist tumour masks, contrast-enhanced T1",
+                   "pairs": "LGG manual FLAIR-abnormality masks",
+                   "image": "weak Otsu threshold"}[kind]
     meta = build_meta(
         method_id=m1.METHOD_ID,
         architecture=m1.SEG_ARCHITECTURE,
@@ -185,20 +211,27 @@ def main() -> int:
         image_size=spec.image_size,
         transform_id=spec.id,
         test_dice=test_dice,
+        # Written into the checkpoint so serving can warn about masks learned from
+        # a thresholding heuristic rather than from radiologist annotation.
+        mask_source=mask_source,
+        ground_truth_masks=kind in ("h5", "nifti", "pairs", "cjdata"),
+        trained_on=str(root),
     )
     save_checkpoint(m1.SEG_WEIGHTS_PATH, model.state_dict(), meta,
                     epoch=best_epoch, val_dice=stopper.best)
     print(f"[seg] checkpoint -> {m1.SEG_WEIGHTS_PATH}")
 
     section = {
-        "split": "volume-grouped held-out test",
+        "split": f"{level}-grouped held-out test",
         "dataset": str(root),
         "dice": round(test_dice, 4) if test_dice is not None else None,
+        # The headline number for outlining quality: empty slices are excluded.
+        "dice_on_tumour_slices": round(tumour_dice, 4) if tumour_dice is not None else None,
+        "tumour_slices_in_test": n_tumour,
         "iou": round(test_iou, 4) if test_iou is not None else None,
         "avg_inference_time_s": round(avg_time, 5) if avg_time is not None else None,
         "model_version": meta.model_version,
-        "mask_source": {"h5": "BraTS ground truth", "nifti": "BraTS ground truth",
-                        "image": "weak Otsu threshold"}[kind],
+        "mask_source": mask_source,
         "warnings": warnings,
     }
     update_metrics(m1.METHOD_ID, "segmentation", section)
@@ -226,7 +259,9 @@ def main() -> int:
         ),
         root=config.ROOT_DIR,
     )
-    print(f"[seg] done. Held-out test Dice: {test_dice:.4f}")
+    print(f"[seg] done. Held-out test Dice: {test_dice:.4f} (all slices) | "
+          f"{tumour_dice if tumour_dice is None else round(tumour_dice, 4)} on the "
+          f"{n_tumour} slices that contain a tumour")
     for w in warnings:
         print(f"[seg] WARNING: {w}")
     return 0
