@@ -51,6 +51,15 @@ class ZFNet(nn.Module):
     def forward(self, x):
         return self.classifier(self.features(x))
 
+    def penultimate(self, x):
+        """The fully connected representation the final layer classifies.
+
+        ``fc_units`` numbers per image. This is what the Red Fox feature
+        selection searches over and what the SVM classifies; the network's own
+        softmax layer is simply the last ``Linear`` applied to it.
+        """
+        return self.classifier[:-1](self.features(x))
+
     @property
     def gradcam_target(self) -> nn.Module:
         # conv5's own output: BatchNorm consumes it out-of-place, so the gradient

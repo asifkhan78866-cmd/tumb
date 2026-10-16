@@ -29,6 +29,9 @@ backend/weights/method4/*
 !backend/weights/method4/best_classifier.pth
 !backend/weights/method4/best_classifier.pth.meta.json
 !backend/weights/method4/model_metadata.json
+# ...and the SVM that classifies its Red Fox-selected features (220 KB).
+!backend/weights/method4/rfo_svm.joblib
+!backend/weights/method4/feature_svm_metadata.json
 backend/dataset/*
 !backend/dataset/.gitkeep
 backend/uploads/*
@@ -66,14 +69,23 @@ backend/logs/method1/*
 !backend/logs/method3_classification_runcard.json
 !backend/logs/method3_cls_confusion_matrix.png
 !backend/logs/method3_cls_roc.png
+!backend/logs/method3/
+backend/logs/method3/*
+!backend/logs/method3/accuracy.png
+!backend/logs/method3/train_loss.png
 !backend/logs/method4_metrics.json
 !backend/logs/method4_classification_runcard.json
 !backend/logs/method4_rfo_runcard.json
 !backend/logs/method4_cls_confusion_matrix.png
 !backend/logs/method4_cls_roc.png
+!backend/logs/method4_feature_selection_runcard.json
 !backend/logs/method4/
 backend/logs/method4/*
 !backend/logs/method4/rfo_results.json
+!backend/logs/method4/rfo_feature_selection.json
+!backend/logs/method4/rfo_feature_selection.png
+!backend/logs/method4/accuracy.png
+!backend/logs/method4/train_loss.png
 *.nii
 *.nii.gz
 

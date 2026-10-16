@@ -1,0 +1,411 @@
+{
+  "method_id": "method4",
+  "method_name": "Red Fox Optimized ZFNet-Based Brain Tumor Classification",
+  "architecture": "ZFNet features + RFO feature selection + SVM",
+  "class_order": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "dataset_path": "/Users/syedasif/tumb/data/bri/archive",
+  "dataset_counts": {
+    "train": {
+      "glioma": 1107,
+      "meningioma": 1132,
+      "notumor": 1267,
+      "pituitary": 1235
+    },
+    "validation": {
+      "glioma": 214,
+      "meningioma": 205,
+      "notumor": 203,
+      "pituitary": 215
+    },
+    "test": {
+      "glioma": 300,
+      "meningioma": 306,
+      "notumor": 405,
+      "pituitary": 300
+    },
+    "train_copies_of_test_images_dropped": 134
+  },
+  "split_strategy": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+  "preprocessing": {
+    "id": "m4-gray224",
+    "image_size": 224,
+    "channels": 1,
+    "normalisation": "(x - 0.5) / 0.25",
+    "description": "Grayscale, resize to 224\u00d7224 (area interpolation when shrinking), single channel, fixed standardisation. Training adds GPU augmentation only."
+  },
+  "feature_extractor": {
+    "architecture": "ZFNet",
+    "layer": "penultimate fully connected",
+    "model_version": "20260917-130430",
+    "features_per_image": 1024
+  },
+  "feature_selection": {
+    "algorithm": "Red Fox Optimization",
+    "population": 30,
+    "iterations": 40,
+    "evaluations": 1525,
+    "features_available": 909,
+    "features_selected": 434,
+    "duration_s": 169.5
+  },
+  "svm": {
+    "C": 90.99753345731945,
+    "gamma": 0.0012303813900738441,
+    "kernel": "rbf"
+  },
+  "served_head": "rfo_svm",
+  "validation_metrics": {
+    "rfo_svm": {
+      "accuracy": 0.9881,
+      "precision": 0.9881,
+      "recall": 0.9881,
+      "sensitivity": 0.9881,
+      "specificity": 0.996,
+      "f1": 0.9881,
+      "weighted": {
+        "precision": 0.9881,
+        "recall": 0.9881,
+        "specificity": 0.996,
+        "f1": 0.9881
+      },
+      "auc": 0.9973,
+      "avg_inference_time_s": 1.6e-05,
+      "total_eval_time_s": 0.013,
+      "confusion_matrix": [
+        [
+          209,
+          5,
+          0,
+          0
+        ],
+        [
+          1,
+          201,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          203,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          214
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9952,
+          "recall": 0.9766,
+          "sensitivity": 0.9766,
+          "specificity": 0.9984,
+          "f1": 0.9858,
+          "support": 214
+        },
+        "meningioma": {
+          "precision": 0.971,
+          "recall": 0.9805,
+          "sensitivity": 0.9805,
+          "specificity": 0.9905,
+          "f1": 0.9757,
+          "support": 205
+        },
+        "notumor": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1": 1.0,
+          "support": 203
+        },
+        "pituitary": {
+          "precision": 0.9862,
+          "recall": 0.9953,
+          "sensitivity": 0.9953,
+          "specificity": 0.9952,
+          "f1": 0.9907,
+          "support": 215
+        }
+      }
+    },
+    "zfnet_softmax": {
+      "accuracy": 0.9821,
+      "precision": 0.9826,
+      "recall": 0.9821,
+      "sensitivity": 0.9821,
+      "specificity": 0.994,
+      "f1": 0.9822,
+      "weighted": {
+        "precision": 0.9825,
+        "recall": 0.9821,
+        "specificity": 0.994,
+        "f1": 0.9821
+      },
+      "auc": 0.9989,
+      "avg_inference_time_s": 0.001417,
+      "total_eval_time_s": 1.275,
+      "confusion_matrix": [
+        [
+          207,
+          5,
+          0,
+          2
+        ],
+        [
+          0,
+          199,
+          0,
+          6
+        ],
+        [
+          0,
+          0,
+          202,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          214
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 1.0,
+          "recall": 0.9673,
+          "sensitivity": 0.9673,
+          "specificity": 1.0,
+          "f1": 0.9834,
+          "support": 214
+        },
+        "meningioma": {
+          "precision": 0.9707,
+          "recall": 0.9707,
+          "sensitivity": 0.9707,
+          "specificity": 0.9905,
+          "f1": 0.9707,
+          "support": 205
+        },
+        "notumor": {
+          "precision": 1.0,
+          "recall": 0.9951,
+          "sensitivity": 0.9951,
+          "specificity": 1.0,
+          "f1": 0.9975,
+          "support": 203
+        },
+        "pituitary": {
+          "precision": 0.9596,
+          "recall": 0.9953,
+          "sensitivity": 0.9953,
+          "specificity": 0.9855,
+          "f1": 0.9772,
+          "support": 215
+        }
+      }
+    }
+  },
+  "test_metrics": {
+    "rfo_svm": {
+      "accuracy": 0.9764,
+      "precision": 0.9754,
+      "recall": 0.9771,
+      "sensitivity": 0.9771,
+      "specificity": 0.9922,
+      "f1": 0.9761,
+      "weighted": {
+        "precision": 0.9767,
+        "recall": 0.9764,
+        "specificity": 0.9925,
+        "f1": 0.9764
+      },
+      "auc": 0.9953,
+      "avg_inference_time_s": 1.6e-05,
+      "total_eval_time_s": 0.021,
+      "confusion_matrix": [
+        [
+          290,
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          300,
+          3,
+          2
+        ],
+        [
+          6,
+          7,
+          392,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          298
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9732,
+          "recall": 0.9667,
+          "sensitivity": 0.9667,
+          "specificity": 0.9921,
+          "f1": 0.9699,
+          "support": 300
+        },
+        "meningioma": {
+          "precision": 0.9494,
+          "recall": 0.9804,
+          "sensitivity": 0.9804,
+          "specificity": 0.9841,
+          "f1": 0.9646,
+          "support": 306
+        },
+        "notumor": {
+          "precision": 0.9924,
+          "recall": 0.9679,
+          "sensitivity": 0.9679,
+          "specificity": 0.9967,
+          "f1": 0.98,
+          "support": 405
+        },
+        "pituitary": {
+          "precision": 0.9868,
+          "recall": 0.9933,
+          "sensitivity": 0.9933,
+          "specificity": 0.996,
+          "f1": 0.99,
+          "support": 300
+        }
+      }
+    },
+    "zfnet_softmax": {
+      "accuracy": 0.9718,
+      "precision": 0.9707,
+      "recall": 0.972,
+      "sensitivity": 0.972,
+      "specificity": 0.9907,
+      "f1": 0.9712,
+      "weighted": {
+        "precision": 0.9719,
+        "recall": 0.9718,
+        "specificity": 0.991,
+        "f1": 0.9718
+      },
+      "auc": 0.9982,
+      "avg_inference_time_s": 0.001419,
+      "total_eval_time_s": 1.899,
+      "confusion_matrix": [
+        [
+          290,
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          292,
+          5,
+          8
+        ],
+        [
+          6,
+          6,
+          393,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          299
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9764,
+          "recall": 0.9667,
+          "sensitivity": 0.9667,
+          "specificity": 0.9931,
+          "f1": 0.9715,
+          "support": 300
+        },
+        "meningioma": {
+          "precision": 0.9511,
+          "recall": 0.9542,
+          "sensitivity": 0.9542,
+          "specificity": 0.9851,
+          "f1": 0.9527,
+          "support": 306
+        },
+        "notumor": {
+          "precision": 0.9874,
+          "recall": 0.9704,
+          "sensitivity": 0.9704,
+          "specificity": 0.9945,
+          "f1": 0.9788,
+          "support": 405
+        },
+        "pituitary": {
+          "precision": 0.9676,
+          "recall": 0.9967,
+          "sensitivity": 0.9967,
+          "specificity": 0.9901,
+          "f1": 0.9819,
+          "support": 300
+        }
+      }
+    }
+  },
+  "random_seed": 42,
+  "device": "mps",
+  "model_version": "20261017-025621",
+  "artefact_path": "/Users/syedasif/tumb/backend/weights/method4/rfo_svm.joblib",
+  "total_time_s": 174.5,
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+    "Two classifier heads exist for this method: the ZFNet softmax layer and an SVM on Red Fox\u2013selected ZFNet features. The rfo_svm head is served; the choice was made on validation macro-F1 (0.9881 SVM vs 0.9822 softmax) before the test set was opened.",
+    "The SVM's probabilities come from Platt scaling cross-fitted on the training split; they rank classes well but are not calibrated risk estimates.",
+    "Grad-CAM explains the ZFNet backbone that produced the features, not the SVM's decision boundary."
+  ]
+}

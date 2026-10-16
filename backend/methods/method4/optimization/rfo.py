@@ -30,7 +30,7 @@ import random
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from backend.methods.method1.optimization.sfla import Parameter, SearchSpace
 
@@ -101,6 +101,7 @@ class RedFoxOptimizer:
         replace_fraction: float = 0.25,
         seed: int = 42,
         objective_name: str = "objective",
+        progress: Optional[Callable[[dict], None]] = None,
     ):
         if population < 3:
             raise ValueError("population must be at least 3 (two parents plus one fox to replace).")
@@ -113,6 +114,9 @@ class RedFoxOptimizer:
         self.replace_fraction = replace_fraction
         self.seed = seed
         self.objective_name = objective_name
+        # Optional per-iteration callback, so a long search can report progress
+        # instead of going silent for minutes.
+        self.progress = progress
         self._rng = random.Random(seed)
         self._evaluations = 0
         self._log: list[dict] = []
@@ -206,6 +210,8 @@ class RedFoxOptimizer:
                 "worst_fitness": foxes[-1].fitness,
                 "evaluations": self._evaluations,
             })
+            if self.progress is not None:
+                self.progress(history[-1])
 
         best = foxes[0]
         return RFOResult(

@@ -4,6 +4,139 @@
     "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
     "split_level": "image-level (dataset provides no patient ids)",
     "dataset": "/Users/syedasif/tumb/data/bri/archive",
+    "accuracy": 0.9764,
+    "precision": 0.9754,
+    "recall": 0.9771,
+    "sensitivity": 0.9771,
+    "specificity": 0.9922,
+    "f1": 0.9761,
+    "weighted": {
+      "precision": 0.9767,
+      "recall": 0.9764,
+      "specificity": 0.9925,
+      "f1": 0.9764
+    },
+    "auc": 0.9953,
+    "avg_inference_time_s": 1.6e-05,
+    "total_eval_time_s": 0.021,
+    "confusion_matrix": [
+      [
+        290,
+        8,
+        0,
+        2
+      ],
+      [
+        1,
+        300,
+        3,
+        2
+      ],
+      [
+        6,
+        7,
+        392,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        298
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "precision": [
+        0.9732,
+        0.9494,
+        0.9924,
+        0.9868
+      ],
+      "recall": [
+        0.9667,
+        0.9804,
+        0.9679,
+        0.9933
+      ],
+      "f1": [
+        0.9699,
+        0.9646,
+        0.98,
+        0.99
+      ],
+      "specificity": [
+        0.9921,
+        0.9841,
+        0.9967,
+        0.996
+      ]
+    },
+    "per_class_detail": {
+      "glioma": {
+        "precision": 0.9732,
+        "recall": 0.9667,
+        "sensitivity": 0.9667,
+        "specificity": 0.9921,
+        "f1": 0.9699,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.9494,
+        "recall": 0.9804,
+        "sensitivity": 0.9804,
+        "specificity": 0.9841,
+        "f1": 0.9646,
+        "support": 306
+      },
+      "notumor": {
+        "precision": 0.9924,
+        "recall": 0.9679,
+        "sensitivity": 0.9679,
+        "specificity": 0.9967,
+        "f1": 0.98,
+        "support": 405
+      },
+      "pituitary": {
+        "precision": 0.9868,
+        "recall": 0.9933,
+        "sensitivity": 0.9933,
+        "specificity": 0.996,
+        "f1": 0.99,
+        "support": 300
+      }
+    },
+    "test_size": 1311,
+    "head": "rfo_svm",
+    "architecture": "ZFNet features + RFO feature selection + SVM",
+    "model_version": "20261017-025621",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+      "Two classifier heads exist for this method: the ZFNet softmax layer and an SVM on Red Fox\u2013selected ZFNet features. The rfo_svm head is served; the choice was made on validation macro-F1 (0.9881 SVM vs 0.9822 softmax) before the test set was opened.",
+      "The SVM's probabilities come from Platt scaling cross-fitted on the training split; they rank classes well but are not calibrated risk estimates.",
+      "Grad-CAM explains the ZFNet backbone that produced the features, not the SVM's decision boundary."
+    ],
+    "features_selected": 434,
+    "features_available": 909,
+    "svm": {
+      "C": 90.99753345731945,
+      "gamma": 0.0012303813900738441,
+      "kernel": "rbf"
+    },
+    "feature_extractor_version": "20260917-130430"
+  },
+  "updated_at": "2026-10-16T21:26:23+00:00",
+  "classification_other_head": {
+    "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "dataset": "/Users/syedasif/tumb/data/bri/archive",
     "accuracy": 0.9718,
     "precision": 0.9707,
     "recall": 0.972,
@@ -17,8 +150,8 @@
       "f1": 0.9718
     },
     "auc": 0.9982,
-    "avg_inference_time_s": 0.003931,
-    "total_eval_time_s": 5.485,
+    "avg_inference_time_s": 0.001419,
+    "total_eval_time_s": 1.899,
     "confusion_matrix": [
       [
         290,
@@ -112,12 +245,11 @@
       }
     },
     "test_size": 1311,
+    "head": "zfnet_softmax",
+    "architecture": "ZFNet (BatchNorm, single-channel input)",
     "model_version": "20260917-130430",
     "warnings": [
-      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
-      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
-      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+      "Recorded for comparison; this head is not the one the API serves."
     ]
-  },
-  "updated_at": "2026-09-17T13:04:35+00:00"
+  }
 }

@@ -324,9 +324,12 @@ METHOD3 = MethodSpec(
     short_name="Pre-trained CNNs + Transfer Learning",
     display_number=1,
     summary=(
-        "ImageNet-pretrained CNN backbones (EfficientNet-B0 and ResNet-50) are "
-        "fine-tuned on brain MRI with a new four-class head. The backbone with the best "
-        "validation macro-F1 is selected, then evaluated once on the held-out test set."
+        "ImageNet-pretrained CNN backbones are transferred to brain MRI. Two routes are "
+        "implemented: fine-tuning a single backbone (EfficientNet-B0 or ResNet-50, chosen on "
+        "validation macro-F1), and a feature-fusion ensemble in which frozen GoogleNet, VGG16, "
+        "ResNet-50 and AlexNet branches are concatenated and weighed by a trained meta-learner. "
+        "Whichever checkpoint is on disk is the one served, and it was evaluated once on the "
+        "held-out test set."
     ),
     modality="MRI",
     class_names=METHOD1_CLASS_NAMES,
@@ -334,23 +337,30 @@ METHOD3 = MethodSpec(
     pipeline=(
         PipelineStage("input", "Input MRI", "input", "Single MRI slice (PNG/JPG/TIFF)."),
         PipelineStage("preprocess", "Preprocessing", "preprocess", "Grayscale, resize to 224×224, replicate to 3 channels, ImageNet normalisation."),
-        PipelineStage("pretrained", "Pre-trained backbones", "feature", "EfficientNet-B0 and ResNet-50 with ImageNet weights."),
-        PipelineStage("transfer", "Transfer learning", "classifier", "Head warm-up with the backbone frozen, then full fine-tuning at a lower learning rate."),
-        PipelineStage("select", "Model selection", "optimization", "Backbone chosen by validation macro-F1 (test set untouched)."),
+        PipelineStage("pretrained", "Pre-trained backbones", "feature", "GoogleNet, VGG16, ResNet-50 and AlexNet with ImageNet weights (EfficientNet-B0 on the single-backbone route)."),
+        PipelineStage("transfer", "Transfer learning", "classifier", "Fusion route: backbones frozen, a 64-d head per branch. Single-backbone route: head warm-up, then full fine-tuning at a lower learning rate."),
+        PipelineStage("fusion", "Feature fusion", "feature", "The four branch vectors are concatenated and weighed by a meta-learner (256 → 128 → 64 → classes)."),
+        PipelineStage("select", "Model selection", "optimization", "Backbone and route chosen by validation macro-F1 (test set untouched)."),
         PipelineStage("predict", "Prediction", "output", "Glioma / Meningioma / No Tumor / Pituitary."),
         PipelineStage("gradcam", "Grad-CAM", "output", "Heatmap over the last convolutional stage."),
         PipelineStage("evaluate", "Performance evaluation", "eval", "Accuracy, precision, recall, specificity, F1, AUC on the held-out test set."),
     ),
     datasets=(_BRI_CLASSIFICATION,),
     weights=(
-        WeightSpec("classification", "M3_WEIGHTS_PATH", "TransferLearningCNN", "METHOD3_WEIGHTS"),
+        WeightSpec("classification", "M3_WEIGHTS_PATH", "FusionEnsembleCNN", "METHOD3_WEIGHTS"),
     ),
     segmentation_model="Not part of this method (whole-image classification)",
-    classifier_model="ImageNet-pretrained CNN (EfficientNet-B0 or ResNet-50, chosen on validation), fine-tuned",
-    optimization="Backbone selection by validation macro-F1",
+    classifier_model=(
+        "Feature-fusion ensemble of frozen GoogleNet + VGG16 + ResNet-50 + AlexNet branches with a "
+        "trained meta-learner, or a single fine-tuned backbone — whichever checkpoint is present"
+    ),
+    optimization="Backbone and route selection by validation macro-F1; branch weighting learned by the meta-learner",
     engine_module="backend.methods.method3.inference",
     transforms_module="backend.methods.method3.transforms",
-    training_entrypoints=("python -m backend.methods.method3.training.train_classifier",),
+    training_entrypoints=(
+        "python -m backend.methods.method3.training.train_fusion",
+        "python -m backend.methods.method3.training.train_classifier",
+    ),
     metrics_filename="method3_metrics.json",
     run_card_filenames={"classification": "method3_classification_runcard.json"},
 )
@@ -366,7 +376,9 @@ METHOD4 = MethodSpec(
     summary=(
         "A ZFNet convolutional network trained from scratch on brain MRI, with its "
         "hyper-parameters chosen by Red Fox Optimization (RFO), a metaheuristic that "
-        "searches using validation macro-F1 as fitness."
+        "searches using validation macro-F1 as fitness. RFO is then applied a second time, to "
+        "select which of ZFNet's learned features an SVM should classify; the head that scores "
+        "higher on validation is the one served."
     ),
     modality="MRI",
     class_names=METHOD1_CLASS_NAMES,
@@ -376,6 +388,9 @@ METHOD4 = MethodSpec(
         PipelineStage("preprocess", "Preprocessing", "preprocess", "Grayscale, resize to 224×224, normalise."),
         PipelineStage("zfnet", "ZFNet", "classifier", "7×7/2 conv stem, 5×5/2 conv, three 3×3 convs, two fully connected layers."),
         PipelineStage("rfo", "Red Fox Optimization", "optimization", "Global search, local search and habitat reproduction over learning rate, weight decay, dropout, FC width and batch size (train/val only)."),
+        PipelineStage("features", "Feature extraction", "feature", "The penultimate fully connected layer's activations become a fixed feature vector per image."),
+        PipelineStage("rfo_features", "Red Fox feature selection", "optimization", "A second RFO search picks the feature subset and the SVM's C, gamma and kernel, scored by validation macro-F1 (train/val only)."),
+        PipelineStage("svm", "SVM classifier", "classifier", "A support vector machine on the selected features. Served only if it beats the network's own softmax layer on validation."),
         PipelineStage("predict", "Prediction", "output", "Glioma / Meningioma / No Tumor / Pituitary."),
         PipelineStage("gradcam", "Grad-CAM", "output", "Heatmap over the last convolutional layer."),
         PipelineStage("evaluate", "Performance evaluation", "eval", "Accuracy, precision, recall, specificity, F1, AUC on the held-out test set."),
@@ -383,18 +398,26 @@ METHOD4 = MethodSpec(
     datasets=(_BRI_CLASSIFICATION,),
     weights=(WeightSpec("classification", "M4_WEIGHTS_PATH", "ZFNet", "METHOD4_WEIGHTS"),),
     segmentation_model="Not part of this method (whole-image classification)",
-    classifier_model="ZFNet (Zeiler & Fergus 2014) with BatchNorm, single-channel input",
-    optimization="Red Fox Optimization (Połap & Woźniak 2021) over ZFNet hyper-parameters",
+    classifier_model=(
+        "ZFNet (Zeiler & Fergus 2014) with BatchNorm, single-channel input; its softmax layer or an "
+        "SVM on Red Fox–selected ZFNet features, whichever wins on validation macro-F1"
+    ),
+    optimization=(
+        "Red Fox Optimization (Połap & Woźniak 2021), twice: over ZFNet's hyper-parameters, and "
+        "over the feature subset plus SVM hyper-parameters"
+    ),
     engine_module="backend.methods.method4.inference",
     transforms_module="backend.methods.method4.transforms",
     training_entrypoints=(
         "python -m backend.methods.method4.optimization.run_rfo",
         "python -m backend.methods.method4.training.train_classifier",
+        "python -m backend.methods.method4.training.train_feature_svm",
     ),
     metrics_filename="method4_metrics.json",
     run_card_filenames={
         "classification": "method4_classification_runcard.json",
         "rfo": "method4_rfo_runcard.json",
+        "feature_selection": "method4_feature_selection_runcard.json",
     },
     optimization_result_filename="method4/rfo_results.json",
 )

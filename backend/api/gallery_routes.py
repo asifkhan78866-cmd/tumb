@@ -51,8 +51,9 @@ _PLOTS: dict[str, dict[str, tuple[str, str, str]]] = {
         "confusion_matrix": ("method3_cls_confusion_matrix.png", "Confusion matrix (held-out test)",
                              "Rows are the true class, columns the prediction."),
         "roc": ("method3_cls_roc.png", "ROC curves (held-out test)", "One-vs-rest, with per-class AUC."),
-        "accuracy": ("method3/accuracy.png", "Accuracy per epoch", "Selected backbone, training vs validation."),
-        "loss": ("method3/train_loss.png", "Training loss per epoch", "Selected backbone."),
+        "accuracy": ("method3/accuracy.png", "Accuracy per epoch",
+                     "Training vs validation, from the run that produced the served checkpoint."),
+        "loss": ("method3/train_loss.png", "Loss per epoch", "Training vs validation."),
     },
     "method4": {
         "confusion_matrix": ("method4_cls_confusion_matrix.png", "Confusion matrix (held-out test)",
@@ -60,6 +61,10 @@ _PLOTS: dict[str, dict[str, tuple[str, str, str]]] = {
         "roc": ("method4_cls_roc.png", "ROC curves (held-out test)", "One-vs-rest, with per-class AUC."),
         "accuracy": ("method4/accuracy.png", "Accuracy per epoch", "Training vs validation."),
         "loss": ("method4/train_loss.png", "Training loss per epoch", "ZFNet trained from scratch."),
+        "feature_selection": ("method4/rfo_feature_selection.png",
+                              "Red Fox feature selection — fitness per iteration",
+                              "Best and mean fitness of the fox population; fitness is validation "
+                              "macro-F1 minus a penalty for the features kept."),
     },
 }
 
