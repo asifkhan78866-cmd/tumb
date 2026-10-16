@@ -72,12 +72,16 @@ class WholeImageClassifierEngine:
     class_labels: dict[str, str]
     image_size: int = 224
     train_command: str = ""
+    # A method may serve more than one architecture (e.g. a single fine-tuned
+    # backbone or a fusion ensemble); the checkpoint says which one it is.
+    accepted_architectures: tuple[str, ...] = ()
 
     def __init__(self) -> None:
         self.device = config.DEVICE
         self.model = None
         self.meta: dict = {}
         self.loaded = False
+        self.architecture_in_use = self.architecture
         self.load_warnings: list[str] = []
         self._ready = False
 
@@ -98,6 +102,28 @@ class WholeImageClassifierEngine:
     def extra_details(self) -> dict:
         return {}
 
+    def load_target(self, model: torch.nn.Module) -> torch.nn.Module:
+        """Submodule the stored weights belong to. Default: the whole model."""
+        return model
+
+    def load_extras(self) -> None:
+        """Hook for anything a method loads beside the checkpoint (e.g. an SVM head)."""
+
+    def class_probabilities(self, x: torch.Tensor) -> np.ndarray:
+        """One probability per class for a single prepared input.
+
+        The default is the network's own softmax. A method whose final classifier
+        is not the network's last layer overrides this.
+        """
+        with torch.no_grad():
+            return F.softmax(self.model(x).float(), dim=1).squeeze(0).cpu().numpy()
+
+    def _expected_architecture(self, meta: dict) -> str:
+        """Honour an accepted alternative architecture named by the checkpoint."""
+        found = str((meta or {}).get("architecture") or "")
+        allowed = self.accepted_architectures or (self.architecture,)
+        return found if found in allowed else self.architecture
+
     # -- loading ----------------------------------------------------------- #
     def load(self, force: bool = False) -> None:
         # Once loaded, stay loaded. While untrained, re-check on every request so a
@@ -114,17 +140,20 @@ class WholeImageClassifierEngine:
             self._ready = True
             return
         try:
+            expected = self._expected_architecture(meta)
             model = self.build_model(meta).to(self.device)
             meta, warns = load_checkpoint(
-                model, self.weights_path,
+                self.load_target(model), self.weights_path,
                 expected_method=self.method_id,
-                expected_architecture=self.architecture,
+                expected_architecture=expected,
                 expected_role="classification",
                 expected_class_names=self.class_names,
             )
             model.eval()
             self.model, self.meta, self.loaded = model, meta, True
+            self.architecture_in_use = str(meta.get("architecture") or self.architecture)
             self.load_warnings.extend(warns)
+            self.load_extras()
         except (CheckpointError, KeyError, ValueError, RuntimeError) as exc:
             self.load_warnings.append(f"Classification unavailable: {exc}")
         self._ready = True
@@ -161,8 +190,7 @@ class WholeImageClassifierEngine:
         ai_details = None
         if self.loaded:
             x = self.to_input(torch.from_numpy(gray).float().div(255.0)[None, None].to(self.device))
-            with torch.no_grad():
-                probs = F.softmax(self.model(x).float(), dim=1).squeeze(0).cpu().numpy()
+            probs = self.class_probabilities(x)
             idx = int(np.argmax(probs))
             prediction_key = self.class_names[idx]
             prediction = self.class_labels[prediction_key]
