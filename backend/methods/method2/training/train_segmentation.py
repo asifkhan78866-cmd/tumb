@@ -51,6 +51,59 @@ def per_class_dice_iou(logits: torch.Tensor, target: torch.Tensor, num_classes: 
     return dices, ious
 
 
+def class_weights(samples, dataset_cls, spec, sample_size: int = 2000) -> np.ndarray:
+    """Inverse-frequency weights over the four classes, from the training split.
+
+    The sub-regions are tiny next to the background — a necrotic core is a few
+    hundred voxels in a 128×128 slice — so an unweighted loss is minimised well
+    enough by predicting background everywhere, which is exactly what the first
+    run did: Dice 0.0 on two of the three regions. Frequencies are counted on a
+    sample of the training slices (the whole split would be a needless pass) and
+    the weights are capped so a class that is almost absent cannot dominate.
+    """
+    rng = np.random.default_rng(config.SEED)
+    chosen = samples if len(samples) <= sample_size else [
+        samples[i] for i in rng.choice(len(samples), sample_size, replace=False)
+    ]
+    probe = dataset_cls(chosen, spec, augment=False)
+    counts = np.zeros(m2.NUM_SEG_CLASSES, dtype=np.float64)
+    for i in range(len(probe)):
+        _, label = probe[i]
+        counts += np.bincount(label.numpy().ravel(), minlength=m2.NUM_SEG_CLASSES)
+    freq = counts / max(counts.sum(), 1.0)
+    weights = np.where(freq > 0, 1.0 / np.maximum(freq, 1e-8), 0.0)
+    weights = weights / weights[weights > 0].min()          # background ~= 1
+    return np.clip(weights, 0.0, 50.0).astype(np.float32)   # cap the rarest class
+
+
+def soft_dice_loss(logits: torch.Tensor, target: torch.Tensor, eps: float = 1.0) -> torch.Tensor:
+    """1 − mean Dice over the foreground classes, differentiable.
+
+    Cross-entropy scores pixels; Dice scores the overlap of whole regions, which
+    is what the metric reported downstream actually measures. Background is left
+    out: it is near-perfect on every slice and would hide the regions that matter.
+    """
+    probs = torch.softmax(logits, dim=1)
+    onehot = F.one_hot(target, m2.NUM_SEG_CLASSES).permute(0, 3, 1, 2).float()
+    dims = (0, 2, 3)
+    intersection = (probs * onehot).sum(dims)
+    denominator = probs.sum(dims) + onehot.sum(dims)
+    dice = (2 * intersection + eps) / (denominator + eps)
+    return 1.0 - dice[1:].mean()
+
+
+class CombinedLoss(torch.nn.Module):
+    """Weighted cross-entropy plus soft Dice, in the usual 1:1 mix."""
+
+    def __init__(self, weights: torch.Tensor, dice_weight: float = 1.0):
+        super().__init__()
+        self.ce = torch.nn.CrossEntropyLoss(weight=weights)
+        self.dice_weight = dice_weight
+
+    def forward(self, logits: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        return self.ce(logits, target) + self.dice_weight * soft_dice_loss(logits, target)
+
+
 def run_epoch(model, loader, criterion, optimizer, scaler, train: bool, device):
     model.train(train)
     total_loss, n = 0.0, 0
@@ -118,6 +171,8 @@ def main() -> int:
     ap.add_argument("--val-frac", type=float, default=0.15)
     ap.add_argument("--test-frac", type=float, default=0.15)
     ap.add_argument("--data-root", default=None)
+    ap.add_argument("--dice-weight", type=float, default=1.0,
+                    help="weight of the soft-Dice term beside the weighted cross-entropy")
     ap.add_argument("--limit-volumes", type=int, default=0,
                     help="use only the first N volumes (a smoke test, never a reported run)")
     args = ap.parse_args()
@@ -172,7 +227,15 @@ def main() -> int:
     }
 
     model = MultiClassUNet(in_channels=1, num_classes=m2.NUM_SEG_CLASSES).to(device)
-    criterion = torch.nn.CrossEntropyLoss()
+    weights = class_weights(train_s, MultiClassSegmentationDataset, spec)
+    print(f"[m2-seg] class weights (inverse frequency, capped at 50): "
+          f"{dict(zip(m2.SEG_CLASS_NAMES, weights.round(2).tolist()))}")
+    criterion = CombinedLoss(torch.from_numpy(weights).to(device), dice_weight=args.dice_weight)
+    warnings.append(
+        "Loss is class-weighted cross-entropy plus soft Dice over the foreground classes. "
+        "Unweighted cross-entropy scored 0.0 Dice on two of the three sub-regions: predicting "
+        "background everywhere is a good enough minimum when the regions are this small."
+    )
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=4)
     scaler = torch.amp.GradScaler("cuda", enabled=config.USE_AMP)
@@ -251,7 +314,9 @@ def main() -> int:
             architecture=m2.SEG_ARCHITECTURE,
             model_config={"num_classes": m2.NUM_SEG_CLASSES, "classes": m2.SEG_CLASS_NAMES},
             optimizer={"name": "Adam", "lr": args.lr, "scheduler": "ReduceLROnPlateau",
-                       "batch_size": args.batch_size},
+                       "batch_size": args.batch_size,
+                       "loss": "class-weighted cross-entropy + soft Dice (foreground)",
+                       "class_weights": dict(zip(m2.SEG_CLASS_NAMES, weights.round(3).tolist()))},
             epochs=args.epochs, best_epoch=best_epoch, metrics=section,
             checkpoint_path=str(m2.SEG_WEIGHTS_PATH), inference_time_s=avg_time,
             train_duration_s=round(time.perf_counter() - started, 1),
