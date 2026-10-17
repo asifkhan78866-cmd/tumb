@@ -170,6 +170,10 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
             <FeatureStage details={result.details} />
           )}
 
+          {result.details?.feature_selection && (
+            <SelectedFeatures details={result.details} />
+          )}
+
           <WarningList warnings={result.warnings} />
 
           <p className="border-t pt-4 text-[11px] leading-relaxed text-muted-foreground">
@@ -221,6 +225,34 @@ function AIFindings({ ai }: { ai: Record<string, any> }) {
       {ai.rationale && (
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{ai.rationale}</p>
       )}
+    </div>
+  );
+}
+
+/**
+ * Shown when the class came from an SVM on a metaheuristically selected feature
+ * subset rather than from the network's own softmax layer — including what the
+ * heatmap then explains, which is the network, not the SVM.
+ */
+function SelectedFeatures({ details }: { details: Record<string, any> }) {
+  const fs = details.feature_selection;
+  const svm = fs.svm ?? {};
+  return (
+    <div className="rounded-xl border bg-muted/20 p-4 text-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <h4 className="font-semibold">Classifier head: SVM on selected features</h4>
+        <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+          {fs.features_selected} of {fs.features_available} features kept
+        </span>
+      </div>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+        {fs.algorithm} selected the subset, scored on validation macro-F1. A support vector
+        machine classifies it
+        {svm.kernel ? ` (${svm.kernel} kernel, C = ${Number(svm.C).toPrecision(3)})` : ""}; the
+        percentages come from {fs.probability_estimates ?? "its probability estimates"} and are
+        not calibrated risk estimates.
+        {details.gradcam_note ? ` ${details.gradcam_note}` : ""}
+      </p>
     </div>
   );
 }

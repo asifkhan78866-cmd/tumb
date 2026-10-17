@@ -39,7 +39,7 @@ from backend.methods.common.metrics_store import update_metrics
 from backend.methods.common.runcard import RunCard, write_run_card
 from backend.methods.method1.datasets import DatasetError, class_distribution
 from backend.methods.method4.models import ZFNet
-from backend.methods.method4.optimization.feature_selection import (
+from backend.methods.common.feature_selection import (
     SVM_PARAMETERS, feature_space, fitted_pipeline, make_objective, mask_of,
 )
 from backend.methods.method4.optimization.rfo import RedFoxOptimizer
