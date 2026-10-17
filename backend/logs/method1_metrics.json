@@ -4,6 +4,162 @@
     "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
     "split_level": "image-level (dataset provides no patient ids)",
     "dataset": "/Users/syedasif/tumb/data/bri/archive",
+    "accuracy": 0.9695,
+    "precision": 0.9688,
+    "recall": 0.9707,
+    "sensitivity": 0.9707,
+    "specificity": 0.9899,
+    "f1": 0.9697,
+    "weighted": {
+      "precision": 0.9698,
+      "recall": 0.9695,
+      "specificity": 0.99,
+      "f1": 0.9695
+    },
+    "auc": 0.9944,
+    "avg_inference_time_s": 2e-06,
+    "total_eval_time_s": 0.002,
+    "confusion_matrix": [
+      [
+        289,
+        7,
+        2,
+        2
+      ],
+      [
+        3,
+        297,
+        5,
+        1
+      ],
+      [
+        9,
+        9,
+        387,
+        0
+      ],
+      [
+        0,
+        2,
+        0,
+        298
+      ]
+    ],
+    "class_order": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "per_class": {
+      "precision": [
+        0.9601,
+        0.9429,
+        0.9822,
+        0.99
+      ],
+      "recall": [
+        0.9633,
+        0.9706,
+        0.9556,
+        0.9933
+      ],
+      "f1": [
+        0.9617,
+        0.9565,
+        0.9687,
+        0.9917
+      ],
+      "specificity": [
+        0.9881,
+        0.9821,
+        0.9923,
+        0.997
+      ]
+    },
+    "per_class_detail": {
+      "glioma": {
+        "precision": 0.9601,
+        "recall": 0.9633,
+        "sensitivity": 0.9633,
+        "specificity": 0.9881,
+        "f1": 0.9617,
+        "support": 300
+      },
+      "meningioma": {
+        "precision": 0.9429,
+        "recall": 0.9706,
+        "sensitivity": 0.9706,
+        "specificity": 0.9821,
+        "f1": 0.9565,
+        "support": 306
+      },
+      "notumor": {
+        "precision": 0.9822,
+        "recall": 0.9556,
+        "sensitivity": 0.9556,
+        "specificity": 0.9923,
+        "f1": 0.9687,
+        "support": 405
+      },
+      "pituitary": {
+        "precision": 0.99,
+        "recall": 0.9933,
+        "sensitivity": 0.9933,
+        "specificity": 0.997,
+        "f1": 0.9917,
+        "support": 300
+      }
+    },
+    "test_size": 1311,
+    "head": "sfla_svm",
+    "architecture": "ConvLSTM features + SFLA feature selection + SVM",
+    "transform": {
+      "id": "m1-v1-legacy",
+      "image_size": 128,
+      "order": "denoise_then_resize",
+      "denoise": true,
+      "clahe": true,
+      "roi_crop": false,
+      "roi_pad": 8,
+      "roi_min_pixels": 20,
+      "description": "Original geometry: full-resolution non-local-means denoise, CLAHE, then resize; classifier sees the whole slice, never an ROI crop. Used for the untagged classifier checkpoint shipped with the repository."
+    },
+    "model_version": "20261017-145311",
+    "warnings": [
+      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+      "Two classifier heads exist for this method: the ConvLSTM's softmax layer and an SVM on SFLA-selected ConvLSTM features. The sfla_svm head is served; the choice was made on validation macro-F1 (0.9893 SVM vs 0.9775 softmax) before the test set was opened.",
+      "The SVM's probabilities come from Platt scaling cross-fitted on the training split; they rank classes well but are not calibrated risk estimates.",
+      "Grad-CAM explains the ConvLSTM that produced the features, not the SVM's decision boundary."
+    ],
+    "features_selected": 36,
+    "features_available": 98,
+    "svm": {
+      "C": 8.53622763207344,
+      "gamma": 0.020417821288915457,
+      "kernel": "linear"
+    },
+    "feature_extractor_version": "20260916-221953"
+  },
+  "updated_at": "2026-10-17T09:23:11+00:00",
+  "segmentation": {
+    "split": "patient-grouped held-out test",
+    "dataset": "data/figshare",
+    "dice": 0.6558,
+    "dice_on_tumour_slices": 0.662,
+    "tumour_slices_in_test": 459,
+    "iou": 0.5696,
+    "avg_inference_time_s": 0.00097,
+    "model_version": "20260918-175949",
+    "mask_source": "figshare (Cheng) radiologist tumour masks, contrast-enhanced T1",
+    "warnings": []
+  },
+  "classification_other_head": {
+    "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+    "split_level": "image-level (dataset provides no patient ids)",
+    "dataset": "/Users/syedasif/tumb/data/bri/archive",
     "accuracy": 0.9641,
     "precision": 0.9639,
     "recall": 0.9659,
@@ -17,8 +173,8 @@
       "f1": 0.9644
     },
     "auc": 0.997,
-    "avg_inference_time_s": 0.000657,
-    "total_eval_time_s": 0.949,
+    "avg_inference_time_s": 0.0,
+    "total_eval_time_s": 0.0,
     "confusion_matrix": [
       [
         285,
@@ -112,26 +268,22 @@
       }
     },
     "test_size": 1311,
-    "best_epoch": 46,
+    "head": "convlstm_softmax",
+    "architecture": "U-Net \u2192 ROI crop \u2192 ConvLSTM \u2192 softmax",
+    "transform": {
+      "id": "m1-v1-legacy",
+      "image_size": 128,
+      "order": "denoise_then_resize",
+      "denoise": true,
+      "clahe": true,
+      "roi_crop": false,
+      "roi_pad": 8,
+      "roi_min_pixels": 20,
+      "description": "Original geometry: full-resolution non-local-means denoise, CLAHE, then resize; classifier sees the whole slice, never an ROI crop. Used for the untagged classifier checkpoint shipped with the repository."
+    },
     "model_version": "20260916-221953",
     "warnings": [
-      "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (Method 1 training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
-      "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
-      "Requested ROI-cropped geometry (m1-v2-roi) but no segmentation checkpoint exists at /Users/syedasif/tumb/backend/weights/method1/best_unet.pth. Falling back to the whole-slice geometry (m1-v1-legacy) so that training and inference stay identical. Train the U-Net first to use ROI cropping.",
-      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
+      "Recorded for comparison; this head is not the one the API serves."
     ]
-  },
-  "updated_at": "2026-09-18T17:59:49+00:00",
-  "segmentation": {
-    "split": "patient-grouped held-out test",
-    "dataset": "data/figshare",
-    "dice": 0.6558,
-    "dice_on_tumour_slices": 0.662,
-    "tumour_slices_in_test": 459,
-    "iou": 0.5696,
-    "avg_inference_time_s": 0.00097,
-    "model_version": "20260918-175949",
-    "mask_source": "figshare (Cheng) radiologist tumour masks, contrast-enhanced T1",
-    "warnings": []
   }
 }

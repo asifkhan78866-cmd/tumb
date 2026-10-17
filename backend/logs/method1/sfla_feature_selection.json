@@ -1,0 +1,8874 @@
+{
+  "algorithm": "Shuffled Frog Leaping Algorithm (SFLA)",
+  "reference": "Eusuff & Lansey (2003), Journal of Water Resources Planning and Management",
+  "objective": "validation macro-F1 \u2212 0.02\u00b7(features kept / features available)",
+  "seed": 42,
+  "population": 30,
+  "memeplexes": 5,
+  "frogs_per_memeplex": 6,
+  "iterations": 30,
+  "local_iterations": 8,
+  "max_step": 0.5,
+  "evaluations": 1850,
+  "duration_s": 32.635,
+  "search_space": [
+    {
+      "name": "f00",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f01",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f02",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f03",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f04",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f05",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f06",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f07",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f08",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f09",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f10",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f11",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f12",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f13",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f14",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f15",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f16",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f17",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f18",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f19",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f20",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f21",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f22",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f23",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f24",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f25",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f26",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f27",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f28",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f29",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f30",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f31",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f32",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f33",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f34",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f35",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f36",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f37",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f38",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f39",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f40",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f41",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f42",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f43",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f44",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f45",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f46",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f47",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f48",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f49",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f50",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f51",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f52",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f53",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f54",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f55",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f56",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f57",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f58",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f59",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f60",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f61",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f62",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f63",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f64",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f65",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f66",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f67",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f68",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f69",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f70",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f71",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f72",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f73",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f74",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f75",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f76",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f77",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f78",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f79",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f80",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f81",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f82",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f83",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f84",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f85",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f86",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f87",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f88",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f89",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f90",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f91",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f92",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f93",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f94",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f95",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f96",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "f97",
+      "kind": "choice",
+      "choices": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "C",
+      "kind": "float",
+      "low": 0.1,
+      "high": 100.0,
+      "log": true
+    },
+    {
+      "name": "gamma",
+      "kind": "float",
+      "low": 0.0001,
+      "high": 0.1,
+      "log": true
+    },
+    {
+      "name": "kernel",
+      "kind": "choice",
+      "choices": [
+        "rbf",
+        "linear"
+      ]
+    }
+  ],
+  "best_parameters": {
+    "C": 8.53622763207344,
+    "gamma": 0.020417821288915457,
+    "kernel": "linear",
+    "features_selected": 36
+  },
+  "best_fitness": 0.9819633508848232,
+  "best_position": "see selected_feature_indices",
+  "history": [
+    {
+      "iteration": 1,
+      "best_fitness": 0.9755589058138207,
+      "iteration_best": 0.9755589058138207,
+      "iteration_mean": 0.9721174468450868,
+      "iteration_worst": 0.9698554452411918,
+      "evaluations": 84
+    },
+    {
+      "iteration": 2,
+      "best_fitness": 0.9763578562114446,
+      "iteration_best": 0.9763578562114446,
+      "iteration_mean": 0.9730552863461479,
+      "iteration_worst": 0.9594482791274511,
+      "evaluations": 146
+    },
+    {
+      "iteration": 3,
+      "best_fitness": 0.9775615105855426,
+      "iteration_best": 0.9775615105855426,
+      "iteration_mean": 0.9749245783316257,
+      "iteration_worst": 0.9688825872280173,
+      "evaluations": 209
+    },
+    {
+      "iteration": 4,
+      "best_fitness": 0.9789524862739305,
+      "iteration_best": 0.9789524862739305,
+      "iteration_mean": 0.9758275495379216,
+      "iteration_worst": 0.9673515134785614,
+      "evaluations": 278
+    },
+    {
+      "iteration": 5,
+      "best_fitness": 0.9795654248332863,
+      "iteration_best": 0.9795654248332863,
+      "iteration_mean": 0.9765499458080813,
+      "iteration_worst": 0.9685228731780993,
+      "evaluations": 341
+    },
+    {
+      "iteration": 6,
+      "best_fitness": 0.9795654248332863,
+      "iteration_best": 0.9795654248332863,
+      "iteration_mean": 0.9773358254005212,
+      "iteration_worst": 0.9685773347427482,
+      "evaluations": 399
+    },
+    {
+      "iteration": 7,
+      "best_fitness": 0.9803306978235987,
+      "iteration_best": 0.9803306978235987,
+      "iteration_mean": 0.9780152589116057,
+      "iteration_worst": 0.967001446652451,
+      "evaluations": 460
+    },
+    {
+      "iteration": 8,
+      "best_fitness": 0.9807388610889048,
+      "iteration_best": 0.9807388610889048,
+      "iteration_mean": 0.9783588071064375,
+      "iteration_worst": 0.9689882640749233,
+      "evaluations": 527
+    },
+    {
+      "iteration": 9,
+      "best_fitness": 0.9807388610889048,
+      "iteration_best": 0.9807388610889048,
+      "iteration_mean": 0.9788177670220798,
+      "iteration_worst": 0.9685812474216734,
+      "evaluations": 584
+    },
+    {
+      "iteration": 10,
+      "best_fitness": 0.9807388610889048,
+      "iteration_best": 0.9807388610889048,
+      "iteration_mean": 0.979036825805312,
+      "iteration_worst": 0.9655569690017078,
+      "evaluations": 641
+    },
+    {
+      "iteration": 11,
+      "best_fitness": 0.9807388610889048,
+      "iteration_best": 0.9807388610889048,
+      "iteration_mean": 0.9797807388874155,
+      "iteration_worst": 0.970647040787556,
+      "evaluations": 701
+    },
+    {
+      "iteration": 12,
+      "best_fitness": 0.9807388610889048,
+      "iteration_best": 0.9807388610889048,
+      "iteration_mean": 0.9789789897690989,
+      "iteration_worst": 0.9655968359303219,
+      "evaluations": 766
+    },
+    {
+      "iteration": 13,
+      "best_fitness": 0.981147024354211,
+      "iteration_best": 0.981147024354211,
+      "iteration_mean": 0.9796219815615895,
+      "iteration_worst": 0.9689627148435878,
+      "evaluations": 829
+    },
+    {
+      "iteration": 14,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.979666920238493,
+      "iteration_worst": 0.9702193615191272,
+      "evaluations": 886
+    },
+    {
+      "iteration": 15,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9800098945220624,
+      "iteration_worst": 0.9682086279192158,
+      "evaluations": 946
+    },
+    {
+      "iteration": 16,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9803935422933928,
+      "iteration_worst": 0.9717790169340252,
+      "evaluations": 1004
+    },
+    {
+      "iteration": 17,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.97969636003102,
+      "iteration_worst": 0.9674346595989313,
+      "evaluations": 1073
+    },
+    {
+      "iteration": 18,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9804555262351909,
+      "iteration_worst": 0.9705893732431559,
+      "evaluations": 1130
+    },
+    {
+      "iteration": 19,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9803850144937037,
+      "iteration_worst": 0.9718716718202572,
+      "evaluations": 1192
+    },
+    {
+      "iteration": 20,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9806094592596455,
+      "iteration_worst": 0.9704199241801069,
+      "evaluations": 1251
+    },
+    {
+      "iteration": 21,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9801259177252535,
+      "iteration_worst": 0.9703111586565888,
+      "evaluations": 1317
+    },
+    {
+      "iteration": 22,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.980457109326329,
+      "iteration_worst": 0.9723502554430107,
+      "evaluations": 1374
+    },
+    {
+      "iteration": 23,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9805673355481329,
+      "iteration_worst": 0.9707110145461816,
+      "evaluations": 1432
+    },
+    {
+      "iteration": 24,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9803495303968324,
+      "iteration_worst": 0.9727707580009515,
+      "evaluations": 1488
+    },
+    {
+      "iteration": 25,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9802985324858968,
+      "iteration_worst": 0.9691580849573652,
+      "evaluations": 1548
+    },
+    {
+      "iteration": 26,
+      "best_fitness": 0.981351105986864,
+      "iteration_best": 0.981351105986864,
+      "iteration_mean": 0.9804823185079066,
+      "iteration_worst": 0.9711366947317261,
+      "evaluations": 1607
+    },
+    {
+      "iteration": 27,
+      "best_fitness": 0.9815551876195171,
+      "iteration_best": 0.9815551876195171,
+      "iteration_mean": 0.9802396315596401,
+      "iteration_worst": 0.964486411121698,
+      "evaluations": 1669
+    },
+    {
+      "iteration": 28,
+      "best_fitness": 0.9817592692521702,
+      "iteration_best": 0.9817592692521702,
+      "iteration_mean": 0.9805854680425523,
+      "iteration_worst": 0.9714163268938841,
+      "evaluations": 1728
+    },
+    {
+      "iteration": 29,
+      "best_fitness": 0.9819633508848232,
+      "iteration_best": 0.9819633508848232,
+      "iteration_mean": 0.9805614387377997,
+      "iteration_worst": 0.9683453160989738,
+      "evaluations": 1792
+    },
+    {
+      "iteration": 30,
+      "best_fitness": 0.9819633508848232,
+      "iteration_best": 0.9819633508848232,
+      "iteration_mean": 0.980860890608135,
+      "iteration_worst": 0.9685965324165138,
+      "evaluations": 1850
+    }
+  ],
+  "evaluation_log": [
+    {
+      "evaluation": 1,
+      "fitness": 0.9663827404418316
+    },
+    {
+      "evaluation": 2,
+      "fitness": 0.9739002286438497
+    },
+    {
+      "evaluation": 3,
+      "fitness": 0.9683268718780124
+    },
+    {
+      "evaluation": 4,
+      "fitness": 0.9669780825244523
+    },
+    {
+      "evaluation": 5,
+      "fitness": 0.9697559493332821
+    },
+    {
+      "evaluation": 6,
+      "fitness": 0.974176695349232
+    },
+    {
+      "evaluation": 7,
+      "fitness": 0.9690571581611334
+    },
+    {
+      "evaluation": 8,
+      "fitness": 0.9637601012364443
+    },
+    {
+      "evaluation": 9,
+      "fitness": 0.9675411639262221
+    },
+    {
+      "evaluation": 10,
+      "fitness": 0.9672809079738369
+    },
+    {
+      "evaluation": 11,
+      "fitness": 0.9723754664356169
+    },
+    {
+      "evaluation": 12,
+      "fitness": 0.9706116067342787
+    },
+    {
+      "evaluation": 13,
+      "fitness": 0.970388821861366
+    },
+    {
+      "evaluation": 14,
+      "fitness": 0.9720214749225905
+    },
+    {
+      "evaluation": 15,
+      "fitness": 0.9687748720404011
+    },
+    {
+      "evaluation": 16,
+      "fitness": 0.9671290560166944
+    },
+    {
+      "evaluation": 17,
+      "fitness": 0.9704140694366258
+    },
+    {
+      "evaluation": 18,
+      "fitness": 0.9678085976475947
+    },
+    {
+      "evaluation": 19,
+      "fitness": 0.9657735434534118
+    },
+    {
+      "evaluation": 20,
+      "fitness": 0.9691701663254605
+    },
+    {
+      "evaluation": 21,
+      "fitness": 0.9649997382585764
+    },
+    {
+      "evaluation": 22,
+      "fitness": 0.9679419616541864
+    },
+    {
+      "evaluation": 23,
+      "fitness": 0.9696837186133681
+    },
+    {
+      "evaluation": 24,
+      "fitness": 0.9608759106508791
+    },
+    {
+      "evaluation": 25,
+      "fitness": 0.9705647241485897
+    },
+    {
+      "evaluation": 26,
+      "fitness": 0.9694456112424406
+    },
+    {
+      "evaluation": 27,
+      "fitness": 0.9727965636653184
+    },
+    {
+      "evaluation": 28,
+      "fitness": 0.9698245411883326
+    },
+    {
+      "evaluation": 29,
+      "fitness": 0.9705438739907586
+    },
+    {
+      "evaluation": 30,
+      "fitness": 0.9717455340098367
+    },
+    {
+      "evaluation": 31,
+      "fitness": 0.9697460576359346
+    },
+    {
+      "evaluation": 32,
+      "fitness": 0.9680242458253286
+    },
+    {
+      "evaluation": 33,
+      "fitness": 0.9692032468753001
+    },
+    {
+      "evaluation": 34,
+      "fitness": 0.968547803279231
+    },
+    {
+      "evaluation": 35,
+      "fitness": 0.9707104617595887
+    },
+    {
+      "evaluation": 36,
+      "fitness": 0.9678017279541165
+    },
+    {
+      "evaluation": 37,
+      "fitness": 0.9678017279541165
+    },
+    {
+      "evaluation": 38,
+      "fitness": 0.9718841230588836
+    },
+    {
+      "evaluation": 39,
+      "fitness": 0.9712944448799198
+    },
+    {
+      "evaluation": 40,
+      "fitness": 0.9703111586565888
+    },
+    {
+      "evaluation": 41,
+      "fitness": 0.9679762412180538
+    },
+    {
+      "evaluation": 42,
+      "fitness": 0.972783629700923
+    },
+    {
+      "evaluation": 43,
+      "fitness": 0.9696114101406063
+    },
+    {
+      "evaluation": 44,
+      "fitness": 0.9721354078942266
+    },
+    {
+      "evaluation": 45,
+      "fitness": 0.9711976253274719
+    },
+    {
+      "evaluation": 46,
+      "fitness": 0.9709066836279394
+    },
+    {
+      "evaluation": 47,
+      "fitness": 0.970214184808246
+    },
+    {
+      "evaluation": 48,
+      "fitness": 0.9755589058138207
+    },
+    {
+      "evaluation": 49,
+      "fitness": 0.9747916822506987
+    },
+    {
+      "evaluation": 50,
+      "fitness": 0.9729744714787324
+    },
+    {
+      "evaluation": 51,
+      "fitness": 0.9750009645433482
+    },
+    {
+      "evaluation": 52,
+      "fitness": 0.9723360634193322
+    },
+    {
+      "evaluation": 53,
+      "fitness": 0.96442493633472
+    },
+    {
+      "evaluation": 54,
+      "fitness": 0.9679982823623813
+    },
+    {
+      "evaluation": 55,
+      "fitness": 0.9671394723461878
+    },
+    {
+      "evaluation": 56,
+      "fitness": 0.9727278053033761
+    },
+    {
+      "evaluation": 57,
+      "fitness": 0.9687643282004185
+    },
+    {
+      "evaluation": 58,
+      "fitness": 0.9699959126909764
+    },
+    {
+      "evaluation": 59,
+      "fitness": 0.9705903957618951
+    },
+    {
+      "evaluation": 60,
+      "fitness": 0.9662443070059934
+    },
+    {
+      "evaluation": 61,
+      "fitness": 0.968588486116013
+    },
+    {
+      "evaluation": 62,
+      "fitness": 0.9698523574452658
+    },
+    {
+      "evaluation": 63,
+      "fitness": 0.9724133662991185
+    },
+    {
+      "evaluation": 64,
+      "fitness": 0.9721988116879965
+    },
+    {
+      "evaluation": 65,
+      "fitness": 0.9675579921507306
+    },
+    {
+      "evaluation": 66,
+      "fitness": 0.9677647239299503
+    },
+    {
+      "evaluation": 67,
+      "fitness": 0.9659880256468208
+    },
+    {
+      "evaluation": 68,
+      "fitness": 0.9701772171642066
+    },
+    {
+      "evaluation": 69,
+      "fitness": 0.9697971557267475
+    },
+    {
+      "evaluation": 70,
+      "fitness": 0.9715766060268319
+    },
+    {
+      "evaluation": 71,
+      "fitness": 0.9712688053944981
+    },
+    {
+      "evaluation": 72,
+      "fitness": 0.9708175638900128
+    },
+    {
+      "evaluation": 73,
+      "fitness": 0.970561108233537
+    },
+    {
+      "evaluation": 74,
+      "fitness": 0.9694472819758857
+    },
+    {
+      "evaluation": 75,
+      "fitness": 0.9683844044833599
+    },
+    {
+      "evaluation": 76,
+      "fitness": 0.965968070444499
+    },
+    {
+      "evaluation": 77,
+      "fitness": 0.9663231458155755
+    },
+    {
+      "evaluation": 78,
+      "fitness": 0.9660679176744925
+    },
+    {
+      "evaluation": 79,
+      "fitness": 0.9672446362177601
+    },
+    {
+      "evaluation": 80,
+      "fitness": 0.9664588398623524
+    },
+    {
+      "evaluation": 81,
+      "fitness": 0.9707667272564416
+    },
+    {
+      "evaluation": 82,
+      "fitness": 0.9720305050718948
+    },
+    {
+      "evaluation": 83,
+      "fitness": 0.9714179415435069
+    },
+    {
+      "evaluation": 84,
+      "fitness": 0.9698554452411918
+    },
+    {
+      "evaluation": 85,
+      "fitness": 0.9727129205580131
+    },
+    {
+      "evaluation": 86,
+      "fitness": 0.9688229338926545
+    },
+    {
+      "evaluation": 87,
+      "fitness": 0.9679723791971976
+    },
+    {
+      "evaluation": 88,
+      "fitness": 0.9709788148679145
+    },
+    {
+      "evaluation": 89,
+      "fitness": 0.9723978429274146
+    },
+    {
+      "evaluation": 90,
+      "fitness": 0.9729571673394527
+    },
+    {
+      "evaluation": 91,
+      "fitness": 0.9749952615420495
+    },
+    {
+      "evaluation": 92,
+      "fitness": 0.9747425792832084
+    },
+    {
+      "evaluation": 93,
+      "fitness": 0.9717295985369245
+    },
+    {
+      "evaluation": 94,
+      "fitness": 0.9743344160179023
+    },
+    {
+      "evaluation": 95,
+      "fitness": 0.9722461353185843
+    },
+    {
+      "evaluation": 96,
+      "fitness": 0.9726232244020391
+    },
+    {
+      "evaluation": 97,
+      "fitness": 0.9594482791274511
+    },
+    {
+      "evaluation": 98,
+      "fitness": 0.9718582215020661
+    },
+    {
+      "evaluation": 99,
+      "fitness": 0.9707826046046298
+    },
+    {
+      "evaluation": 100,
+      "fitness": 0.9723869584843144
+    },
+    {
+      "evaluation": 101,
+      "fitness": 0.9720337880894978
+    },
+    {
+      "evaluation": 102,
+      "fitness": 0.9710037695492364
+    },
+    {
+      "evaluation": 103,
+      "fitness": 0.971727965319696
+    },
+    {
+      "evaluation": 104,
+      "fitness": 0.9707763574965474
+    },
+    {
+      "evaluation": 105,
+      "fitness": 0.9720070944005482
+    },
+    {
+      "evaluation": 106,
+      "fitness": 0.9725624064154509
+    },
+    {
+      "evaluation": 107,
+      "fitness": 0.9763578562114446
+    },
+    {
+      "evaluation": 108,
+      "fitness": 0.973782219153295
+    },
+    {
+      "evaluation": 109,
+      "fitness": 0.97139204831609
+    },
+    {
+      "evaluation": 110,
+      "fitness": 0.9727961336612081
+    },
+    {
+      "evaluation": 111,
+      "fitness": 0.9747439857019019
+    },
+    {
+      "evaluation": 112,
+      "fitness": 0.9697064424588804
+    },
+    {
+      "evaluation": 113,
+      "fitness": 0.9705563448019949
+    },
+    {
+      "evaluation": 114,
+      "fitness": 0.9699509731320374
+    },
+    {
+      "evaluation": 115,
+      "fitness": 0.970959084322844
+    },
+    {
+      "evaluation": 116,
+      "fitness": 0.9733486211385963
+    },
+    {
+      "evaluation": 117,
+      "fitness": 0.9694332854472515
+    },
+    {
+      "evaluation": 118,
+      "fitness": 0.9705757217854778
+    },
+    {
+      "evaluation": 119,
+      "fitness": 0.9665073990730522
+    },
+    {
+      "evaluation": 120,
+      "fitness": 0.9737368045931154
+    },
+    {
+      "evaluation": 121,
+      "fitness": 0.9694075032282774
+    },
+    {
+      "evaluation": 122,
+      "fitness": 0.9710924126877976
+    },
+    {
+      "evaluation": 123,
+      "fitness": 0.9696114101406063
+    },
+    {
+      "evaluation": 124,
+      "fitness": 0.971787707825915
+    },
+    {
+      "evaluation": 125,
+      "fitness": 0.971575890548155
+    },
+    {
+      "evaluation": 126,
+      "fitness": 0.9703389568940527
+    },
+    {
+      "evaluation": 127,
+      "fitness": 0.9707987268011983
+    },
+    {
+      "evaluation": 128,
+      "fitness": 0.9684383259818209
+    },
+    {
+      "evaluation": 129,
+      "fitness": 0.968801322983233
+    },
+    {
+      "evaluation": 130,
+      "fitness": 0.9707471201593588
+    },
+    {
+      "evaluation": 131,
+      "fitness": 0.9703488916260237
+    },
+    {
+      "evaluation": 132,
+      "fitness": 0.9715247668314682
+    },
+    {
+      "evaluation": 133,
+      "fitness": 0.9733329059691016
+    },
+    {
+      "evaluation": 134,
+      "fitness": 0.9719644150631624
+    },
+    {
+      "evaluation": 135,
+      "fitness": 0.9705410681873272
+    },
+    {
+      "evaluation": 136,
+      "fitness": 0.9721631408844298
+    },
+    {
+      "evaluation": 137,
+      "fitness": 0.9706668436596962
+    },
+    {
+      "evaluation": 138,
+      "fitness": 0.9720560962130048
+    },
+    {
+      "evaluation": 139,
+      "fitness": 0.9705444825672436
+    },
+    {
+      "evaluation": 140,
+      "fitness": 0.9727781630456699
+    },
+    {
+      "evaluation": 141,
+      "fitness": 0.9732127983081975
+    },
+    {
+      "evaluation": 142,
+      "fitness": 0.972974007671068
+    },
+    {
+      "evaluation": 143,
+      "fitness": 0.9712164959123085
+    },
+    {
+      "evaluation": 144,
+      "fitness": 0.9709599428529447
+    },
+    {
+      "evaluation": 145,
+      "fitness": 0.9734973598464229
+    },
+    {
+      "evaluation": 146,
+      "fitness": 0.9724171657177678
+    },
+    {
+      "evaluation": 147,
+      "fitness": 0.9693764585399005
+    },
+    {
+      "evaluation": 148,
+      "fitness": 0.9713407763643792
+    },
+    {
+      "evaluation": 149,
+      "fitness": 0.9684566678363559
+    },
+    {
+      "evaluation": 150,
+      "fitness": 0.9707028789529706
+    },
+    {
+      "evaluation": 151,
+      "fitness": 0.9721224443219341
+    },
+    {
+      "evaluation": 152,
+      "fitness": 0.9767700864083407
+    },
+    {
+      "evaluation": 153,
+      "fitness": 0.974014522810977
+    },
+    {
+      "evaluation": 154,
+      "fitness": 0.9739002286438497
+    },
+    {
+      "evaluation": 155,
+      "fitness": 0.9730376958206018
+    },
+    {
+      "evaluation": 156,
+      "fitness": 0.9735920241232413
+    },
+    {
+      "evaluation": 157,
+      "fitness": 0.9694253576498578
+    },
+    {
+      "evaluation": 158,
+      "fitness": 0.9693082362984251
+    },
+    {
+      "evaluation": 159,
+      "fitness": 0.9694163779230265
+    },
+    {
+      "evaluation": 160,
+      "fitness": 0.9688825872280173
+    },
+    {
+      "evaluation": 161,
+      "fitness": 0.9700961162708863
+    },
+    {
+      "evaluation": 162,
+      "fitness": 0.9739709402679071
+    },
+    {
+      "evaluation": 163,
+      "fitness": 0.9717535777412638
+    },
+    {
+      "evaluation": 164,
+      "fitness": 0.9699973612357934
+    },
+    {
+      "evaluation": 165,
+      "fitness": 0.9744711313775664
+    },
+    {
+      "evaluation": 166,
+      "fitness": 0.9698533891160015
+    },
+    {
+      "evaluation": 167,
+      "fitness": 0.9721408408088404
+    },
+    {
+      "evaluation": 168,
+      "fitness": 0.97114462684002
+    },
+    {
+      "evaluation": 169,
+      "fitness": 0.9717460798848386
+    },
+    {
+      "evaluation": 170,
+      "fitness": 0.9759843579538078
+    },
+    {
+      "evaluation": 171,
+      "fitness": 0.9721921506347735
+    },
+    {
+      "evaluation": 172,
+      "fitness": 0.9701542209012407
+    },
+    {
+      "evaluation": 173,
+      "fitness": 0.9697934035306677
+    },
+    {
+      "evaluation": 174,
+      "fitness": 0.9709948196512428
+    },
+    {
+      "evaluation": 175,
+      "fitness": 0.9694088150168447
+    },
+    {
+      "evaluation": 176,
+      "fitness": 0.9720196818865943
+    },
+    {
+      "evaluation": 177,
+      "fitness": 0.9713138264929508
+    },
+    {
+      "evaluation": 178,
+      "fitness": 0.9747992350348474
+    },
+    {
+      "evaluation": 179,
+      "fitness": 0.971906689777879
+    },
+    {
+      "evaluation": 180,
+      "fitness": 0.9734941767287258
+    },
+    {
+      "evaluation": 181,
+      "fitness": 0.9745384976505553
+    },
+    {
+      "evaluation": 182,
+      "fitness": 0.9713524134780237
+    },
+    {
+      "evaluation": 183,
+      "fitness": 0.9741476917141074
+    },
+    {
+      "evaluation": 184,
+      "fitness": 0.9721572778053533
+    },
+    {
+      "evaluation": 185,
+      "fitness": 0.9725327571958777
+    },
+    {
+      "evaluation": 186,
+      "fitness": 0.9728251096212158
+    },
+    {
+      "evaluation": 187,
+      "fitness": 0.9707216792403462
+    },
+    {
+      "evaluation": 188,
+      "fitness": 0.9733304063175119
+    },
+    {
+      "evaluation": 189,
+      "fitness": 0.9771533535153059
+    },
+    {
+      "evaluation": 190,
+      "fitness": 0.9755579974956466
+    },
+    {
+      "evaluation": 191,
+      "fitness": 0.974185049417084
+    },
+    {
+      "evaluation": 192,
+      "fitness": 0.9721207043983499
+    },
+    {
+      "evaluation": 193,
+      "fitness": 0.9747425792832084
+    },
+    {
+      "evaluation": 194,
+      "fitness": 0.9749501421969575
+    },
+    {
+      "evaluation": 195,
+      "fitness": 0.9750183425461194
+    },
+    {
+      "evaluation": 196,
+      "fitness": 0.9759599691588766
+    },
+    {
+      "evaluation": 197,
+      "fitness": 0.9775615105855426
+    },
+    {
+      "evaluation": 198,
+      "fitness": 0.9747972943150431
+    },
+    {
+      "evaluation": 199,
+      "fitness": 0.9763645839364166
+    },
+    {
+      "evaluation": 200,
+      "fitness": 0.9676417635868962
+    },
+    {
+      "evaluation": 201,
+      "fitness": 0.9702240459793676
+    },
+    {
+      "evaluation": 202,
+      "fitness": 0.9728038665825302
+    },
+    {
+      "evaluation": 203,
+      "fitness": 0.9735378867684968
+    },
+    {
+      "evaluation": 204,
+      "fitness": 0.972246372307904
+    },
+    {
+      "evaluation": 205,
+      "fitness": 0.9763922943824159
+    },
+    {
+      "evaluation": 206,
+      "fitness": 0.9711592461338857
+    },
+    {
+      "evaluation": 207,
+      "fitness": 0.9744083506538536
+    },
+    {
+      "evaluation": 208,
+      "fitness": 0.9755993652803551
+    },
+    {
+      "evaluation": 209,
+      "fitness": 0.9749942909265947
+    },
+    {
+      "evaluation": 210,
+      "fitness": 0.9737561382729587
+    },
+    {
+      "evaluation": 211,
+      "fitness": 0.9739895477860019
+    },
+    {
+      "evaluation": 212,
+      "fitness": 0.9728218577150487
+    },
+    {
+      "evaluation": 213,
+      "fitness": 0.9741789350114373
+    },
+    {
+      "evaluation": 214,
+      "fitness": 0.9737707717461311
+    },
+    {
+      "evaluation": 215,
+      "fitness": 0.9763363951002839
+    },
+    {
+      "evaluation": 216,
+      "fitness": 0.9762090701638473
+    },
+    {
+      "evaluation": 217,
+      "fitness": 0.9712459766041069
+    },
+    {
+      "evaluation": 218,
+      "fitness": 0.9753811220717797
+    },
+    {
+      "evaluation": 219,
+      "fitness": 0.9740041105676379
+    },
+    {
+      "evaluation": 220,
+      "fitness": 0.9761640507915297
+    },
+    {
+      "evaluation": 221,
+      "fitness": 0.9758034469130081
+    },
+    {
+      "evaluation": 222,
+      "fitness": 0.9765863437459481
+    },
+    {
+      "evaluation": 223,
+      "fitness": 0.9725546535695286
+    },
+    {
+      "evaluation": 224,
+      "fitness": 0.9755335746513729
+    },
+    {
+      "evaluation": 225,
+      "fitness": 0.9751413141329474
+    },
+    {
+      "evaluation": 226,
+      "fitness": 0.9751418218341318
+    },
+    {
+      "evaluation": 227,
+      "fitness": 0.9686308318477351
+    },
+    {
+      "evaluation": 228,
+      "fitness": 0.9773937495621777
+    },
+    {
+      "evaluation": 229,
+      "fitness": 0.9759793933158682
+    },
+    {
+      "evaluation": 230,
+      "fitness": 0.9729479803970714
+    },
+    {
+      "evaluation": 231,
+      "fitness": 0.9763974876464249
+    },
+    {
+      "evaluation": 232,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 233,
+      "fitness": 0.9747961284803389
+    },
+    {
+      "evaluation": 234,
+      "fitness": 0.9747977480239779
+    },
+    {
+      "evaluation": 235,
+      "fitness": 0.9681965663006498
+    },
+    {
+      "evaluation": 236,
+      "fitness": 0.9709012265457448
+    },
+    {
+      "evaluation": 237,
+      "fitness": 0.972807258864243
+    },
+    {
+      "evaluation": 238,
+      "fitness": 0.9729090214684264
+    },
+    {
+      "evaluation": 239,
+      "fitness": 0.9745330582172687
+    },
+    {
+      "evaluation": 240,
+      "fitness": 0.9735602252950306
+    },
+    {
+      "evaluation": 241,
+      "fitness": 0.9735680691305796
+    },
+    {
+      "evaluation": 242,
+      "fitness": 0.9747476307544182
+    },
+    {
+      "evaluation": 243,
+      "fitness": 0.9709599428529447
+    },
+    {
+      "evaluation": 244,
+      "fitness": 0.9730259393477018
+    },
+    {
+      "evaluation": 245,
+      "fitness": 0.9713487084726731
+    },
+    {
+      "evaluation": 246,
+      "fitness": 0.9697584570322576
+    },
+    {
+      "evaluation": 247,
+      "fitness": 0.9691738169874466
+    },
+    {
+      "evaluation": 248,
+      "fitness": 0.9701905744887258
+    },
+    {
+      "evaluation": 249,
+      "fitness": 0.9719535995078027
+    },
+    {
+      "evaluation": 250,
+      "fitness": 0.9693272897917202
+    },
+    {
+      "evaluation": 251,
+      "fitness": 0.971517240643695
+    },
+    {
+      "evaluation": 252,
+      "fitness": 0.9660618094443683
+    },
+    {
+      "evaluation": 253,
+      "fitness": 0.9673515134785614
+    },
+    {
+      "evaluation": 254,
+      "fitness": 0.9748058743166141
+    },
+    {
+      "evaluation": 255,
+      "fitness": 0.9727379612396224
+    },
+    {
+      "evaluation": 256,
+      "fitness": 0.9748290750434357
+    },
+    {
+      "evaluation": 257,
+      "fitness": 0.9731486046399735
+    },
+    {
+      "evaluation": 258,
+      "fitness": 0.9777479774508233
+    },
+    {
+      "evaluation": 259,
+      "fitness": 0.977180757801304
+    },
+    {
+      "evaluation": 260,
+      "fitness": 0.9694277342213558
+    },
+    {
+      "evaluation": 261,
+      "fitness": 0.9763738013905601
+    },
+    {
+      "evaluation": 262,
+      "fitness": 0.9742706869982035
+    },
+    {
+      "evaluation": 263,
+      "fitness": 0.9749764765719372
+    },
+    {
+      "evaluation": 264,
+      "fitness": 0.968590359119889
+    },
+    {
+      "evaluation": 265,
+      "fitness": 0.973065747225397
+    },
+    {
+      "evaluation": 266,
+      "fitness": 0.974403411062176
+    },
+    {
+      "evaluation": 267,
+      "fitness": 0.9707610965009532
+    },
+    {
+      "evaluation": 268,
+      "fitness": 0.9699993618363195
+    },
+    {
+      "evaluation": 269,
+      "fitness": 0.9759245842878265
+    },
+    {
+      "evaluation": 270,
+      "fitness": 0.9771985886439073
+    },
+    {
+      "evaluation": 271,
+      "fitness": 0.977172634631651
+    },
+    {
+      "evaluation": 272,
+      "fitness": 0.9732060473125131
+    },
+    {
+      "evaluation": 273,
+      "fitness": 0.9683602677853237
+    },
+    {
+      "evaluation": 274,
+      "fitness": 0.9700125175357555
+    },
+    {
+      "evaluation": 275,
+      "fitness": 0.9720400143937076
+    },
+    {
+      "evaluation": 276,
+      "fitness": 0.9744176009889499
+    },
+    {
+      "evaluation": 277,
+      "fitness": 0.9729915695494349
+    },
+    {
+      "evaluation": 278,
+      "fitness": 0.9769945070112542
+    },
+    {
+      "evaluation": 279,
+      "fitness": 0.9763586934441212
+    },
+    {
+      "evaluation": 280,
+      "fitness": 0.978728973203579
+    },
+    {
+      "evaluation": 281,
+      "fitness": 0.9744028213418893
+    },
+    {
+      "evaluation": 282,
+      "fitness": 0.977790494571606
+    },
+    {
+      "evaluation": 283,
+      "fitness": 0.9781642196659408
+    },
+    {
+      "evaluation": 284,
+      "fitness": 0.977184458954795
+    },
+    {
+      "evaluation": 285,
+      "fitness": 0.9764131517965003
+    },
+    {
+      "evaluation": 286,
+      "fitness": 0.9787607394930774
+    },
+    {
+      "evaluation": 287,
+      "fitness": 0.9776120463770928
+    },
+    {
+      "evaluation": 288,
+      "fitness": 0.9776120463770928
+    },
+    {
+      "evaluation": 289,
+      "fitness": 0.9767739671941719
+    },
+    {
+      "evaluation": 290,
+      "fitness": 0.9685228731780993
+    },
+    {
+      "evaluation": 291,
+      "fitness": 0.9737664220262934
+    },
+    {
+      "evaluation": 292,
+      "fitness": 0.9700352627493551
+    },
+    {
+      "evaluation": 293,
+      "fitness": 0.966425439019424
+    },
+    {
+      "evaluation": 294,
+      "fitness": 0.9674124892730656
+    },
+    {
+      "evaluation": 295,
+      "fitness": 0.9723640344355368
+    },
+    {
+      "evaluation": 296,
+      "fitness": 0.9721753881296058
+    },
+    {
+      "evaluation": 297,
+      "fitness": 0.9773478931353285
+    },
+    {
+      "evaluation": 298,
+      "fitness": 0.9739519561532374
+    },
+    {
+      "evaluation": 299,
+      "fitness": 0.9751729978505065
+    },
+    {
+      "evaluation": 300,
+      "fitness": 0.9720532122464894
+    },
+    {
+      "evaluation": 301,
+      "fitness": 0.9720388924633726
+    },
+    {
+      "evaluation": 302,
+      "fitness": 0.9701874430186241
+    },
+    {
+      "evaluation": 303,
+      "fitness": 0.9713581911028191
+    },
+    {
+      "evaluation": 304,
+      "fitness": 0.9695565312242205
+    },
+    {
+      "evaluation": 305,
+      "fitness": 0.975553466380534
+    },
+    {
+      "evaluation": 306,
+      "fitness": 0.974939698041045
+    },
+    {
+      "evaluation": 307,
+      "fitness": 0.9759496929461384
+    },
+    {
+      "evaluation": 308,
+      "fitness": 0.9743886991080066
+    },
+    {
+      "evaluation": 309,
+      "fitness": 0.9779696131119233
+    },
+    {
+      "evaluation": 310,
+      "fitness": 0.9760252510322599
+    },
+    {
+      "evaluation": 311,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 312,
+      "fitness": 0.9769626409763736
+    },
+    {
+      "evaluation": 313,
+      "fitness": 0.9762090701638473
+    },
+    {
+      "evaluation": 314,
+      "fitness": 0.9766172334291534
+    },
+    {
+      "evaluation": 315,
+      "fitness": 0.9775748858743328
+    },
+    {
+      "evaluation": 316,
+      "fitness": 0.9779696738508488
+    },
+    {
+      "evaluation": 317,
+      "fitness": 0.9765544777110675
+    },
+    {
+      "evaluation": 318,
+      "fitness": 0.9745177680096883
+    },
+    {
+      "evaluation": 319,
+      "fitness": 0.9696407226013756
+    },
+    {
+      "evaluation": 320,
+      "fitness": 0.9717754320544597
+    },
+    {
+      "evaluation": 321,
+      "fitness": 0.9700340045122776
+    },
+    {
+      "evaluation": 322,
+      "fitness": 0.9756283719014607
+    },
+    {
+      "evaluation": 323,
+      "fitness": 0.976197448602392
+    },
+    {
+      "evaluation": 324,
+      "fitness": 0.9776267718288011
+    },
+    {
+      "evaluation": 325,
+      "fitness": 0.9741993294295229
+    },
+    {
+      "evaluation": 326,
+      "fitness": 0.9757780768085218
+    },
+    {
+      "evaluation": 327,
+      "fitness": 0.9654138045333289
+    },
+    {
+      "evaluation": 328,
+      "fitness": 0.9711608416463643
+    },
+    {
+      "evaluation": 329,
+      "fitness": 0.9747317782094672
+    },
+    {
+      "evaluation": 330,
+      "fitness": 0.9748007612363415
+    },
+    {
+      "evaluation": 331,
+      "fitness": 0.9723739376414585
+    },
+    {
+      "evaluation": 332,
+      "fitness": 0.9747894059691552
+    },
+    {
+      "evaluation": 333,
+      "fitness": 0.977003118057316
+    },
+    {
+      "evaluation": 334,
+      "fitness": 0.9769803773221419
+    },
+    {
+      "evaluation": 335,
+      "fitness": 0.9738113243227492
+    },
+    {
+      "evaluation": 336,
+      "fitness": 0.9767762956894889
+    },
+    {
+      "evaluation": 337,
+      "fitness": 0.9767356482373694
+    },
+    {
+      "evaluation": 338,
+      "fitness": 0.9771438115026755
+    },
+    {
+      "evaluation": 339,
+      "fitness": 0.9756057324997675
+    },
+    {
+      "evaluation": 340,
+      "fitness": 0.9751567206585309
+    },
+    {
+      "evaluation": 341,
+      "fitness": 0.9698554452411918
+    },
+    {
+      "evaluation": 342,
+      "fitness": 0.9759576406635596
+    },
+    {
+      "evaluation": 343,
+      "fitness": 0.9769860462885193
+    },
+    {
+      "evaluation": 344,
+      "fitness": 0.9769562421965929
+    },
+    {
+      "evaluation": 345,
+      "fitness": 0.9769679354442529
+    },
+    {
+      "evaluation": 346,
+      "fitness": 0.9761546118114681
+    },
+    {
+      "evaluation": 347,
+      "fitness": 0.9759844973318308
+    },
+    {
+      "evaluation": 348,
+      "fitness": 0.9693627963745426
+    },
+    {
+      "evaluation": 349,
+      "fitness": 0.9668964845535748
+    },
+    {
+      "evaluation": 350,
+      "fitness": 0.9685609959669319
+    },
+    {
+      "evaluation": 351,
+      "fitness": 0.9706792504235737
+    },
+    {
+      "evaluation": 352,
+      "fitness": 0.9722145605692205
+    },
+    {
+      "evaluation": 353,
+      "fitness": 0.9704580082100985
+    },
+    {
+      "evaluation": 354,
+      "fitness": 0.9726406577583306
+    },
+    {
+      "evaluation": 355,
+      "fitness": 0.9758324535341137
+    },
+    {
+      "evaluation": 356,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 357,
+      "fitness": 0.9775982911864785
+    },
+    {
+      "evaluation": 358,
+      "fitness": 0.9745384976505553
+    },
+    {
+      "evaluation": 359,
+      "fitness": 0.9765949547920099
+    },
+    {
+      "evaluation": 360,
+      "fitness": 0.9723818697497525
+    },
+    {
+      "evaluation": 361,
+      "fitness": 0.9741998004728892
+    },
+    {
+      "evaluation": 362,
+      "fitness": 0.9753846398372433
+    },
+    {
+      "evaluation": 363,
+      "fitness": 0.9755827554561978
+    },
+    {
+      "evaluation": 364,
+      "fitness": 0.9751705481256079
+    },
+    {
+      "evaluation": 365,
+      "fitness": 0.9787490983026741
+    },
+    {
+      "evaluation": 366,
+      "fitness": 0.9718831286447922
+    },
+    {
+      "evaluation": 367,
+      "fitness": 0.9745885655665898
+    },
+    {
+      "evaluation": 368,
+      "fitness": 0.9738009653274537
+    },
+    {
+      "evaluation": 369,
+      "fitness": 0.973375721148254
+    },
+    {
+      "evaluation": 370,
+      "fitness": 0.9710524632388167
+    },
+    {
+      "evaluation": 371,
+      "fitness": 0.9736207299821338
+    },
+    {
+      "evaluation": 372,
+      "fitness": 0.9768108709058939
+    },
+    {
+      "evaluation": 373,
+      "fitness": 0.9746249934107827
+    },
+    {
+      "evaluation": 374,
+      "fitness": 0.974527849242539
+    },
+    {
+      "evaluation": 375,
+      "fitness": 0.9667560097690939
+    },
+    {
+      "evaluation": 376,
+      "fitness": 0.9705935332785434
+    },
+    {
+      "evaluation": 377,
+      "fitness": 0.9733781870710612
+    },
+    {
+      "evaluation": 378,
+      "fitness": 0.9745853243365021
+    },
+    {
+      "evaluation": 379,
+      "fitness": 0.9767762956894889
+    },
+    {
+      "evaluation": 380,
+      "fitness": 0.9779320781106652
+    },
+    {
+      "evaluation": 381,
+      "fitness": 0.9779637618282243
+    },
+    {
+      "evaluation": 382,
+      "fitness": 0.9777279964780121
+    },
+    {
+      "evaluation": 383,
+      "fitness": 0.9789662830536754
+    },
+    {
+      "evaluation": 384,
+      "fitness": 0.9789531799353272
+    },
+    {
+      "evaluation": 385,
+      "fitness": 0.9754232295051546
+    },
+    {
+      "evaluation": 386,
+      "fitness": 0.9741667156214567
+    },
+    {
+      "evaluation": 387,
+      "fitness": 0.9685773347427482
+    },
+    {
+      "evaluation": 388,
+      "fitness": 0.9745183430899023
+    },
+    {
+      "evaluation": 389,
+      "fitness": 0.973445859085908
+    },
+    {
+      "evaluation": 390,
+      "fitness": 0.9725847746433105
+    },
+    {
+      "evaluation": 391,
+      "fitness": 0.9595221743559096
+    },
+    {
+      "evaluation": 392,
+      "fitness": 0.9724046626505474
+    },
+    {
+      "evaluation": 393,
+      "fitness": 0.9729999006493746
+    },
+    {
+      "evaluation": 394,
+      "fitness": 0.9729999006493746
+    },
+    {
+      "evaluation": 395,
+      "fitness": 0.9753981839458161
+    },
+    {
+      "evaluation": 396,
+      "fitness": 0.9759705503602228
+    },
+    {
+      "evaluation": 397,
+      "fitness": 0.9789724672467417
+    },
+    {
+      "evaluation": 398,
+      "fitness": 0.9742247050897795
+    },
+    {
+      "evaluation": 399,
+      "fitness": 0.9775889210666101
+    },
+    {
+      "evaluation": 400,
+      "fitness": 0.9738229034881157
+    },
+    {
+      "evaluation": 401,
+      "fitness": 0.9755710932049851
+    },
+    {
+      "evaluation": 402,
+      "fitness": 0.9729908013364441
+    },
+    {
+      "evaluation": 403,
+      "fitness": 0.9690372942954442
+    },
+    {
+      "evaluation": 404,
+      "fitness": 0.9724437195407439
+    },
+    {
+      "evaluation": 405,
+      "fitness": 0.9687084637983309
+    },
+    {
+      "evaluation": 406,
+      "fitness": 0.974296676754092
+    },
+    {
+      "evaluation": 407,
+      "fitness": 0.9733729558098397
+    },
+    {
+      "evaluation": 408,
+      "fitness": 0.9739389603965896
+    },
+    {
+      "evaluation": 409,
+      "fitness": 0.9662866133038976
+    },
+    {
+      "evaluation": 410,
+      "fitness": 0.9682025723203707
+    },
+    {
+      "evaluation": 411,
+      "fitness": 0.9707759433239113
+    },
+    {
+      "evaluation": 412,
+      "fitness": 0.9732237128270982
+    },
+    {
+      "evaluation": 413,
+      "fitness": 0.9769597661276894
+    },
+    {
+      "evaluation": 414,
+      "fitness": 0.9761605023037635
+    },
+    {
+      "evaluation": 415,
+      "fitness": 0.973375721148254
+    },
+    {
+      "evaluation": 416,
+      "fitness": 0.9664740665640371
+    },
+    {
+      "evaluation": 417,
+      "fitness": 0.9690227469758592
+    },
+    {
+      "evaluation": 418,
+      "fitness": 0.9739945365885215
+    },
+    {
+      "evaluation": 419,
+      "fitness": 0.9713978192001211
+    },
+    {
+      "evaluation": 420,
+      "fitness": 0.9735822687037142
+    },
+    {
+      "evaluation": 421,
+      "fitness": 0.9712034797954071
+    },
+    {
+      "evaluation": 422,
+      "fitness": 0.9738138470027847
+    },
+    {
+      "evaluation": 423,
+      "fitness": 0.9712224115520388
+    },
+    {
+      "evaluation": 424,
+      "fitness": 0.9755938697057005
+    },
+    {
+      "evaluation": 425,
+      "fitness": 0.9758324535341137
+    },
+    {
+      "evaluation": 426,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 427,
+      "fitness": 0.9775023874821543
+    },
+    {
+      "evaluation": 428,
+      "fitness": 0.9749544021325439
+    },
+    {
+      "evaluation": 429,
+      "fitness": 0.9741650511098411
+    },
+    {
+      "evaluation": 430,
+      "fitness": 0.9703559742155622
+    },
+    {
+      "evaluation": 431,
+      "fitness": 0.9756173374466494
+    },
+    {
+      "evaluation": 432,
+      "fitness": 0.976805650911731
+    },
+    {
+      "evaluation": 433,
+      "fitness": 0.9777483498578324
+    },
+    {
+      "evaluation": 434,
+      "fitness": 0.9765619378440976
+    },
+    {
+      "evaluation": 435,
+      "fitness": 0.9763658039288657
+    },
+    {
+      "evaluation": 436,
+      "fitness": 0.9709556423293728
+    },
+    {
+      "evaluation": 437,
+      "fitness": 0.9738104678154896
+    },
+    {
+      "evaluation": 438,
+      "fitness": 0.9722345867045479
+    },
+    {
+      "evaluation": 439,
+      "fitness": 0.9736294267902436
+    },
+    {
+      "evaluation": 440,
+      "fitness": 0.967001446652451
+    },
+    {
+      "evaluation": 441,
+      "fitness": 0.9740355463818741
+    },
+    {
+      "evaluation": 442,
+      "fitness": 0.977218608563495
+    },
+    {
+      "evaluation": 443,
+      "fitness": 0.978545016670021
+    },
+    {
+      "evaluation": 444,
+      "fitness": 0.9779637618282243
+    },
+    {
+      "evaluation": 445,
+      "fitness": 0.9781879387789538
+    },
+    {
+      "evaluation": 446,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 447,
+      "fitness": 0.9781737554835018
+    },
+    {
+      "evaluation": 448,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 449,
+      "fitness": 0.9721093236358119
+    },
+    {
+      "evaluation": 450,
+      "fitness": 0.9759193217067571
+    },
+    {
+      "evaluation": 451,
+      "fitness": 0.9731741054384081
+    },
+    {
+      "evaluation": 452,
+      "fitness": 0.9747830387497428
+    },
+    {
+      "evaluation": 453,
+      "fitness": 0.9671910870609256
+    },
+    {
+      "evaluation": 454,
+      "fitness": 0.9721347264031938
+    },
+    {
+      "evaluation": 455,
+      "fitness": 0.9728218577150487
+    },
+    {
+      "evaluation": 456,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 457,
+      "fitness": 0.9753722524338716
+    },
+    {
+      "evaluation": 458,
+      "fitness": 0.9771555628628543
+    },
+    {
+      "evaluation": 459,
+      "fitness": 0.9761315719941351
+    },
+    {
+      "evaluation": 460,
+      "fitness": 0.9781737554835018
+    },
+    {
+      "evaluation": 461,
+      "fitness": 0.9769486399982431
+    },
+    {
+      "evaluation": 462,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 463,
+      "fitness": 0.9771782496736469
+    },
+    {
+      "evaluation": 464,
+      "fitness": 0.9761537745787915
+    },
+    {
+      "evaluation": 465,
+      "fitness": 0.9695686235628481
+    },
+    {
+      "evaluation": 466,
+      "fitness": 0.9702270132353574
+    },
+    {
+      "evaluation": 467,
+      "fitness": 0.9732465945030332
+    },
+    {
+      "evaluation": 468,
+      "fitness": 0.9750383926667725
+    },
+    {
+      "evaluation": 469,
+      "fitness": 0.9769741680409938
+    },
+    {
+      "evaluation": 470,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 471,
+      "fitness": 0.9773942095538254
+    },
+    {
+      "evaluation": 472,
+      "fitness": 0.9773927871513782
+    },
+    {
+      "evaluation": 473,
+      "fitness": 0.9695911985710134
+    },
+    {
+      "evaluation": 474,
+      "fitness": 0.9769860462885193
+    },
+    {
+      "evaluation": 475,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 476,
+      "fitness": 0.9783771876745998
+    },
+    {
+      "evaluation": 477,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 478,
+      "fitness": 0.9775233020828452
+    },
+    {
+      "evaluation": 479,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 480,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 481,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 482,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 483,
+      "fitness": 0.979309534383979
+    },
+    {
+      "evaluation": 484,
+      "fitness": 0.9740269851207688
+    },
+    {
+      "evaluation": 485,
+      "fitness": 0.9761867915267037
+    },
+    {
+      "evaluation": 486,
+      "fitness": 0.9703707019302168
+    },
+    {
+      "evaluation": 487,
+      "fitness": 0.9733709801001409
+    },
+    {
+      "evaluation": 488,
+      "fitness": 0.9732010605703915
+    },
+    {
+      "evaluation": 489,
+      "fitness": 0.9777930026992632
+    },
+    {
+      "evaluation": 490,
+      "fitness": 0.9733787329460631
+    },
+    {
+      "evaluation": 491,
+      "fitness": 0.9764446984320729
+    },
+    {
+      "evaluation": 492,
+      "fitness": 0.9743184509767593
+    },
+    {
+      "evaluation": 493,
+      "fitness": 0.9717962026083635
+    },
+    {
+      "evaluation": 494,
+      "fitness": 0.9719847718812867
+    },
+    {
+      "evaluation": 495,
+      "fitness": 0.9681793389831416
+    },
+    {
+      "evaluation": 496,
+      "fitness": 0.9746302294014664
+    },
+    {
+      "evaluation": 497,
+      "fitness": 0.973631693555434
+    },
+    {
+      "evaluation": 498,
+      "fitness": 0.9762116101783143
+    },
+    {
+      "evaluation": 499,
+      "fitness": 0.9740185302771734
+    },
+    {
+      "evaluation": 500,
+      "fitness": 0.978786000381461
+    },
+    {
+      "evaluation": 501,
+      "fitness": 0.9767556844950364
+    },
+    {
+      "evaluation": 502,
+      "fitness": 0.9771901279211723
+    },
+    {
+      "evaluation": 503,
+      "fitness": 0.9777655922181957
+    },
+    {
+      "evaluation": 504,
+      "fitness": 0.977207199689969
+    },
+    {
+      "evaluation": 505,
+      "fitness": 0.9770216692440858
+    },
+    {
+      "evaluation": 506,
+      "fitness": 0.9692357898961516
+    },
+    {
+      "evaluation": 507,
+      "fitness": 0.9765750585602048
+    },
+    {
+      "evaluation": 508,
+      "fitness": 0.9757587536055633
+    },
+    {
+      "evaluation": 509,
+      "fitness": 0.9683805424625037
+    },
+    {
+      "evaluation": 510,
+      "fitness": 0.9649773015713896
+    },
+    {
+      "evaluation": 511,
+      "fitness": 0.9743495053799504
+    },
+    {
+      "evaluation": 512,
+      "fitness": 0.9727707580009515
+    },
+    {
+      "evaluation": 513,
+      "fitness": 0.9728969238749481
+    },
+    {
+      "evaluation": 514,
+      "fitness": 0.96660027054478
+    },
+    {
+      "evaluation": 515,
+      "fitness": 0.9755128569956959
+    },
+    {
+      "evaluation": 516,
+      "fitness": 0.9680218548157163
+    },
+    {
+      "evaluation": 517,
+      "fitness": 0.9727368388285308
+    },
+    {
+      "evaluation": 518,
+      "fitness": 0.9786046429786119
+    },
+    {
+      "evaluation": 519,
+      "fitness": 0.9756133381553765
+    },
+    {
+      "evaluation": 520,
+      "fitness": 0.9783719250935304
+    },
+    {
+      "evaluation": 521,
+      "fitness": 0.9761882127497629
+    },
+    {
+      "evaluation": 522,
+      "fitness": 0.9779696738508488
+    },
+    {
+      "evaluation": 523,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 524,
+      "fitness": 0.9781678434608774
+    },
+    {
+      "evaluation": 525,
+      "fitness": 0.9777655922181957
+    },
+    {
+      "evaluation": 526,
+      "fitness": 0.9621846008942481
+    },
+    {
+      "evaluation": 527,
+      "fitness": 0.9689882640749233
+    },
+    {
+      "evaluation": 528,
+      "fitness": 0.9782189968071726
+    },
+    {
+      "evaluation": 529,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 530,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 531,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 532,
+      "fitness": 0.9774079647444397
+    },
+    {
+      "evaluation": 533,
+      "fitness": 0.9750013759476962
+    },
+    {
+      "evaluation": 534,
+      "fitness": 0.9708175638900128
+    },
+    {
+      "evaluation": 535,
+      "fitness": 0.9735457891754649
+    },
+    {
+      "evaluation": 536,
+      "fitness": 0.9745472733995306
+    },
+    {
+      "evaluation": 537,
+      "fitness": 0.9779690244092937
+    },
+    {
+      "evaluation": 538,
+      "fitness": 0.9781737554835018
+    },
+    {
+      "evaluation": 539,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 540,
+      "fitness": 0.9779320781106652
+    },
+    {
+      "evaluation": 541,
+      "fitness": 0.9774079647444397
+    },
+    {
+      "evaluation": 542,
+      "fitness": 0.9675507882266908
+    },
+    {
+      "evaluation": 543,
+      "fitness": 0.9705584721151431
+    },
+    {
+      "evaluation": 544,
+      "fitness": 0.9715527901053261
+    },
+    {
+      "evaluation": 545,
+      "fitness": 0.9783771876745998
+    },
+    {
+      "evaluation": 546,
+      "fitness": 0.9767904253786012
+    },
+    {
+      "evaluation": 547,
+      "fitness": 0.976758741661042
+    },
+    {
+      "evaluation": 548,
+      "fitness": 0.9712405634729375
+    },
+    {
+      "evaluation": 549,
+      "fitness": 0.9718820653318363
+    },
+    {
+      "evaluation": 550,
+      "fitness": 0.9725766599611216
+    },
+    {
+      "evaluation": 551,
+      "fitness": 0.9739829085042352
+    },
+    {
+      "evaluation": 552,
+      "fitness": 0.9697956861858745
+    },
+    {
+      "evaluation": 553,
+      "fitness": 0.9741397017348161
+    },
+    {
+      "evaluation": 554,
+      "fitness": 0.9722345867045479
+    },
+    {
+      "evaluation": 555,
+      "fitness": 0.9731785531113855
+    },
+    {
+      "evaluation": 556,
+      "fitness": 0.9657164814360553
+    },
+    {
+      "evaluation": 557,
+      "fitness": 0.9733400502013353
+    },
+    {
+      "evaluation": 558,
+      "fitness": 0.9745339178497128
+    },
+    {
+      "evaluation": 559,
+      "fitness": 0.9747977480239779
+    },
+    {
+      "evaluation": 560,
+      "fitness": 0.9765778830232131
+    },
+    {
+      "evaluation": 561,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 562,
+      "fitness": 0.9721871801993314
+    },
+    {
+      "evaluation": 563,
+      "fitness": 0.9738155299128859
+    },
+    {
+      "evaluation": 564,
+      "fitness": 0.9753635999301429
+    },
+    {
+      "evaluation": 565,
+      "fitness": 0.9751595182974898
+    },
+    {
+      "evaluation": 566,
+      "fitness": 0.9753635999301429
+    },
+    {
+      "evaluation": 567,
+      "fitness": 0.9716781132742952
+    },
+    {
+      "evaluation": 568,
+      "fitness": 0.9678139537977344
+    },
+    {
+      "evaluation": 569,
+      "fitness": 0.9701436163223325
+    },
+    {
+      "evaluation": 570,
+      "fitness": 0.9637725431808462
+    },
+    {
+      "evaluation": 571,
+      "fitness": 0.9702099878039727
+    },
+    {
+      "evaluation": 572,
+      "fitness": 0.9751585586721012
+    },
+    {
+      "evaluation": 573,
+      "fitness": 0.9773687745372027
+    },
+    {
+      "evaluation": 574,
+      "fitness": 0.9722282593451548
+    },
+    {
+      "evaluation": 575,
+      "fitness": 0.9743777757825508
+    },
+    {
+      "evaluation": 576,
+      "fitness": 0.9779690244092937
+    },
+    {
+      "evaluation": 577,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 578,
+      "fitness": 0.9767762956894889
+    },
+    {
+      "evaluation": 579,
+      "fitness": 0.978786000381461
+    },
+    {
+      "evaluation": 580,
+      "fitness": 0.9749501421969575
+    },
+    {
+      "evaluation": 581,
+      "fitness": 0.9759906117374775
+    },
+    {
+      "evaluation": 582,
+      "fitness": 0.9663901023592335
+    },
+    {
+      "evaluation": 583,
+      "fitness": 0.9677884030353436
+    },
+    {
+      "evaluation": 584,
+      "fitness": 0.9685812474216734
+    },
+    {
+      "evaluation": 585,
+      "fitness": 0.9795484865174602
+    },
+    {
+      "evaluation": 586,
+      "fitness": 0.9779832314569604
+    },
+    {
+      "evaluation": 587,
+      "fitness": 0.9790042653095661
+    },
+    {
+      "evaluation": 588,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 589,
+      "fitness": 0.9778108335418665
+    },
+    {
+      "evaluation": 590,
+      "fitness": 0.9686991089407134
+    },
+    {
+      "evaluation": 591,
+      "fitness": 0.9734928980832497
+    },
+    {
+      "evaluation": 592,
+      "fitness": 0.9743237676098859
+    },
+    {
+      "evaluation": 593,
+      "fitness": 0.9793243600369855
+    },
+    {
+      "evaluation": 594,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 595,
+      "fitness": 0.978936241619501
+    },
+    {
+      "evaluation": 596,
+      "fitness": 0.9781678434608774
+    },
+    {
+      "evaluation": 597,
+      "fitness": 0.9655569690017078
+    },
+    {
+      "evaluation": 598,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 599,
+      "fitness": 0.9789900820141141
+    },
+    {
+      "evaluation": 600,
+      "fitness": 0.9773885405874481
+    },
+    {
+      "evaluation": 601,
+      "fitness": 0.9787510155353677
+    },
+    {
+      "evaluation": 602,
+      "fitness": 0.9694659122916878
+    },
+    {
+      "evaluation": 603,
+      "fitness": 0.9659731928075413
+    },
+    {
+      "evaluation": 604,
+      "fitness": 0.9700497588482885
+    },
+    {
+      "evaluation": 605,
+      "fitness": 0.9746302294014664
+    },
+    {
+      "evaluation": 606,
+      "fitness": 0.974843311651381
+    },
+    {
+      "evaluation": 607,
+      "fitness": 0.9769803773221419
+    },
+    {
+      "evaluation": 608,
+      "fitness": 0.9781737554835018
+    },
+    {
+      "evaluation": 609,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 610,
+      "fitness": 0.9783719250935304
+    },
+    {
+      "evaluation": 611,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 612,
+      "fitness": 0.96436051921062
+    },
+    {
+      "evaluation": 613,
+      "fitness": 0.9708430942921974
+    },
+    {
+      "evaluation": 614,
+      "fitness": 0.9718094165401097
+    },
+    {
+      "evaluation": 615,
+      "fitness": 0.972980681991003
+    },
+    {
+      "evaluation": 616,
+      "fitness": 0.9726240718506235
+    },
+    {
+      "evaluation": 617,
+      "fitness": 0.9749501421969575
+    },
+    {
+      "evaluation": 618,
+      "fitness": 0.9769628232936951
+    },
+    {
+      "evaluation": 619,
+      "fitness": 0.9791371364688851
+    },
+    {
+      "evaluation": 620,
+      "fitness": 0.9732445730804157
+    },
+    {
+      "evaluation": 621,
+      "fitness": 0.9781694822470102
+    },
+    {
+      "evaluation": 622,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 623,
+      "fitness": 0.9771669049263482
+    },
+    {
+      "evaluation": 624,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 625,
+      "fitness": 0.9721381186849066
+    },
+    {
+      "evaluation": 626,
+      "fitness": 0.9725000954072165
+    },
+    {
+      "evaluation": 627,
+      "fitness": 0.9719496156424897
+    },
+    {
+      "evaluation": 628,
+      "fitness": 0.975691842677231
+    },
+    {
+      "evaluation": 629,
+      "fitness": 0.9769397298700224
+    },
+    {
+      "evaluation": 630,
+      "fitness": 0.9757800494844567
+    },
+    {
+      "evaluation": 631,
+      "fitness": 0.9769628232936951
+    },
+    {
+      "evaluation": 632,
+      "fitness": 0.9753440231074264
+    },
+    {
+      "evaluation": 633,
+      "fitness": 0.978545016670021
+    },
+    {
+      "evaluation": 634,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 635,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 636,
+      "fitness": 0.9769397298700224
+    },
+    {
+      "evaluation": 637,
+      "fitness": 0.9771438115026755
+    },
+    {
+      "evaluation": 638,
+      "fitness": 0.9682288158036778
+    },
+    {
+      "evaluation": 639,
+      "fitness": 0.9700059061713197
+    },
+    {
+      "evaluation": 640,
+      "fitness": 0.9709398601641124
+    },
+    {
+      "evaluation": 641,
+      "fitness": 0.9751729978505065
+    },
+    {
+      "evaluation": 642,
+      "fitness": 0.9761668952948986
+    },
+    {
+      "evaluation": 643,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 644,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 645,
+      "fitness": 0.9773224441067963
+    },
+    {
+      "evaluation": 646,
+      "fitness": 0.9793444048848071
+    },
+    {
+      "evaluation": 647,
+      "fitness": 0.9679387833515455
+    },
+    {
+      "evaluation": 648,
+      "fitness": 0.9654560786473504
+    },
+    {
+      "evaluation": 649,
+      "fitness": 0.9707471201593588
+    },
+    {
+      "evaluation": 650,
+      "fitness": 0.9761234033394102
+    },
+    {
+      "evaluation": 651,
+      "fitness": 0.9733967577433074
+    },
+    {
+      "evaluation": 652,
+      "fitness": 0.9775756938809946
+    },
+    {
+      "evaluation": 653,
+      "fitness": 0.9770145269308419
+    },
+    {
+      "evaluation": 654,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 655,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 656,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 657,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 658,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 659,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 660,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 661,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 662,
+      "fitness": 0.9793412181015382
+    },
+    {
+      "evaluation": 663,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 664,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 665,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 666,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 667,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 668,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 669,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 670,
+      "fitness": 0.9795364136247752
+    },
+    {
+      "evaluation": 671,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 672,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 673,
+      "fitness": 0.9755827554561978
+    },
+    {
+      "evaluation": 674,
+      "fitness": 0.9773531557163979
+    },
+    {
+      "evaluation": 675,
+      "fitness": 0.9719673031703108
+    },
+    {
+      "evaluation": 676,
+      "fitness": 0.9763731390768761
+    },
+    {
+      "evaluation": 677,
+      "fitness": 0.9779433934669431
+    },
+    {
+      "evaluation": 678,
+      "fitness": 0.9741993294295229
+    },
+    {
+      "evaluation": 679,
+      "fitness": 0.9771754458607002
+    },
+    {
+      "evaluation": 680,
+      "fitness": 0.970647040787556
+    },
+    {
+      "evaluation": 681,
+      "fitness": 0.9765368291857857
+    },
+    {
+      "evaluation": 682,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 683,
+      "fitness": 0.977384839433957
+    },
+    {
+      "evaluation": 684,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 685,
+      "fitness": 0.9699235987366318
+    },
+    {
+      "evaluation": 686,
+      "fitness": 0.9723577789077958
+    },
+    {
+      "evaluation": 687,
+      "fitness": 0.9732300209803548
+    },
+    {
+      "evaluation": 688,
+      "fitness": 0.977207199689969
+    },
+    {
+      "evaluation": 689,
+      "fitness": 0.9779696738508488
+    },
+    {
+      "evaluation": 690,
+      "fitness": 0.9791371364688851
+    },
+    {
+      "evaluation": 691,
+      "fitness": 0.971166772036066
+    },
+    {
+      "evaluation": 692,
+      "fitness": 0.9703504455054538
+    },
+    {
+      "evaluation": 693,
+      "fitness": 0.9713708536687191
+    },
+    {
+      "evaluation": 694,
+      "fitness": 0.9749554366648367
+    },
+    {
+      "evaluation": 695,
+      "fitness": 0.976554660028389
+    },
+    {
+      "evaluation": 696,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 697,
+      "fitness": 0.9769724958395553
+    },
+    {
+      "evaluation": 698,
+      "fitness": 0.9769846238860721
+    },
+    {
+      "evaluation": 699,
+      "fitness": 0.9668418148820999
+    },
+    {
+      "evaluation": 700,
+      "fitness": 0.9692396291291335
+    },
+    {
+      "evaluation": 701,
+      "fitness": 0.9753721815100258
+    },
+    {
+      "evaluation": 702,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 703,
+      "fitness": 0.9799534629994974
+    },
+    {
+      "evaluation": 704,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 705,
+      "fitness": 0.9787632036493501
+    },
+    {
+      "evaluation": 706,
+      "fitness": 0.9695899128715358
+    },
+    {
+      "evaluation": 707,
+      "fitness": 0.972571317909233
+    },
+    {
+      "evaluation": 708,
+      "fitness": 0.9767725945359979
+    },
+    {
+      "evaluation": 709,
+      "fitness": 0.9783719250935304
+    },
+    {
+      "evaluation": 710,
+      "fitness": 0.9795484865174602
+    },
+    {
+      "evaluation": 711,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 712,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 713,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 714,
+      "fitness": 0.9691437044353229
+    },
+    {
+      "evaluation": 715,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 716,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 717,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 718,
+      "fitness": 0.9725515085252534
+    },
+    {
+      "evaluation": 719,
+      "fitness": 0.9708411193669553
+    },
+    {
+      "evaluation": 720,
+      "fitness": 0.974572464803571
+    },
+    {
+      "evaluation": 721,
+      "fitness": 0.9740010901542683
+    },
+    {
+      "evaluation": 722,
+      "fitness": 0.9727815966230712
+    },
+    {
+      "evaluation": 723,
+      "fitness": 0.9701542209012407
+    },
+    {
+      "evaluation": 724,
+      "fitness": 0.9664594343583935
+    },
+    {
+      "evaluation": 725,
+      "fitness": 0.9710328040832241
+    },
+    {
+      "evaluation": 726,
+      "fitness": 0.9738207885073387
+    },
+    {
+      "evaluation": 727,
+      "fitness": 0.9735456103039443
+    },
+    {
+      "evaluation": 728,
+      "fitness": 0.976758741661042
+    },
+    {
+      "evaluation": 729,
+      "fitness": 0.9733653306047588
+    },
+    {
+      "evaluation": 730,
+      "fitness": 0.9753699135432157
+    },
+    {
+      "evaluation": 731,
+      "fitness": 0.9685137108115762
+    },
+    {
+      "evaluation": 732,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 733,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 734,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 735,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 736,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 737,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 738,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 739,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 740,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 741,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 742,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 743,
+      "fitness": 0.9626652539025113
+    },
+    {
+      "evaluation": 744,
+      "fitness": 0.9655968359303219
+    },
+    {
+      "evaluation": 745,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 746,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 747,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 748,
+      "fitness": 0.9681461904870686
+    },
+    {
+      "evaluation": 749,
+      "fitness": 0.9702053189920536
+    },
+    {
+      "evaluation": 750,
+      "fitness": 0.9759827098940507
+    },
+    {
+      "evaluation": 751,
+      "fitness": 0.9755739951758687
+    },
+    {
+      "evaluation": 752,
+      "fitness": 0.9781879387789538
+    },
+    {
+      "evaluation": 753,
+      "fitness": 0.9783719250935304
+    },
+    {
+      "evaluation": 754,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 755,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 756,
+      "fitness": 0.9721745176334313
+    },
+    {
+      "evaluation": 757,
+      "fitness": 0.9701784931206305
+    },
+    {
+      "evaluation": 758,
+      "fitness": 0.97351808948729
+    },
+    {
+      "evaluation": 759,
+      "fitness": 0.9747977480239779
+    },
+    {
+      "evaluation": 760,
+      "fitness": 0.9763505783957359
+    },
+    {
+      "evaluation": 761,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 762,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 763,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 764,
+      "fitness": 0.9773767162643041
+    },
+    {
+      "evaluation": 765,
+      "fitness": 0.9691437044353229
+    },
+    {
+      "evaluation": 766,
+      "fitness": 0.9707826046046298
+    },
+    {
+      "evaluation": 767,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 768,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 769,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 770,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 771,
+      "fitness": 0.9709875945627657
+    },
+    {
+      "evaluation": 772,
+      "fitness": 0.9701641125985883
+    },
+    {
+      "evaluation": 773,
+      "fitness": 0.967190709703529
+    },
+    {
+      "evaluation": 774,
+      "fitness": 0.9691960693893465
+    },
+    {
+      "evaluation": 775,
+      "fitness": 0.970581907507996
+    },
+    {
+      "evaluation": 776,
+      "fitness": 0.9729474570867598
+    },
+    {
+      "evaluation": 777,
+      "fitness": 0.9771896679295247
+    },
+    {
+      "evaluation": 778,
+      "fitness": 0.977180757801304
+    },
+    {
+      "evaluation": 779,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 780,
+      "fitness": 0.9773574289528896
+    },
+    {
+      "evaluation": 781,
+      "fitness": 0.9769492656875834
+    },
+    {
+      "evaluation": 782,
+      "fitness": 0.9771533473202365
+    },
+    {
+      "evaluation": 783,
+      "fitness": 0.9691834412879153
+    },
+    {
+      "evaluation": 784,
+      "fitness": 0.9735535960185778
+    },
+    {
+      "evaluation": 785,
+      "fitness": 0.9706061643591521
+    },
+    {
+      "evaluation": 786,
+      "fitness": 0.973654127983815
+    },
+    {
+      "evaluation": 787,
+      "fitness": 0.976213103579429
+    },
+    {
+      "evaluation": 788,
+      "fitness": 0.9754284607663759
+    },
+    {
+      "evaluation": 789,
+      "fitness": 0.9776267718288011
+    },
+    {
+      "evaluation": 790,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 791,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 792,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 793,
+      "fitness": 0.9668576383504944
+    },
+    {
+      "evaluation": 794,
+      "fitness": 0.9700325673546432
+    },
+    {
+      "evaluation": 795,
+      "fitness": 0.9743683831709179
+    },
+    {
+      "evaluation": 796,
+      "fitness": 0.9711914692527378
+    },
+    {
+      "evaluation": 797,
+      "fitness": 0.9761976489473538
+    },
+    {
+      "evaluation": 798,
+      "fitness": 0.9740236059334737
+    },
+    {
+      "evaluation": 799,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 800,
+      "fitness": 0.9781192214274921
+    },
+    {
+      "evaluation": 801,
+      "fitness": 0.9795136160166321
+    },
+    {
+      "evaluation": 802,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 803,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 804,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 805,
+      "fitness": 0.9671426249613847
+    },
+    {
+      "evaluation": 806,
+      "fitness": 0.9689627148435878
+    },
+    {
+      "evaluation": 807,
+      "fitness": 0.9693207086962901
+    },
+    {
+      "evaluation": 808,
+      "fitness": 0.9717026081452259
+    },
+    {
+      "evaluation": 809,
+      "fitness": 0.9777279964780121
+    },
+    {
+      "evaluation": 810,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 811,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 812,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 813,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 814,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 815,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 816,
+      "fitness": 0.969797578544437
+    },
+    {
+      "evaluation": 817,
+      "fitness": 0.967036826452672
+    },
+    {
+      "evaluation": 818,
+      "fitness": 0.9742310667534219
+    },
+    {
+      "evaluation": 819,
+      "fitness": 0.9766261406630328
+    },
+    {
+      "evaluation": 820,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 821,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 822,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 823,
+      "fitness": 0.9799534629994974
+    },
+    {
+      "evaluation": 824,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 825,
+      "fitness": 0.9722595701606858
+    },
+    {
+      "evaluation": 826,
+      "fitness": 0.9706014281387197
+    },
+    {
+      "evaluation": 827,
+      "fitness": 0.9699826724042087
+    },
+    {
+      "evaluation": 828,
+      "fitness": 0.9671728538973172
+    },
+    {
+      "evaluation": 829,
+      "fitness": 0.9731131031010795
+    },
+    {
+      "evaluation": 830,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 831,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 832,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 833,
+      "fitness": 0.9711845207618536
+    },
+    {
+      "evaluation": 834,
+      "fitness": 0.971203355355982
+    },
+    {
+      "evaluation": 835,
+      "fitness": 0.9723978429274146
+    },
+    {
+      "evaluation": 836,
+      "fitness": 0.9747859390478569
+    },
+    {
+      "evaluation": 837,
+      "fitness": 0.9749593685598549
+    },
+    {
+      "evaluation": 838,
+      "fitness": 0.9751634501925079
+    },
+    {
+      "evaluation": 839,
+      "fitness": 0.975367531825161
+    },
+    {
+      "evaluation": 840,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 841,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 842,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 843,
+      "fitness": 0.9801575446321504
+    },
+    {
+      "evaluation": 844,
+      "fitness": 0.9632456017814494
+    },
+    {
+      "evaluation": 845,
+      "fitness": 0.9715622727354721
+    },
+    {
+      "evaluation": 846,
+      "fitness": 0.9721650350032853
+    },
+    {
+      "evaluation": 847,
+      "fitness": 0.9722255565552436
+    },
+    {
+      "evaluation": 848,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 849,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 850,
+      "fitness": 0.975367531825161
+    },
+    {
+      "evaluation": 851,
+      "fitness": 0.9757800494844567
+    },
+    {
+      "evaluation": 852,
+      "fitness": 0.9771490740837449
+    },
+    {
+      "evaluation": 853,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 854,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 855,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 856,
+      "fitness": 0.9655968359303219
+    },
+    {
+      "evaluation": 857,
+      "fitness": 0.9717967656598128
+    },
+    {
+      "evaluation": 858,
+      "fitness": 0.9767582042056987
+    },
+    {
+      "evaluation": 859,
+      "fitness": 0.9763239209452388
+    },
+    {
+      "evaluation": 860,
+      "fitness": 0.9765399392775936
+    },
+    {
+      "evaluation": 861,
+      "fitness": 0.9702193615191272
+    },
+    {
+      "evaluation": 862,
+      "fitness": 0.9693942190364819
+    },
+    {
+      "evaluation": 863,
+      "fitness": 0.9709507532229043
+    },
+    {
+      "evaluation": 864,
+      "fitness": 0.972604202443256
+    },
+    {
+      "evaluation": 865,
+      "fitness": 0.9777596801955712
+    },
+    {
+      "evaluation": 866,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 867,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 868,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 869,
+      "fitness": 0.9707826046046298
+    },
+    {
+      "evaluation": 870,
+      "fitness": 0.969180586461546
+    },
+    {
+      "evaluation": 871,
+      "fitness": 0.9736085750882887
+    },
+    {
+      "evaluation": 872,
+      "fitness": 0.9759821496298585
+    },
+    {
+      "evaluation": 873,
+      "fitness": 0.9750060979279351
+    },
+    {
+      "evaluation": 874,
+      "fitness": 0.9759933669697389
+    },
+    {
+      "evaluation": 875,
+      "fitness": 0.9757753116832152
+    },
+    {
+      "evaluation": 876,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 877,
+      "fitness": 0.9783778371161549
+    },
+    {
+      "evaluation": 878,
+      "fitness": 0.9773568032635492
+    },
+    {
+      "evaluation": 879,
+      "fitness": 0.9660281690794967
+    },
+    {
+      "evaluation": 880,
+      "fitness": 0.9738040378641883
+    },
+    {
+      "evaluation": 881,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 882,
+      "fitness": 0.978786000381461
+    },
+    {
+      "evaluation": 883,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 884,
+      "fitness": 0.9797176976492852
+    },
+    {
+      "evaluation": 885,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 886,
+      "fitness": 0.9710033333442115
+    },
+    {
+      "evaluation": 887,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 888,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 889,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 890,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 891,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 892,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 893,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 894,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 895,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 896,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 897,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 898,
+      "fitness": 0.9801575446321504
+    },
+    {
+      "evaluation": 899,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 900,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 901,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 902,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 903,
+      "fitness": 0.9684064456276874
+    },
+    {
+      "evaluation": 904,
+      "fitness": 0.972264064850775
+    },
+    {
+      "evaluation": 905,
+      "fitness": 0.9719424086715694
+    },
+    {
+      "evaluation": 906,
+      "fitness": 0.9749780880544101
+    },
+    {
+      "evaluation": 907,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 908,
+      "fitness": 0.9803616262648035
+    },
+    {
+      "evaluation": 909,
+      "fitness": 0.9801575446321504
+    },
+    {
+      "evaluation": 910,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 911,
+      "fitness": 0.9799566497827663
+    },
+    {
+      "evaluation": 912,
+      "fitness": 0.9795452997341912
+    },
+    {
+      "evaluation": 913,
+      "fitness": 0.9704313591626826
+    },
+    {
+      "evaluation": 914,
+      "fitness": 0.971451767325948
+    },
+    {
+      "evaluation": 915,
+      "fitness": 0.9714177537205058
+    },
+    {
+      "evaluation": 916,
+      "fitness": 0.9708967361639164
+    },
+    {
+      "evaluation": 917,
+      "fitness": 0.9697060417222956
+    },
+    {
+      "evaluation": 918,
+      "fitness": 0.9708262824798795
+    },
+    {
+      "evaluation": 919,
+      "fitness": 0.9728473330713563
+    },
+    {
+      "evaluation": 920,
+      "fitness": 0.975418163756603
+    },
+    {
+      "evaluation": 921,
+      "fitness": 0.9696311437489421
+    },
+    {
+      "evaluation": 922,
+      "fitness": 0.967370753990863
+    },
+    {
+      "evaluation": 923,
+      "fitness": 0.9679254425662489
+    },
+    {
+      "evaluation": 924,
+      "fitness": 0.9661957720210292
+    },
+    {
+      "evaluation": 925,
+      "fitness": 0.9673563915534839
+    },
+    {
+      "evaluation": 926,
+      "fitness": 0.9675594455015829
+    },
+    {
+      "evaluation": 927,
+      "fitness": 0.9723937495621777
+    },
+    {
+      "evaluation": 928,
+      "fitness": 0.9765773315703373
+    },
+    {
+      "evaluation": 929,
+      "fitness": 0.9771527216308962
+    },
+    {
+      "evaluation": 930,
+      "fitness": 0.9763578562114446
+    },
+    {
+      "evaluation": 931,
+      "fitness": 0.9761691683050312
+    },
+    {
+      "evaluation": 932,
+      "fitness": 0.9699888179963368
+    },
+    {
+      "evaluation": 933,
+      "fitness": 0.9716133116572844
+    },
+    {
+      "evaluation": 934,
+      "fitness": 0.971225727155319
+    },
+    {
+      "evaluation": 935,
+      "fitness": 0.9737816081320168
+    },
+    {
+      "evaluation": 936,
+      "fitness": 0.9743542215949956
+    },
+    {
+      "evaluation": 937,
+      "fitness": 0.9756109733613072
+    },
+    {
+      "evaluation": 938,
+      "fitness": 0.9769860462885193
+    },
+    {
+      "evaluation": 939,
+      "fitness": 0.9767819646558662
+    },
+    {
+      "evaluation": 940,
+      "fitness": 0.9771901279211723
+    },
+    {
+      "evaluation": 941,
+      "fitness": 0.9795484865174602
+    },
+    {
+      "evaluation": 942,
+      "fitness": 0.9803306978235987
+    },
+    {
+      "evaluation": 943,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 944,
+      "fitness": 0.9805347794562518
+    },
+    {
+      "evaluation": 945,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 946,
+      "fitness": 0.9682086279192158
+    },
+    {
+      "evaluation": 947,
+      "fitness": 0.9797493813668443
+    },
+    {
+      "evaluation": 948,
+      "fitness": 0.9793412181015382
+    },
+    {
+      "evaluation": 949,
+      "fitness": 0.967928431445019
+    },
+    {
+      "evaluation": 950,
+      "fitness": 0.9719194035790811
+    },
+    {
+      "evaluation": 951,
+      "fitness": 0.9713845288310599
+    },
+    {
+      "evaluation": 952,
+      "fitness": 0.9719496156424897
+    },
+    {
+      "evaluation": 953,
+      "fitness": 0.9741722872528984
+    },
+    {
+      "evaluation": 954,
+      "fitness": 0.9745437921184346
+    },
+    {
+      "evaluation": 955,
+      "fitness": 0.977557237349051
+    },
+    {
+      "evaluation": 956,
+      "fitness": 0.977557237349051
+    },
+    {
+      "evaluation": 957,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 958,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 959,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 960,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 961,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 962,
+      "fitness": 0.9797493813668443
+    },
+    {
+      "evaluation": 963,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 964,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 965,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 966,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 967,
+      "fitness": 0.9669558330547885
+    },
+    {
+      "evaluation": 968,
+      "fitness": 0.969530534095276
+    },
+    {
+      "evaluation": 969,
+      "fitness": 0.9747859390478569
+    },
+    {
+      "evaluation": 970,
+      "fitness": 0.9741617615237979
+    },
+    {
+      "evaluation": 971,
+      "fitness": 0.9713835973037519
+    },
+    {
+      "evaluation": 972,
+      "fitness": 0.9717790169340252
+    },
+    {
+      "evaluation": 973,
+      "fitness": 0.9773709865590012
+    },
+    {
+      "evaluation": 974,
+      "fitness": 0.9761459593077395
+    },
+    {
+      "evaluation": 975,
+      "fitness": 0.9761459593077395
+    },
+    {
+      "evaluation": 976,
+      "fitness": 0.970785574302162
+    },
+    {
+      "evaluation": 977,
+      "fitness": 0.9701909747260327
+    },
+    {
+      "evaluation": 978,
+      "fitness": 0.9702038494511807
+    },
+    {
+      "evaluation": 979,
+      "fitness": 0.9719697311965217
+    },
+    {
+      "evaluation": 980,
+      "fitness": 0.9721777881170994
+    },
+    {
+      "evaluation": 981,
+      "fitness": 0.974998728463348
+    },
+    {
+      "evaluation": 982,
+      "fitness": 0.9766063636655358
+    },
+    {
+      "evaluation": 983,
+      "fitness": 0.9781879387789538
+    },
+    {
+      "evaluation": 984,
+      "fitness": 0.9783920204116069
+    },
+    {
+      "evaluation": 985,
+      "fitness": 0.9751784422366894
+    },
+    {
+      "evaluation": 986,
+      "fitness": 0.976594403339134
+    },
+    {
+      "evaluation": 987,
+      "fitness": 0.9797176976492852
+    },
+    {
+      "evaluation": 988,
+      "fitness": 0.9799217792819382
+    },
+    {
+      "evaluation": 989,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 990,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 991,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 992,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 993,
+      "fitness": 0.9704199241801069
+    },
+    {
+      "evaluation": 994,
+      "fitness": 0.9729104718516378
+    },
+    {
+      "evaluation": 995,
+      "fitness": 0.9708395224279888
+    },
+    {
+      "evaluation": 996,
+      "fitness": 0.972795840217725
+    },
+    {
+      "evaluation": 997,
+      "fitness": 0.9783396286134575
+    },
+    {
+      "evaluation": 998,
+      "fitness": 0.9791882516241427
+    },
+    {
+      "evaluation": 999,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1000,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1001,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 1002,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 1003,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 1004,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 1005,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1006,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1007,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 1008,
+      "fitness": 0.967958951491997
+    },
+    {
+      "evaluation": 1009,
+      "fitness": 0.9747690775187824
+    },
+    {
+      "evaluation": 1010,
+      "fitness": 0.9765880897260613
+    },
+    {
+      "evaluation": 1011,
+      "fitness": 0.9751847097015302
+    },
+    {
+      "evaluation": 1012,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 1013,
+      "fitness": 0.97859610204426
+    },
+    {
+      "evaluation": 1014,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1015,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1016,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1017,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1018,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1019,
+      "fitness": 0.9674346595989313
+    },
+    {
+      "evaluation": 1020,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 1021,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1022,
+      "fitness": 0.9697497199616321
+    },
+    {
+      "evaluation": 1023,
+      "fitness": 0.9686181934915038
+    },
+    {
+      "evaluation": 1024,
+      "fitness": 0.9691858691911573
+    },
+    {
+      "evaluation": 1025,
+      "fitness": 0.9692295180443739
+    },
+    {
+      "evaluation": 1026,
+      "fitness": 0.9700564390779188
+    },
+    {
+      "evaluation": 1027,
+      "fitness": 0.9745932126823901
+    },
+    {
+      "evaluation": 1028,
+      "fitness": 0.9770145269308419
+    },
+    {
+      "evaluation": 1029,
+      "fitness": 0.9759935673147008
+    },
+    {
+      "evaluation": 1030,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 1031,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 1032,
+      "fitness": 0.9795654248332863
+    },
+    {
+      "evaluation": 1033,
+      "fitness": 0.972783629700923
+    },
+    {
+      "evaluation": 1034,
+      "fitness": 0.972766488048104
+    },
+    {
+      "evaluation": 1035,
+      "fitness": 0.9675451220382579
+    },
+    {
+      "evaluation": 1036,
+      "fitness": 0.9686062244610254
+    },
+    {
+      "evaluation": 1037,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 1038,
+      "fitness": 0.9790042653095661
+    },
+    {
+      "evaluation": 1039,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1040,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1041,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 1042,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1043,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1044,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1045,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1046,
+      "fitness": 0.965438431699087
+    },
+    {
+      "evaluation": 1047,
+      "fitness": 0.9702072194121067
+    },
+    {
+      "evaluation": 1048,
+      "fitness": 0.9779696738508488
+    },
+    {
+      "evaluation": 1049,
+      "fitness": 0.9771901279211723
+    },
+    {
+      "evaluation": 1050,
+      "fitness": 0.9769628232936951
+    },
+    {
+      "evaluation": 1051,
+      "fitness": 0.9705634075574139
+    },
+    {
+      "evaluation": 1052,
+      "fitness": 0.9705517795876386
+    },
+    {
+      "evaluation": 1053,
+      "fitness": 0.9721288133156099
+    },
+    {
+      "evaluation": 1054,
+      "fitness": 0.9701808684608073
+    },
+    {
+      "evaluation": 1055,
+      "fitness": 0.9699767868281542
+    },
+    {
+      "evaluation": 1056,
+      "fitness": 0.9695500609023727
+    },
+    {
+      "evaluation": 1057,
+      "fitness": 0.9709710400261502
+    },
+    {
+      "evaluation": 1058,
+      "fitness": 0.9747317782094672
+    },
+    {
+      "evaluation": 1059,
+      "fitness": 0.9773567795113345
+    },
+    {
+      "evaluation": 1060,
+      "fitness": 0.9779838571463008
+    },
+    {
+      "evaluation": 1061,
+      "fitness": 0.975746448546162
+    },
+    {
+      "evaluation": 1062,
+      "fitness": 0.976340862601518
+    },
+    {
+      "evaluation": 1063,
+      "fitness": 0.9755337144097803
+    },
+    {
+      "evaluation": 1064,
+      "fitness": 0.9755337144097803
+    },
+    {
+      "evaluation": 1065,
+      "fitness": 0.9737707717461311
+    },
+    {
+      "evaluation": 1066,
+      "fitness": 0.9692290041073465
+    },
+    {
+      "evaluation": 1067,
+      "fitness": 0.9725477492400592
+    },
+    {
+      "evaluation": 1068,
+      "fitness": 0.9709346653702243
+    },
+    {
+      "evaluation": 1069,
+      "fitness": 0.9676102781472894
+    },
+    {
+      "evaluation": 1070,
+      "fitness": 0.9713957578280719
+    },
+    {
+      "evaluation": 1071,
+      "fitness": 0.9771490740837449
+    },
+    {
+      "evaluation": 1072,
+      "fitness": 0.977761318981704
+    },
+    {
+      "evaluation": 1073,
+      "fitness": 0.9777791498243074
+    },
+    {
+      "evaluation": 1074,
+      "fitness": 0.9783920204116069
+    },
+    {
+      "evaluation": 1075,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1076,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 1077,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1078,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1079,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1080,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1081,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1082,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1083,
+      "fitness": 0.971545900050161
+    },
+    {
+      "evaluation": 1084,
+      "fitness": 0.9719540633154671
+    },
+    {
+      "evaluation": 1085,
+      "fitness": 0.971527252804049
+    },
+    {
+      "evaluation": 1086,
+      "fitness": 0.9751333664155262
+    },
+    {
+      "evaluation": 1087,
+      "fitness": 0.9792083469422191
+    },
+    {
+      "evaluation": 1088,
+      "fitness": 0.9792083469422191
+    },
+    {
+      "evaluation": 1089,
+      "fitness": 0.9792083469422191
+    },
+    {
+      "evaluation": 1090,
+      "fitness": 0.9727518308727122
+    },
+    {
+      "evaluation": 1091,
+      "fitness": 0.9743985952343265
+    },
+    {
+      "evaluation": 1092,
+      "fitness": 0.9744197444546777
+    },
+    {
+      "evaluation": 1093,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1094,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 1095,
+      "fitness": 0.9789841699914896
+    },
+    {
+      "evaluation": 1096,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1097,
+      "fitness": 0.9717675283226241
+    },
+    {
+      "evaluation": 1098,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 1099,
+      "fitness": 0.9771669049263482
+    },
+    {
+      "evaluation": 1100,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1101,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1102,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1103,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 1104,
+      "fitness": 0.9719354160693551
+    },
+    {
+      "evaluation": 1105,
+      "fitness": 0.9761324571239273
+    },
+    {
+      "evaluation": 1106,
+      "fitness": 0.9747331508676412
+    },
+    {
+      "evaluation": 1107,
+      "fitness": 0.9728123251485735
+    },
+    {
+      "evaluation": 1108,
+      "fitness": 0.9700231958973765
+    },
+    {
+      "evaluation": 1109,
+      "fitness": 0.9705893732431559
+    },
+    {
+      "evaluation": 1110,
+      "fitness": 0.9707142415287181
+    },
+    {
+      "evaluation": 1111,
+      "fitness": 0.9723577789077958
+    },
+    {
+      "evaluation": 1112,
+      "fitness": 0.972571615959976
+    },
+    {
+      "evaluation": 1113,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 1114,
+      "fitness": 0.9777791498243074
+    },
+    {
+      "evaluation": 1115,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1116,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1117,
+      "fitness": 0.9764017305800069
+    },
+    {
+      "evaluation": 1118,
+      "fitness": 0.9685576274452659
+    },
+    {
+      "evaluation": 1119,
+      "fitness": 0.9713229016074361
+    },
+    {
+      "evaluation": 1120,
+      "fitness": 0.9706354407953357
+    },
+    {
+      "evaluation": 1121,
+      "fitness": 0.9745244102415107
+    },
+    {
+      "evaluation": 1122,
+      "fitness": 0.9714359738033881
+    },
+    {
+      "evaluation": 1123,
+      "fitness": 0.9771438115026755
+    },
+    {
+      "evaluation": 1124,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 1125,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1126,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1127,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1128,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1129,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1130,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1131,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1132,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1133,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1134,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1135,
+      "fitness": 0.9700390986889119
+    },
+    {
+      "evaluation": 1136,
+      "fitness": 0.9771669049263482
+    },
+    {
+      "evaluation": 1137,
+      "fitness": 0.9757780768085218
+    },
+    {
+      "evaluation": 1138,
+      "fitness": 0.9758034469130081
+    },
+    {
+      "evaluation": 1139,
+      "fitness": 0.971001785047382
+    },
+    {
+      "evaluation": 1140,
+      "fitness": 0.9731642557645147
+    },
+    {
+      "evaluation": 1141,
+      "fitness": 0.9719397659685963
+    },
+    {
+      "evaluation": 1142,
+      "fitness": 0.9719135411149341
+    },
+    {
+      "evaluation": 1143,
+      "fitness": 0.9685453501704748
+    },
+    {
+      "evaluation": 1144,
+      "fitness": 0.9730145382875044
+    },
+    {
+      "evaluation": 1145,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1146,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1147,
+      "fitness": 0.9668539122822287
+    },
+    {
+      "evaluation": 1148,
+      "fitness": 0.9718094165401097
+    },
+    {
+      "evaluation": 1149,
+      "fitness": 0.9717970364718134
+    },
+    {
+      "evaluation": 1150,
+      "fitness": 0.9706153826774129
+    },
+    {
+      "evaluation": 1151,
+      "fitness": 0.968053190016697
+    },
+    {
+      "evaluation": 1152,
+      "fitness": 0.9686107355856768
+    },
+    {
+      "evaluation": 1153,
+      "fitness": 0.9702038494511807
+    },
+    {
+      "evaluation": 1154,
+      "fitness": 0.9707563066397139
+    },
+    {
+      "evaluation": 1155,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 1156,
+      "fitness": 0.9797176976492852
+    },
+    {
+      "evaluation": 1157,
+      "fitness": 0.972765942173102
+    },
+    {
+      "evaluation": 1158,
+      "fitness": 0.9737561382729587
+    },
+    {
+      "evaluation": 1159,
+      "fitness": 0.9677984073151189
+    },
+    {
+      "evaluation": 1160,
+      "fitness": 0.9723519749831194
+    },
+    {
+      "evaluation": 1161,
+      "fitness": 0.9731749129370755
+    },
+    {
+      "evaluation": 1162,
+      "fitness": 0.973349590377782
+    },
+    {
+      "evaluation": 1163,
+      "fitness": 0.9719509396814793
+    },
+    {
+      "evaluation": 1164,
+      "fitness": 0.9766374959302191
+    },
+    {
+      "evaluation": 1165,
+      "fitness": 0.9766374959302191
+    },
+    {
+      "evaluation": 1166,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1167,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1168,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1169,
+      "fitness": 0.9707544437216474
+    },
+    {
+      "evaluation": 1170,
+      "fitness": 0.973042261191519
+    },
+    {
+      "evaluation": 1171,
+      "fitness": 0.9765315666047163
+    },
+    {
+      "evaluation": 1172,
+      "fitness": 0.9769628232936951
+    },
+    {
+      "evaluation": 1173,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1174,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1175,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1176,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1177,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1178,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1179,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1180,
+      "fitness": 0.9713487084726731
+    },
+    {
+      "evaluation": 1181,
+      "fitness": 0.9697559493332821
+    },
+    {
+      "evaluation": 1182,
+      "fitness": 0.9718716718202572
+    },
+    {
+      "evaluation": 1183,
+      "fitness": 0.9759562680053856
+    },
+    {
+      "evaluation": 1184,
+      "fitness": 0.9771490740837449
+    },
+    {
+      "evaluation": 1185,
+      "fitness": 0.9764017305800069
+    },
+    {
+      "evaluation": 1186,
+      "fitness": 0.9769449924510918
+    },
+    {
+      "evaluation": 1187,
+      "fitness": 0.9674910005172649
+    },
+    {
+      "evaluation": 1188,
+      "fitness": 0.9693277352111425
+    },
+    {
+      "evaluation": 1189,
+      "fitness": 0.9715356484525072
+    },
+    {
+      "evaluation": 1190,
+      "fitness": 0.9771527216308962
+    },
+    {
+      "evaluation": 1191,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 1192,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1193,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1194,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1195,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1196,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1197,
+      "fitness": 0.9677384454907074
+    },
+    {
+      "evaluation": 1198,
+      "fitness": 0.971180172854629
+    },
+    {
+      "evaluation": 1199,
+      "fitness": 0.9749952615420495
+    },
+    {
+      "evaluation": 1200,
+      "fitness": 0.9781731060419467
+    },
+    {
+      "evaluation": 1201,
+      "fitness": 0.9797176976492852
+    },
+    {
+      "evaluation": 1202,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 1203,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1204,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1205,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1206,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1207,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1208,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1209,
+      "fitness": 0.972970569680757
+    },
+    {
+      "evaluation": 1210,
+      "fitness": 0.9727372694879656
+    },
+    {
+      "evaluation": 1211,
+      "fitness": 0.9724152576658543
+    },
+    {
+      "evaluation": 1212,
+      "fitness": 0.9652212592210042
+    },
+    {
+      "evaluation": 1213,
+      "fitness": 0.9727298676455464
+    },
+    {
+      "evaluation": 1214,
+      "fitness": 0.9763681324241827
+    },
+    {
+      "evaluation": 1215,
+      "fitness": 0.9769803773221419
+    },
+    {
+      "evaluation": 1216,
+      "fitness": 0.9779637618282243
+    },
+    {
+      "evaluation": 1217,
+      "fitness": 0.9756681994430986
+    },
+    {
+      "evaluation": 1218,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1219,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 1220,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 1221,
+      "fitness": 0.9775519747679816
+    },
+    {
+      "evaluation": 1222,
+      "fitness": 0.9779314653481513
+    },
+    {
+      "evaluation": 1223,
+      "fitness": 0.9725477492400592
+    },
+    {
+      "evaluation": 1224,
+      "fitness": 0.9734073666475798
+    },
+    {
+      "evaluation": 1225,
+      "fitness": 0.9775608611439875
+    },
+    {
+      "evaluation": 1226,
+      "fitness": 0.9791572615679802
+    },
+    {
+      "evaluation": 1227,
+      "fitness": 0.978786000381461
+    },
+    {
+      "evaluation": 1228,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1229,
+      "fitness": 0.9756057324997675
+    },
+    {
+      "evaluation": 1230,
+      "fitness": 0.9761976489473538
+    },
+    {
+      "evaluation": 1231,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 1232,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 1233,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 1234,
+      "fitness": 0.9688043576603332
+    },
+    {
+      "evaluation": 1235,
+      "fitness": 0.972746971301153
+    },
+    {
+      "evaluation": 1236,
+      "fitness": 0.9753301702324706
+    },
+    {
+      "evaluation": 1237,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 1238,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 1239,
+      "fitness": 0.9769628232936951
+    },
+    {
+      "evaluation": 1240,
+      "fitness": 0.9704199241801069
+    },
+    {
+      "evaluation": 1241,
+      "fitness": 0.9730961616161756
+    },
+    {
+      "evaluation": 1242,
+      "fitness": 0.9757236127469814
+    },
+    {
+      "evaluation": 1243,
+      "fitness": 0.9775608848962023
+    },
+    {
+      "evaluation": 1244,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1245,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1246,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1247,
+      "fitness": 0.9716891709169991
+    },
+    {
+      "evaluation": 1248,
+      "fitness": 0.9717219739588049
+    },
+    {
+      "evaluation": 1249,
+      "fitness": 0.971166772036066
+    },
+    {
+      "evaluation": 1250,
+      "fitness": 0.9726231220612537
+    },
+    {
+      "evaluation": 1251,
+      "fitness": 0.9756140745545901
+    },
+    {
+      "evaluation": 1252,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1253,
+      "fitness": 0.9809429427215579
+    },
+    {
+      "evaluation": 1254,
+      "fitness": 0.9665592697817027
+    },
+    {
+      "evaluation": 1255,
+      "fitness": 0.9709161356377175
+    },
+    {
+      "evaluation": 1256,
+      "fitness": 0.9722175798054158
+    },
+    {
+      "evaluation": 1257,
+      "fitness": 0.9784089487507134
+    },
+    {
+      "evaluation": 1258,
+      "fitness": 0.9791882516241427
+    },
+    {
+      "evaluation": 1259,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1260,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1261,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1262,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1263,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1264,
+      "fitness": 0.9703111586565888
+    },
+    {
+      "evaluation": 1265,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1266,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1267,
+      "fitness": 0.9684237860166943
+    },
+    {
+      "evaluation": 1268,
+      "fitness": 0.9737905764439301
+    },
+    {
+      "evaluation": 1269,
+      "fitness": 0.9739408862257685
+    },
+    {
+      "evaluation": 1270,
+      "fitness": 0.975553466380534
+    },
+    {
+      "evaluation": 1271,
+      "fitness": 0.9751993431747026
+    },
+    {
+      "evaluation": 1272,
+      "fitness": 0.9785273846927982
+    },
+    {
+      "evaluation": 1273,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1274,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1275,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1276,
+      "fitness": 0.9705488368259274
+    },
+    {
+      "evaluation": 1277,
+      "fitness": 0.9733878916921772
+    },
+    {
+      "evaluation": 1278,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1279,
+      "fitness": 0.9787484046412774
+    },
+    {
+      "evaluation": 1280,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1281,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1282,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1283,
+      "fitness": 0.9675680779527477
+    },
+    {
+      "evaluation": 1284,
+      "fitness": 0.9726876755476331
+    },
+    {
+      "evaluation": 1285,
+      "fitness": 0.9751260885998175
+    },
+    {
+      "evaluation": 1286,
+      "fitness": 0.9741454237472973
+    },
+    {
+      "evaluation": 1287,
+      "fitness": 0.9763363951002839
+    },
+    {
+      "evaluation": 1288,
+      "fitness": 0.976758741661042
+    },
+    {
+      "evaluation": 1289,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 1290,
+      "fitness": 0.9783778371161549
+    },
+    {
+      "evaluation": 1291,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1292,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1293,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1294,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1295,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1296,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1297,
+      "fitness": 0.9741536561929712
+    },
+    {
+      "evaluation": 1298,
+      "fitness": 0.9757682819143529
+    },
+    {
+      "evaluation": 1299,
+      "fitness": 0.9719509396814793
+    },
+    {
+      "evaluation": 1300,
+      "fitness": 0.9748705454109478
+    },
+    {
+      "evaluation": 1301,
+      "fitness": 0.9698392236416495
+    },
+    {
+      "evaluation": 1302,
+      "fitness": 0.9731746513134101
+    },
+    {
+      "evaluation": 1303,
+      "fitness": 0.9703744413393237
+    },
+    {
+      "evaluation": 1304,
+      "fitness": 0.9709267568164198
+    },
+    {
+      "evaluation": 1305,
+      "fitness": 0.9769820378091054
+    },
+    {
+      "evaluation": 1306,
+      "fitness": 0.9769701011094037
+    },
+    {
+      "evaluation": 1307,
+      "fitness": 0.9805858329965517
+    },
+    {
+      "evaluation": 1308,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1309,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1310,
+      "fitness": 0.9727689680004364
+    },
+    {
+      "evaluation": 1311,
+      "fitness": 0.9768042993144704
+    },
+    {
+      "evaluation": 1312,
+      "fitness": 0.9762232182592664
+    },
+    {
+      "evaluation": 1313,
+      "fitness": 0.9757892853370859
+    },
+    {
+      "evaluation": 1314,
+      "fitness": 0.9684184960876691
+    },
+    {
+      "evaluation": 1315,
+      "fitness": 0.9677127428660217
+    },
+    {
+      "evaluation": 1316,
+      "fitness": 0.9727646466432375
+    },
+    {
+      "evaluation": 1317,
+      "fitness": 0.97499002068051
+    },
+    {
+      "evaluation": 1318,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1319,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1320,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1321,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1322,
+      "fitness": 0.9691920985628074
+    },
+    {
+      "evaluation": 1323,
+      "fitness": 0.9707907380185897
+    },
+    {
+      "evaluation": 1324,
+      "fitness": 0.9773348948081165
+    },
+    {
+      "evaluation": 1325,
+      "fitness": 0.9751177824161281
+    },
+    {
+      "evaluation": 1326,
+      "fitness": 0.9753505903402572
+    },
+    {
+      "evaluation": 1327,
+      "fitness": 0.9692380417402483
+    },
+    {
+      "evaluation": 1328,
+      "fitness": 0.9690330874435131
+    },
+    {
+      "evaluation": 1329,
+      "fitness": 0.9718030127678952
+    },
+    {
+      "evaluation": 1330,
+      "fitness": 0.9761657112784932
+    },
+    {
+      "evaluation": 1331,
+      "fitness": 0.9767440209102467
+    },
+    {
+      "evaluation": 1332,
+      "fitness": 0.9791882516241427
+    },
+    {
+      "evaluation": 1333,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1334,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1335,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1336,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1337,
+      "fitness": 0.9670102184808904
+    },
+    {
+      "evaluation": 1338,
+      "fitness": 0.9706061643591521
+    },
+    {
+      "evaluation": 1339,
+      "fitness": 0.9726193392985074
+    },
+    {
+      "evaluation": 1340,
+      "fitness": 0.9771308131754635
+    },
+    {
+      "evaluation": 1341,
+      "fitness": 0.9754118350708283
+    },
+    {
+      "evaluation": 1342,
+      "fitness": 0.977586412938953
+    },
+    {
+      "evaluation": 1343,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1344,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1345,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1346,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1347,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1348,
+      "fitness": 0.966035589344033
+    },
+    {
+      "evaluation": 1349,
+      "fitness": 0.9695582714728436
+    },
+    {
+      "evaluation": 1350,
+      "fitness": 0.9711828965005675
+    },
+    {
+      "evaluation": 1351,
+      "fitness": 0.9773766555253787
+    },
+    {
+      "evaluation": 1352,
+      "fitness": 0.970243180321565
+    },
+    {
+      "evaluation": 1353,
+      "fitness": 0.97553248230701
+    },
+    {
+      "evaluation": 1354,
+      "fitness": 0.9779320781106652
+    },
+    {
+      "evaluation": 1355,
+      "fitness": 0.9757894856820477
+    },
+    {
+      "evaluation": 1356,
+      "fitness": 0.978800183676913
+    },
+    {
+      "evaluation": 1357,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1358,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1359,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1360,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1361,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1362,
+      "fitness": 0.966836472952454
+    },
+    {
+      "evaluation": 1363,
+      "fitness": 0.9769121946959243
+    },
+    {
+      "evaluation": 1364,
+      "fitness": 0.97114462684002
+    },
+    {
+      "evaluation": 1365,
+      "fitness": 0.9715998394607249
+    },
+    {
+      "evaluation": 1366,
+      "fitness": 0.9744289313208384
+    },
+    {
+      "evaluation": 1367,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 1368,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1369,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1370,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1371,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1372,
+      "fitness": 0.9778108335418665
+    },
+    {
+      "evaluation": 1373,
+      "fitness": 0.9677046129456568
+    },
+    {
+      "evaluation": 1374,
+      "fitness": 0.9723502554430107
+    },
+    {
+      "evaluation": 1375,
+      "fitness": 0.9740321671945791
+    },
+    {
+      "evaluation": 1376,
+      "fitness": 0.9740321671945791
+    },
+    {
+      "evaluation": 1377,
+      "fitness": 0.9685576274452659
+    },
+    {
+      "evaluation": 1378,
+      "fitness": 0.9731741054384081
+    },
+    {
+      "evaluation": 1379,
+      "fitness": 0.9749612943890338
+    },
+    {
+      "evaluation": 1380,
+      "fitness": 0.9749952615420495
+    },
+    {
+      "evaluation": 1381,
+      "fitness": 0.9753548241811676
+    },
+    {
+      "evaluation": 1382,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 1383,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1384,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1385,
+      "fitness": 0.9795452997341912
+    },
+    {
+      "evaluation": 1386,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1387,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1388,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1389,
+      "fitness": 0.9661524457340519
+    },
+    {
+      "evaluation": 1390,
+      "fitness": 0.966396188912127
+    },
+    {
+      "evaluation": 1391,
+      "fitness": 0.9675748356235161
+    },
+    {
+      "evaluation": 1392,
+      "fitness": 0.9747845321508576
+    },
+    {
+      "evaluation": 1393,
+      "fitness": 0.9781694822470102
+    },
+    {
+      "evaluation": 1394,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1395,
+      "fitness": 0.9739864159001795
+    },
+    {
+      "evaluation": 1396,
+      "fitness": 0.9759947687673016
+    },
+    {
+      "evaluation": 1397,
+      "fitness": 0.9691176426677145
+    },
+    {
+      "evaluation": 1398,
+      "fitness": 0.9703481433744078
+    },
+    {
+      "evaluation": 1399,
+      "fitness": 0.9725992884416738
+    },
+    {
+      "evaluation": 1400,
+      "fitness": 0.9765280025778919
+    },
+    {
+      "evaluation": 1401,
+      "fitness": 0.9789841699914896
+    },
+    {
+      "evaluation": 1402,
+      "fitness": 0.9791882516241427
+    },
+    {
+      "evaluation": 1403,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1404,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1405,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1406,
+      "fitness": 0.9707110145461816
+    },
+    {
+      "evaluation": 1407,
+      "fitness": 0.9759616296458401
+    },
+    {
+      "evaluation": 1408,
+      "fitness": 0.9781678434608774
+    },
+    {
+      "evaluation": 1409,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 1410,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1411,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1412,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1413,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1414,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1415,
+      "fitness": 0.9714236425140529
+    },
+    {
+      "evaluation": 1416,
+      "fitness": 0.9686672730252253
+    },
+    {
+      "evaluation": 1417,
+      "fitness": 0.9713924874980383
+    },
+    {
+      "evaluation": 1418,
+      "fitness": 0.9677409872119169
+    },
+    {
+      "evaluation": 1419,
+      "fitness": 0.9681658426798514
+    },
+    {
+      "evaluation": 1420,
+      "fitness": 0.9729877113335761
+    },
+    {
+      "evaluation": 1421,
+      "fitness": 0.9769766761686509
+    },
+    {
+      "evaluation": 1422,
+      "fitness": 0.9778108335418665
+    },
+    {
+      "evaluation": 1423,
+      "fitness": 0.9776067519092134
+    },
+    {
+      "evaluation": 1424,
+      "fitness": 0.9780149151745196
+    },
+    {
+      "evaluation": 1425,
+      "fitness": 0.9778108335418665
+    },
+    {
+      "evaluation": 1426,
+      "fitness": 0.9778108335418665
+    },
+    {
+      "evaluation": 1427,
+      "fitness": 0.9705471708898433
+    },
+    {
+      "evaluation": 1428,
+      "fitness": 0.9719896796621085
+    },
+    {
+      "evaluation": 1429,
+      "fitness": 0.971023545942719
+    },
+    {
+      "evaluation": 1430,
+      "fitness": 0.9736034179240655
+    },
+    {
+      "evaluation": 1431,
+      "fitness": 0.9743619368345565
+    },
+    {
+      "evaluation": 1432,
+      "fitness": 0.9780149151745196
+    },
+    {
+      "evaluation": 1433,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1434,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1435,
+      "fitness": 0.9688350370779265
+    },
+    {
+      "evaluation": 1436,
+      "fitness": 0.9733787329460631
+    },
+    {
+      "evaluation": 1437,
+      "fitness": 0.9773806591048614
+    },
+    {
+      "evaluation": 1438,
+      "fitness": 0.9777930026992632
+    },
+    {
+      "evaluation": 1439,
+      "fitness": 0.9801575446321504
+    },
+    {
+      "evaluation": 1440,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1441,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1442,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1443,
+      "fitness": 0.9654079015238826
+    },
+    {
+      "evaluation": 1444,
+      "fitness": 0.9727707580009515
+    },
+    {
+      "evaluation": 1445,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1446,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1447,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1448,
+      "fitness": 0.9669457472527714
+    },
+    {
+      "evaluation": 1449,
+      "fitness": 0.9733787329460631
+    },
+    {
+      "evaluation": 1450,
+      "fitness": 0.9773644054618991
+    },
+    {
+      "evaluation": 1451,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1452,
+      "fitness": 0.9785443230086244
+    },
+    {
+      "evaluation": 1453,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1454,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1455,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1456,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1457,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1458,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1459,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1460,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1461,
+      "fitness": 0.974728449594096
+    },
+    {
+      "evaluation": 1462,
+      "fitness": 0.9739121230634837
+    },
+    {
+      "evaluation": 1463,
+      "fitness": 0.9737621386028787
+    },
+    {
+      "evaluation": 1464,
+      "fitness": 0.9691580849573652
+    },
+    {
+      "evaluation": 1465,
+      "fitness": 0.9706130271821138
+    },
+    {
+      "evaluation": 1466,
+      "fitness": 0.9729708858351591
+    },
+    {
+      "evaluation": 1467,
+      "fitness": 0.9743879652150328
+    },
+    {
+      "evaluation": 1468,
+      "fitness": 0.9741953756310775
+    },
+    {
+      "evaluation": 1469,
+      "fitness": 0.977422690196148
+    },
+    {
+      "evaluation": 1470,
+      "fitness": 0.978581918748808
+    },
+    {
+      "evaluation": 1471,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1472,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1473,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1474,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1475,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1476,
+      "fitness": 0.9676105472820081
+    },
+    {
+      "evaluation": 1477,
+      "fitness": 0.9696206841909455
+    },
+    {
+      "evaluation": 1478,
+      "fitness": 0.9734023045501835
+    },
+    {
+      "evaluation": 1479,
+      "fitness": 0.9707156930208102
+    },
+    {
+      "evaluation": 1480,
+      "fitness": 0.9737482134666414
+    },
+    {
+      "evaluation": 1481,
+      "fitness": 0.9739262527525961
+    },
+    {
+      "evaluation": 1482,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 1483,
+      "fitness": 0.9783402413759713
+    },
+    {
+      "evaluation": 1484,
+      "fitness": 0.9775968687840313
+    },
+    {
+      "evaluation": 1485,
+      "fitness": 0.9682709473904718
+    },
+    {
+      "evaluation": 1486,
+      "fitness": 0.9688213547790677
+    },
+    {
+      "evaluation": 1487,
+      "fitness": 0.972001316775753
+    },
+    {
+      "evaluation": 1488,
+      "fitness": 0.9747961284803389
+    },
+    {
+      "evaluation": 1489,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1490,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1491,
+      "fitness": 0.9715706319537022
+    },
+    {
+      "evaluation": 1492,
+      "fitness": 0.9741707938517836
+    },
+    {
+      "evaluation": 1493,
+      "fitness": 0.9755342518651237
+    },
+    {
+      "evaluation": 1494,
+      "fitness": 0.9729797792252821
+    },
+    {
+      "evaluation": 1495,
+      "fitness": 0.9733879424905882
+    },
+    {
+      "evaluation": 1496,
+      "fitness": 0.9678802234549404
+    },
+    {
+      "evaluation": 1497,
+      "fitness": 0.968588486116013
+    },
+    {
+      "evaluation": 1498,
+      "fitness": 0.9730171818922844
+    },
+    {
+      "evaluation": 1499,
+      "fitness": 0.9763908731593568
+    },
+    {
+      "evaluation": 1500,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1501,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1502,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1503,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1504,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1505,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1506,
+      "fitness": 0.9675278072363175
+    },
+    {
+      "evaluation": 1507,
+      "fitness": 0.9679984906877176
+    },
+    {
+      "evaluation": 1508,
+      "fitness": 0.9685927444629715
+    },
+    {
+      "evaluation": 1509,
+      "fitness": 0.9747911799093965
+    },
+    {
+      "evaluation": 1510,
+      "fitness": 0.9805858329965517
+    },
+    {
+      "evaluation": 1511,
+      "fitness": 0.9751653760216868
+    },
+    {
+      "evaluation": 1512,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1513,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1514,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1515,
+      "fitness": 0.9729413511206186
+    },
+    {
+      "evaluation": 1516,
+      "fitness": 0.9720148966295026
+    },
+    {
+      "evaluation": 1517,
+      "fitness": 0.9726762571218663
+    },
+    {
+      "evaluation": 1518,
+      "fitness": 0.9686107355856768
+    },
+    {
+      "evaluation": 1519,
+      "fitness": 0.9719498739516685
+    },
+    {
+      "evaluation": 1520,
+      "fitness": 0.9760354744031138
+    },
+    {
+      "evaluation": 1521,
+      "fitness": 0.9750358141186676
+    },
+    {
+      "evaluation": 1522,
+      "fitness": 0.9700254064791637
+    },
+    {
+      "evaluation": 1523,
+      "fitness": 0.9690188988509829
+    },
+    {
+      "evaluation": 1524,
+      "fitness": 0.9682025723203707
+    },
+    {
+      "evaluation": 1525,
+      "fitness": 0.9680184414125955
+    },
+    {
+      "evaluation": 1526,
+      "fitness": 0.9703177700799326
+    },
+    {
+      "evaluation": 1527,
+      "fitness": 0.976554660028389
+    },
+    {
+      "evaluation": 1528,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 1529,
+      "fitness": 0.979309534383979
+    },
+    {
+      "evaluation": 1530,
+      "fitness": 0.9807388610889048
+    },
+    {
+      "evaluation": 1531,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1532,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1533,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1534,
+      "fitness": 0.9660067343415751
+    },
+    {
+      "evaluation": 1535,
+      "fitness": 0.9697683358184972
+    },
+    {
+      "evaluation": 1536,
+      "fitness": 0.9737655308845916
+    },
+    {
+      "evaluation": 1537,
+      "fitness": 0.972571615959976
+    },
+    {
+      "evaluation": 1538,
+      "fitness": 0.9719496156424897
+    },
+    {
+      "evaluation": 1539,
+      "fitness": 0.9681423909806414
+    },
+    {
+      "evaluation": 1540,
+      "fitness": 0.9693877125526722
+    },
+    {
+      "evaluation": 1541,
+      "fitness": 0.9730084771653857
+    },
+    {
+      "evaluation": 1542,
+      "fitness": 0.9757894856820477
+    },
+    {
+      "evaluation": 1543,
+      "fitness": 0.9773709865590012
+    },
+    {
+      "evaluation": 1544,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 1545,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1546,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1547,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1548,
+      "fitness": 0.9691580849573652
+    },
+    {
+      "evaluation": 1549,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1550,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1551,
+      "fitness": 0.9690115279695983
+    },
+    {
+      "evaluation": 1552,
+      "fitness": 0.9749640161328266
+    },
+    {
+      "evaluation": 1553,
+      "fitness": 0.9754465559320786
+    },
+    {
+      "evaluation": 1554,
+      "fitness": 0.9756136208456554
+    },
+    {
+      "evaluation": 1555,
+      "fitness": 0.9778161280097458
+    },
+    {
+      "evaluation": 1556,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1557,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1558,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1559,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1560,
+      "fitness": 0.9711366947317261
+    },
+    {
+      "evaluation": 1561,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1562,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1563,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1564,
+      "fitness": 0.9683850121683323
+    },
+    {
+      "evaluation": 1565,
+      "fitness": 0.9708060152759764
+    },
+    {
+      "evaluation": 1566,
+      "fitness": 0.9745985456839072
+    },
+    {
+      "evaluation": 1567,
+      "fitness": 0.974572464803571
+    },
+    {
+      "evaluation": 1568,
+      "fitness": 0.9733993362914124
+    },
+    {
+      "evaluation": 1569,
+      "fitness": 0.9680060277485824
+    },
+    {
+      "evaluation": 1570,
+      "fitness": 0.9725826808987375
+    },
+    {
+      "evaluation": 1571,
+      "fitness": 0.9728234209311605
+    },
+    {
+      "evaluation": 1572,
+      "fitness": 0.9793923332567958
+    },
+    {
+      "evaluation": 1573,
+      "fitness": 0.9741643015382648
+    },
+    {
+      "evaluation": 1574,
+      "fitness": 0.9771490740837449
+    },
+    {
+      "evaluation": 1575,
+      "fitness": 0.9775519747679816
+    },
+    {
+      "evaluation": 1576,
+      "fitness": 0.9775519747679816
+    },
+    {
+      "evaluation": 1577,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1578,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1579,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1580,
+      "fitness": 0.9707688057812428
+    },
+    {
+      "evaluation": 1581,
+      "fitness": 0.9723474268926003
+    },
+    {
+      "evaluation": 1582,
+      "fitness": 0.9763812104544493
+    },
+    {
+      "evaluation": 1583,
+      "fitness": 0.9775748858743328
+    },
+    {
+      "evaluation": 1584,
+      "fitness": 0.974584114739392
+    },
+    {
+      "evaluation": 1585,
+      "fitness": 0.9746477912798333
+    },
+    {
+      "evaluation": 1586,
+      "fitness": 0.9736726674549321
+    },
+    {
+      "evaluation": 1587,
+      "fitness": 0.9736409301310333
+    },
+    {
+      "evaluation": 1588,
+      "fitness": 0.9663975096552903
+    },
+    {
+      "evaluation": 1589,
+      "fitness": 0.9665699192591461
+    },
+    {
+      "evaluation": 1590,
+      "fitness": 0.9675422237475825
+    },
+    {
+      "evaluation": 1591,
+      "fitness": 0.9763180585294059
+    },
+    {
+      "evaluation": 1592,
+      "fitness": 0.9779637618282243
+    },
+    {
+      "evaluation": 1593,
+      "fitness": 0.981147024354211
+    },
+    {
+      "evaluation": 1594,
+      "fitness": 0.9727732174575839
+    },
+    {
+      "evaluation": 1595,
+      "fitness": 0.9781361597433182
+    },
+    {
+      "evaluation": 1596,
+      "fitness": 0.9793613432006333
+    },
+    {
+      "evaluation": 1597,
+      "fitness": 0.976433414297566
+    },
+    {
+      "evaluation": 1598,
+      "fitness": 0.9761198393125857
+    },
+    {
+      "evaluation": 1599,
+      "fitness": 0.9660296863345866
+    },
+    {
+      "evaluation": 1600,
+      "fitness": 0.9692269787436903
+    },
+    {
+      "evaluation": 1601,
+      "fitness": 0.9765541225730456
+    },
+    {
+      "evaluation": 1602,
+      "fitness": 0.974776546436224
+    },
+    {
+      "evaluation": 1603,
+      "fitness": 0.9752191478725015
+    },
+    {
+      "evaluation": 1604,
+      "fitness": 0.9709798760777513
+    },
+    {
+      "evaluation": 1605,
+      "fitness": 0.9699501392685876
+    },
+    {
+      "evaluation": 1606,
+      "fitness": 0.9705375342914706
+    },
+    {
+      "evaluation": 1607,
+      "fitness": 0.9714409673485302
+    },
+    {
+      "evaluation": 1608,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1609,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1610,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1611,
+      "fitness": 0.9711705837367813
+    },
+    {
+      "evaluation": 1612,
+      "fitness": 0.972769926038415
+    },
+    {
+      "evaluation": 1613,
+      "fitness": 0.9725658444057619
+    },
+    {
+      "evaluation": 1614,
+      "fitness": 0.9750358141186676
+    },
+    {
+      "evaluation": 1615,
+      "fitness": 0.9750013586132646
+    },
+    {
+      "evaluation": 1616,
+      "fitness": 0.9754555565493402
+    },
+    {
+      "evaluation": 1617,
+      "fitness": 0.9779690481615084
+    },
+    {
+      "evaluation": 1618,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1619,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1620,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1621,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1622,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1623,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1624,
+      "fitness": 0.9677548698593439
+    },
+    {
+      "evaluation": 1625,
+      "fitness": 0.9709297533542264
+    },
+    {
+      "evaluation": 1626,
+      "fitness": 0.9763311087669998
+    },
+    {
+      "evaluation": 1627,
+      "fitness": 0.9773515169302651
+    },
+    {
+      "evaluation": 1628,
+      "fitness": 0.9781678434608774
+    },
+    {
+      "evaluation": 1629,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1630,
+      "fitness": 0.9763239209452388
+    },
+    {
+      "evaluation": 1631,
+      "fitness": 0.9787800883588366
+    },
+    {
+      "evaluation": 1632,
+      "fitness": 0.9777560564006347
+    },
+    {
+      "evaluation": 1633,
+      "fitness": 0.9777560564006347
+    },
+    {
+      "evaluation": 1634,
+      "fitness": 0.9541923850173538
+    },
+    {
+      "evaluation": 1635,
+      "fitness": 0.9665742942685767
+    },
+    {
+      "evaluation": 1636,
+      "fitness": 0.9674487178504132
+    },
+    {
+      "evaluation": 1637,
+      "fitness": 0.969970048639706
+    },
+    {
+      "evaluation": 1638,
+      "fitness": 0.9763840080934082
+    },
+    {
+      "evaluation": 1639,
+      "fitness": 0.9763840080934082
+    },
+    {
+      "evaluation": 1640,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1641,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1642,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1643,
+      "fitness": 0.964486411121698
+    },
+    {
+      "evaluation": 1644,
+      "fitness": 0.9751560563656028
+    },
+    {
+      "evaluation": 1645,
+      "fitness": 0.9789293620865219
+    },
+    {
+      "evaluation": 1646,
+      "fitness": 0.97859610204426
+    },
+    {
+      "evaluation": 1647,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1648,
+      "fitness": 0.9789524862739305
+    },
+    {
+      "evaluation": 1649,
+      "fitness": 0.9791565679065836
+    },
+    {
+      "evaluation": 1650,
+      "fitness": 0.9729136607129175
+    },
+    {
+      "evaluation": 1651,
+      "fitness": 0.9721207043983499
+    },
+    {
+      "evaluation": 1652,
+      "fitness": 0.9687877534650945
+    },
+    {
+      "evaluation": 1653,
+      "fitness": 0.9733826268252497
+    },
+    {
+      "evaluation": 1654,
+      "fitness": 0.9709701546327116
+    },
+    {
+      "evaluation": 1655,
+      "fitness": 0.9743879456264669
+    },
+    {
+      "evaluation": 1656,
+      "fitness": 0.9732379879686811
+    },
+    {
+      "evaluation": 1657,
+      "fitness": 0.9756133381553765
+    },
+    {
+      "evaluation": 1658,
+      "fitness": 0.9787853746921207
+    },
+    {
+      "evaluation": 1659,
+      "fitness": 0.9711480885325502
+    },
+    {
+      "evaluation": 1660,
+      "fitness": 0.9723577789077958
+    },
+    {
+      "evaluation": 1661,
+      "fitness": 0.9741143693441062
+    },
+    {
+      "evaluation": 1662,
+      "fitness": 0.9763578562114446
+    },
+    {
+      "evaluation": 1663,
+      "fitness": 0.9767868768908351
+    },
+    {
+      "evaluation": 1664,
+      "fitness": 0.9790042653095661
+    },
+    {
+      "evaluation": 1665,
+      "fitness": 0.9790042653095661
+    },
+    {
+      "evaluation": 1666,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1667,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1668,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1669,
+      "fitness": 0.9682025723203707
+    },
+    {
+      "evaluation": 1670,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1671,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1672,
+      "fitness": 0.9731518790896331
+    },
+    {
+      "evaluation": 1673,
+      "fitness": 0.9703808451115382
+    },
+    {
+      "evaluation": 1674,
+      "fitness": 0.9713581911028191
+    },
+    {
+      "evaluation": 1675,
+      "fitness": 0.9697952802036665
+    },
+    {
+      "evaluation": 1676,
+      "fitness": 0.9754068917286541
+    },
+    {
+      "evaluation": 1677,
+      "fitness": 0.9773708042416798
+    },
+    {
+      "evaluation": 1678,
+      "fitness": 0.9792083469422191
+    },
+    {
+      "evaluation": 1679,
+      "fitness": 0.9807899146292047
+    },
+    {
+      "evaluation": 1680,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1681,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1682,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1683,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1684,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1685,
+      "fitness": 0.9676392575489065
+    },
+    {
+      "evaluation": 1686,
+      "fitness": 0.9716307291980665
+    },
+    {
+      "evaluation": 1687,
+      "fitness": 0.9774079647444397
+    },
+    {
+      "evaluation": 1688,
+      "fitness": 0.9771438115026755
+    },
+    {
+      "evaluation": 1689,
+      "fitness": 0.9789841699914896
+    },
+    {
+      "evaluation": 1690,
+      "fitness": 0.978786000381461
+    },
+    {
+      "evaluation": 1691,
+      "fitness": 0.9785760067261835
+    },
+    {
+      "evaluation": 1692,
+      "fitness": 0.9630731055117709
+    },
+    {
+      "evaluation": 1693,
+      "fitness": 0.9692622814203834
+    },
+    {
+      "evaluation": 1694,
+      "fitness": 0.9750113860072877
+    },
+    {
+      "evaluation": 1695,
+      "fitness": 0.9791565679065836
+    },
+    {
+      "evaluation": 1696,
+      "fitness": 0.9777649665288554
+    },
+    {
+      "evaluation": 1697,
+      "fitness": 0.9791941636467671
+    },
+    {
+      "evaluation": 1698,
+      "fitness": 0.9805858329965517
+    },
+    {
+      "evaluation": 1699,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1700,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1701,
+      "fitness": 0.9706364487176148
+    },
+    {
+      "evaluation": 1702,
+      "fitness": 0.9718068978714268
+    },
+    {
+      "evaluation": 1703,
+      "fitness": 0.9732530615877617
+    },
+    {
+      "evaluation": 1704,
+      "fitness": 0.9752197375927882
+    },
+    {
+      "evaluation": 1705,
+      "fitness": 0.9769766761686509
+    },
+    {
+      "evaluation": 1706,
+      "fitness": 0.9775889210666101
+    },
+    {
+      "evaluation": 1707,
+      "fitness": 0.9666184566658573
+    },
+    {
+      "evaluation": 1708,
+      "fitness": 0.968086409627763
+    },
+    {
+      "evaluation": 1709,
+      "fitness": 0.9703825747532836
+    },
+    {
+      "evaluation": 1710,
+      "fitness": 0.9706134449029018
+    },
+    {
+      "evaluation": 1711,
+      "fitness": 0.971495104642067
+    },
+    {
+      "evaluation": 1712,
+      "fitness": 0.9776120463770928
+    },
+    {
+      "evaluation": 1713,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1714,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1715,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1716,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1717,
+      "fitness": 0.9699352341661075
+    },
+    {
+      "evaluation": 1718,
+      "fitness": 0.9730489799551086
+    },
+    {
+      "evaluation": 1719,
+      "fitness": 0.9662965792519509
+    },
+    {
+      "evaluation": 1720,
+      "fitness": 0.9701742448102023
+    },
+    {
+      "evaluation": 1721,
+      "fitness": 0.976382262113295
+    },
+    {
+      "evaluation": 1722,
+      "fitness": 0.976758741661042
+    },
+    {
+      "evaluation": 1723,
+      "fitness": 0.9771669049263482
+    },
+    {
+      "evaluation": 1724,
+      "fitness": 0.9773709865590012
+    },
+    {
+      "evaluation": 1725,
+      "fitness": 0.9763840080934082
+    },
+    {
+      "evaluation": 1726,
+      "fitness": 0.9763840080934082
+    },
+    {
+      "evaluation": 1727,
+      "fitness": 0.9657732802462307
+    },
+    {
+      "evaluation": 1728,
+      "fitness": 0.9714163268938841
+    },
+    {
+      "evaluation": 1729,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1730,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1731,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1732,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1733,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1734,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1735,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1736,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1737,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1738,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1739,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1740,
+      "fitness": 0.9683453160989738
+    },
+    {
+      "evaluation": 1741,
+      "fitness": 0.9819633508848232
+    },
+    {
+      "evaluation": 1742,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1743,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1744,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1745,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1746,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1747,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1748,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1749,
+      "fitness": 0.9705438739907586
+    },
+    {
+      "evaluation": 1750,
+      "fitness": 0.9739235742170774
+    },
+    {
+      "evaluation": 1751,
+      "fitness": 0.9753122323484613
+    },
+    {
+      "evaluation": 1752,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1753,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1754,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1755,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1756,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1757,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1758,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1759,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1760,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1761,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1762,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1763,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1764,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1765,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1766,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1767,
+      "fitness": 0.975645401574048
+    },
+    {
+      "evaluation": 1768,
+      "fitness": 0.974403411062176
+    },
+    {
+      "evaluation": 1769,
+      "fitness": 0.9768415775628722
+    },
+    {
+      "evaluation": 1770,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1771,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1772,
+      "fitness": 0.9803817513638986
+    },
+    {
+      "evaluation": 1773,
+      "fitness": 0.9694960497133392
+    },
+    {
+      "evaluation": 1774,
+      "fitness": 0.9699809656245996
+    },
+    {
+      "evaluation": 1775,
+      "fitness": 0.96959077948323
+    },
+    {
+      "evaluation": 1776,
+      "fitness": 0.9739733985675609
+    },
+    {
+      "evaluation": 1777,
+      "fitness": 0.9720241777125017
+    },
+    {
+      "evaluation": 1778,
+      "fitness": 0.9735822687037142
+    },
+    {
+      "evaluation": 1779,
+      "fitness": 0.9680960141728102
+    },
+    {
+      "evaluation": 1780,
+      "fitness": 0.9728009653293223
+    },
+    {
+      "evaluation": 1781,
+      "fitness": 0.9698270782664907
+    },
+    {
+      "evaluation": 1782,
+      "fitness": 0.9755859555022705
+    },
+    {
+      "evaluation": 1783,
+      "fitness": 0.9779750306116185
+    },
+    {
+      "evaluation": 1784,
+      "fitness": 0.9771985886439073
+    },
+    {
+      "evaluation": 1785,
+      "fitness": 0.9760138957650736
+    },
+    {
+      "evaluation": 1786,
+      "fitness": 0.9695085233658299
+    },
+    {
+      "evaluation": 1787,
+      "fitness": 0.9676254980559499
+    },
+    {
+      "evaluation": 1788,
+      "fitness": 0.9711157204217368
+    },
+    {
+      "evaluation": 1789,
+      "fitness": 0.972625504885331
+    },
+    {
+      "evaluation": 1790,
+      "fitness": 0.9755676815627959
+    },
+    {
+      "evaluation": 1791,
+      "fitness": 0.9779970843319162
+    },
+    {
+      "evaluation": 1792,
+      "fitness": 0.979133443719175
+    },
+    {
+      "evaluation": 1793,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1794,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1795,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1796,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1797,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1798,
+      "fitness": 0.9744028213418893
+    },
+    {
+      "evaluation": 1799,
+      "fitness": 0.9727986523298909
+    },
+    {
+      "evaluation": 1800,
+      "fitness": 0.9756057324997675
+    },
+    {
+      "evaluation": 1801,
+      "fitness": 0.975573539286993
+    },
+    {
+      "evaluation": 1802,
+      "fitness": 0.9735580569702257
+    },
+    {
+      "evaluation": 1803,
+      "fitness": 0.9701136884472795
+    },
+    {
+      "evaluation": 1804,
+      "fitness": 0.9737936160676082
+    },
+    {
+      "evaluation": 1805,
+      "fitness": 0.9718360965301971
+    },
+    {
+      "evaluation": 1806,
+      "fitness": 0.9745898204006772
+    },
+    {
+      "evaluation": 1807,
+      "fitness": 0.9732039822820276
+    },
+    {
+      "evaluation": 1808,
+      "fitness": 0.9751653760216868
+    },
+    {
+      "evaluation": 1809,
+      "fitness": 0.9803616262648035
+    },
+    {
+      "evaluation": 1810,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1811,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1812,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1813,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1814,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1815,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1816,
+      "fitness": 0.9646642338396416
+    },
+    {
+      "evaluation": 1817,
+      "fitness": 0.9712109826519911
+    },
+    {
+      "evaluation": 1818,
+      "fitness": 0.975584948160519
+    },
+    {
+      "evaluation": 1819,
+      "fitness": 0.9743397104857815
+    },
+    {
+      "evaluation": 1820,
+      "fitness": 0.9767298866585842
+    },
+    {
+      "evaluation": 1821,
+      "fitness": 0.9781879387789538
+    },
+    {
+      "evaluation": 1822,
+      "fitness": 0.9799735880985925
+    },
+    {
+      "evaluation": 1823,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1824,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1825,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1826,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1827,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1828,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1829,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1830,
+      "fitness": 0.9735105605957087
+    },
+    {
+      "evaluation": 1831,
+      "fitness": 0.9747859390478569
+    },
+    {
+      "evaluation": 1832,
+      "fitness": 0.9789841699914896
+    },
+    {
+      "evaluation": 1833,
+      "fitness": 0.9789841699914896
+    },
+    {
+      "evaluation": 1834,
+      "fitness": 0.979337525351828
+    },
+    {
+      "evaluation": 1835,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1836,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1837,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1838,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1839,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1840,
+      "fitness": 0.981351105986864
+    },
+    {
+      "evaluation": 1841,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1842,
+      "fitness": 0.9685965324165138
+    },
+    {
+      "evaluation": 1843,
+      "fitness": 0.9733536220410479
+    },
+    {
+      "evaluation": 1844,
+      "fitness": 0.977943392094228
+    },
+    {
+      "evaluation": 1845,
+      "fitness": 0.9781678434608774
+    },
+    {
+      "evaluation": 1846,
+      "fitness": 0.9797695064659394
+    },
+    {
+      "evaluation": 1847,
+      "fitness": 0.9801776697312455
+    },
+    {
+      "evaluation": 1848,
+      "fitness": 0.9817592692521702
+    },
+    {
+      "evaluation": 1849,
+      "fitness": 0.9815551876195171
+    },
+    {
+      "evaluation": 1850,
+      "fitness": 0.9815551876195171
+    }
+  ],
+  "notes": [
+    "Fitness is validation macro-F1 of an SVM fitted on the training split only.",
+    "The test split was not loaded during the search.",
+    "Features are the ConvLSTM's own penultimate activations on the geometry recorded in its checkpoint, so they are the vector it produces when serving."
+  ],
+  "stage": "feature_selection",
+  "feature_extractor": {
+    "architecture": "ConvLSTMClassifier",
+    "layer": "penultimate dense layer",
+    "model_version": "20260916-221953",
+    "transform_id": "m1-v1-legacy",
+    "features_per_image": 128
+  },
+  "features_available_to_search": 98,
+  "features_selected": 36,
+  "selected_feature_indices": [
+    1,
+    2,
+    8,
+    10,
+    11,
+    15,
+    18,
+    21,
+    23,
+    32,
+    33,
+    38,
+    39,
+    43,
+    44,
+    47,
+    48,
+    49,
+    51,
+    59,
+    63,
+    67,
+    70,
+    77,
+    78,
+    82,
+    83,
+    86,
+    87,
+    89,
+    110,
+    113,
+    114,
+    117,
+    118,
+    126
+  ],
+  "svm": {
+    "C": 8.53622763207344,
+    "gamma": 0.020417821288915457,
+    "kernel": "linear",
+    "class_weight": "balanced",
+    "probability": "Platt scaling"
+  },
+  "sparsity_penalty": 0.02,
+  "validation": {
+    "sfla_svm": {
+      "accuracy": 0.9892,
+      "precision": 0.9894,
+      "recall": 0.9895,
+      "sensitivity": 0.9895,
+      "specificity": 0.9964,
+      "f1": 0.9893,
+      "weighted": {
+        "precision": 0.9896,
+        "recall": 0.9892,
+        "specificity": 0.9965,
+        "f1": 0.9893
+      },
+      "auc": 0.9966,
+      "avg_inference_time_s": 2e-06,
+      "total_eval_time_s": 0.001,
+      "confusion_matrix": [
+        [
+          207,
+          6,
+          0,
+          1
+        ],
+        [
+          0,
+          205,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          203,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          213
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 1.0,
+          "recall": 0.9673,
+          "sensitivity": 0.9673,
+          "specificity": 1.0,
+          "f1": 0.9834,
+          "support": 214
+        },
+        "meningioma": {
+          "precision": 0.9624,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 0.9873,
+          "f1": 0.9809,
+          "support": 205
+        },
+        "notumor": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1": 1.0,
+          "support": 203
+        },
+        "pituitary": {
+          "precision": 0.9953,
+          "recall": 0.9907,
+          "sensitivity": 0.9907,
+          "specificity": 0.9984,
+          "f1": 0.993,
+          "support": 215
+        }
+      }
+    },
+    "convlstm_softmax": {
+      "accuracy": 0.9773,
+      "precision": 0.9784,
+      "recall": 0.9778,
+      "sensitivity": 0.9778,
+      "specificity": 0.9925,
+      "f1": 0.9775,
+      "weighted": {
+        "precision": 0.9787,
+        "recall": 0.9773,
+        "specificity": 0.9926,
+        "f1": 0.9774
+      },
+      "auc": 0.9989,
+      "avg_inference_time_s": 0.0,
+      "total_eval_time_s": 0.0,
+      "confusion_matrix": [
+        [
+          202,
+          11,
+          0,
+          1
+        ],
+        [
+          0,
+          204,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          203,
+          0
+        ],
+        [
+          0,
+          6,
+          0,
+          209
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 1.0,
+          "recall": 0.9439,
+          "sensitivity": 0.9439,
+          "specificity": 1.0,
+          "f1": 0.9712,
+          "support": 214
+        },
+        "meningioma": {
+          "precision": 0.9231,
+          "recall": 0.9951,
+          "sensitivity": 0.9951,
+          "specificity": 0.9731,
+          "f1": 0.9577,
+          "support": 205
+        },
+        "notumor": {
+          "precision": 0.9951,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 0.9984,
+          "f1": 0.9975,
+          "support": 203
+        },
+        "pituitary": {
+          "precision": 0.9952,
+          "recall": 0.9721,
+          "sensitivity": 0.9721,
+          "specificity": 0.9984,
+          "f1": 0.9835,
+          "support": 215
+        }
+      }
+    }
+  },
+  "served_head": "sfla_svm",
+  "head_choice": "higher validation macro-F1; decided before the test set was loaded",
+  "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+  "test": {
+    "sfla_svm": {
+      "accuracy": 0.9695,
+      "precision": 0.9688,
+      "recall": 0.9707,
+      "sensitivity": 0.9707,
+      "specificity": 0.9899,
+      "f1": 0.9697,
+      "weighted": {
+        "precision": 0.9698,
+        "recall": 0.9695,
+        "specificity": 0.99,
+        "f1": 0.9695
+      },
+      "auc": 0.9944,
+      "avg_inference_time_s": 2e-06,
+      "total_eval_time_s": 0.002,
+      "confusion_matrix": [
+        [
+          289,
+          7,
+          2,
+          2
+        ],
+        [
+          3,
+          297,
+          5,
+          1
+        ],
+        [
+          9,
+          9,
+          387,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          298
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9601,
+          "recall": 0.9633,
+          "sensitivity": 0.9633,
+          "specificity": 0.9881,
+          "f1": 0.9617,
+          "support": 300
+        },
+        "meningioma": {
+          "precision": 0.9429,
+          "recall": 0.9706,
+          "sensitivity": 0.9706,
+          "specificity": 0.9821,
+          "f1": 0.9565,
+          "support": 306
+        },
+        "notumor": {
+          "precision": 0.9822,
+          "recall": 0.9556,
+          "sensitivity": 0.9556,
+          "specificity": 0.9923,
+          "f1": 0.9687,
+          "support": 405
+        },
+        "pituitary": {
+          "precision": 0.99,
+          "recall": 0.9933,
+          "sensitivity": 0.9933,
+          "specificity": 0.997,
+          "f1": 0.9917,
+          "support": 300
+        }
+      }
+    },
+    "convlstm_softmax": {
+      "accuracy": 0.9641,
+      "precision": 0.9639,
+      "recall": 0.9659,
+      "sensitivity": 0.9659,
+      "specificity": 0.9882,
+      "f1": 0.9643,
+      "weighted": {
+        "precision": 0.9657,
+        "recall": 0.9641,
+        "specificity": 0.9887,
+        "f1": 0.9644
+      },
+      "auc": 0.997,
+      "avg_inference_time_s": 0.0,
+      "total_eval_time_s": 0.0,
+      "confusion_matrix": [
+        [
+          285,
+          13,
+          0,
+          2
+        ],
+        [
+          0,
+          301,
+          4,
+          1
+        ],
+        [
+          9,
+          14,
+          382,
+          0
+        ],
+        [
+          0,
+          4,
+          0,
+          296
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9694,
+          "recall": 0.95,
+          "sensitivity": 0.95,
+          "specificity": 0.9911,
+          "f1": 0.9596,
+          "support": 300
+        },
+        "meningioma": {
+          "precision": 0.9066,
+          "recall": 0.9837,
+          "sensitivity": 0.9837,
+          "specificity": 0.9692,
+          "f1": 0.9436,
+          "support": 306
+        },
+        "notumor": {
+          "precision": 0.9896,
+          "recall": 0.9432,
+          "sensitivity": 0.9432,
+          "specificity": 0.9956,
+          "f1": 0.9659,
+          "support": 405
+        },
+        "pituitary": {
+          "precision": 0.99,
+          "recall": 0.9867,
+          "sensitivity": 0.9867,
+          "specificity": 0.997,
+          "f1": 0.9883,
+          "support": 300
+        }
+      }
+    }
+  }
+}

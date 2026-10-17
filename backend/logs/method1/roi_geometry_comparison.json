@@ -1,0 +1,50 @@
+{
+  "question": "Should the ConvLSTM classify the U-Net's ROI crop (the geometry the architecture diagram shows) or the whole slice?",
+  "decided_on": "validation macro-F1 only; neither run loaded the test split",
+  "split": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+  "candidates": {
+    "whole_slice": {
+      "transform_id": "m1-v1-legacy",
+      "roi_crop_used_in_training": false,
+      "epochs_run": 56,
+      "max_epochs": 60,
+      "best_epoch": 46,
+      "validation": {
+        "accuracy": 0.9773,
+        "precision": 0.9784,
+        "recall": 0.9778,
+        "specificity": 0.9925,
+        "f1": 0.9775,
+        "auc": 0.9989
+      },
+      "checkpoint": "/Users/syedasif/tumb/backend/weights/method1/best_classifier.pth",
+      "model_version": "20260916-221953"
+    },
+    "unet_roi_crop": {
+      "transform_id": "m1-v2-roi",
+      "roi_crop_used_in_training": true,
+      "epochs_run": 103,
+      "max_epochs": 120,
+      "best_epoch": 88,
+      "validation": {
+        "accuracy": 0.9594,
+        "precision": 0.9597,
+        "recall": 0.9593,
+        "specificity": 0.9864,
+        "f1": 0.9595,
+        "auc": 0.996
+      },
+      "checkpoint": "/Users/syedasif/tumb/backend/weights/method1/baseline_classifier.pth",
+      "model_version": "20261017-084011",
+      "training_log": "backend/logs/method1/roi_classifier_val.log"
+    }
+  },
+  "decision": "whole_slice",
+  "margin_val_macro_f1": 0.018,
+  "notes": [
+    "Both runs used the same split, the same seed and the same default hyper-parameters; they differ only in the input geometry.",
+    "The ROI run was given 120 epochs with patience 15 and early-stopped at 103, so it was trained to convergence rather than cut off by the epoch cap. An earlier 40-epoch run reached 0.9439 and was still improving, which is why it was repeated.",
+    "Why the crop loses: the segmentation it depends on scores Dice 0.656, so a crop often cuts into or misses the lesion, and the context outside the box \u2014 which the whole-slice model can still use \u2014 is discarded.",
+    "The ROI checkpoint is kept at weights/method1/baseline_classifier.pth as evidence. It is not served and was never evaluated on the test set."
+  ]
+}

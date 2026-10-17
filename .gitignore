@@ -64,6 +64,7 @@ backend/logs/method1/*
 !backend/logs/method1/sfla_results.json
 !backend/logs/method1/sfla_feature_selection.json
 !backend/logs/method1/sfla_feature_selection.png
+!backend/logs/method1/roi_geometry_comparison.json
 !backend/logs/method1_segmentation_runcard.json
 !backend/logs/method1_seg_dice.png
 !backend/logs/method1_seg_loss.png
