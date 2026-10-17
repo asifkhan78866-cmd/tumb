@@ -1,0 +1,31 @@
+{
+  "format": 2,
+  "method_id": "method1",
+  "architecture": "UNet3D",
+  "role": "segmentation",
+  "class_names": [
+    "background",
+    "tumour"
+  ],
+  "image_size": 128,
+  "transform_id": "msd-flair-128",
+  "model_version": "20261017-192537",
+  "created_at": "2026-10-17T19:25:37+00:00",
+  "extra": {
+    "hyperparameters": {
+      "patch": 64,
+      "base": 16,
+      "lr": 0.001,
+      "batch_size": 2,
+      "tumour_prob": 0.7,
+      "patches_per_volume": 2,
+      "volume_size": 128
+    },
+    "volumetric": true,
+    "serves_uploads": false,
+    "mask_source": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS) voxel labels",
+    "ground_truth_masks": true
+  },
+  "epoch": 3,
+  "val_dice": 0.6988838492521876
+}

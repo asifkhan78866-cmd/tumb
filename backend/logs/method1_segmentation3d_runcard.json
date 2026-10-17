@@ -1,0 +1,100 @@
+{
+  "method_id": "method1",
+  "stage": "segmentation_3d",
+  "dataset": {
+    "name": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+    "root": "/Users/syedasif/tumb/data/msd_brain",
+    "volumes": 484,
+    "modality": "FLAIR"
+  },
+  "split_strategy": {
+    "type": "volume-level three-way",
+    "group_key": "volume id",
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "threshold": 0.95,
+    "dice": 0.3807,
+    "dice_on_volumes_with_tumour": 0.3807,
+    "volumes": 73,
+    "volumes_with_tumour": 73,
+    "predicted_to_true_volume_ratio": 0.401,
+    "avg_inference_time_s": 2.078
+  },
+  "random_seed": 42,
+  "preprocessing": {
+    "brain_crop": true,
+    "resample": "128\u00b3",
+    "normalise": "1\u201399th percentile of brain voxels"
+  },
+  "image_size": 128,
+  "architecture": "UNet3D",
+  "model_config": {
+    "patch": 64,
+    "base": 16,
+    "lr": 0.001,
+    "batch_size": 2,
+    "tumour_prob": 0.7,
+    "patches_per_volume": 2,
+    "volume_size": 128
+  },
+  "optimizer": {
+    "name": "AdamW",
+    "lr": 0.001,
+    "scheduler": "ReduceLROnPlateau"
+  },
+  "epochs": 0,
+  "best_epoch": 0,
+  "metrics": {
+    "split": "volume-level held-out test (one volume per patient)",
+    "dataset": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+    "architecture": "UNet3D",
+    "volumetric": true,
+    "serves_uploads": false,
+    "decision_threshold": 0.8,
+    "threshold": 0.8,
+    "dice": 0.5091,
+    "dice_on_volumes_with_tumour": 0.5091,
+    "volumes": 72,
+    "volumes_with_tumour": 72,
+    "predicted_to_true_volume_ratio": 1.211,
+    "avg_inference_time_s": 1.917,
+    "validation": {
+      "threshold": 0.8,
+      "dice": 0.5178,
+      "dice_on_volumes_with_tumour": 0.5178,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 1.187,
+      "avg_inference_time_s": 1.932
+    },
+    "model_version": "20261017-192537",
+    "warnings": [
+      "Volumes were brain-cropped and resampled to 128\u00b3 from 240\u00d7240\u00d7155, so the Dice below is measured at that resolution, not at the scanner's.",
+      "FLAIR only: the Decathlon volumes carry four co-registered sequences and this model reads one, which is the sequence whole-tumour extent is clearest in.",
+      "The decision threshold (0.80, not the default 0.5) was chosen on the validation volumes by sweeping 6 candidates. The test volumes took no part in that choice.",
+      "This volumetric model is not what the API serves. An upload is a single slice and a 3D U-Net needs the slices around it, so uploads are segmented by the 2D U-Net; this model's Dice is a volumetric result measured on held-out volumes.",
+      "Disclosure: these held-out volumes were segmented twice. First at the default decision threshold of 0.5 (test Dice 0.4406), before a threshold sweep on the *validation* volumes showed the model over-segmented by a factor of 2.5 and that 0.80 corrected it. The second pass, reported here, used that validation-chosen threshold. The choice never saw the test volumes, but the test set was read twice and saying so is part of the result."
+    ],
+    "earlier_test_evaluation": {
+      "threshold": 0.5,
+      "dice": 0.4406,
+      "dice_on_volumes_with_tumour": 0.4406,
+      "note": "Superseded by the calibrated run; kept so the sequence is visible."
+    }
+  },
+  "checkpoint_path": "/Users/syedasif/tumb/backend/weights/method1/best_unet3d.pth",
+  "inference_time_s": 1.917,
+  "train_duration_s": 897.9,
+  "model_version": "20261017-192537",
+  "created_at": "2026-10-17T19:54:52+00:00",
+  "git_revision": "0a4bea3",
+  "device": "mps",
+  "python": "3.13.7",
+  "warnings": [
+    "Volumes were brain-cropped and resampled to 128\u00b3 from 240\u00d7240\u00d7155, so the Dice below is measured at that resolution, not at the scanner's.",
+    "FLAIR only: the Decathlon volumes carry four co-registered sequences and this model reads one, which is the sequence whole-tumour extent is clearest in.",
+    "The decision threshold (0.80, not the default 0.5) was chosen on the validation volumes by sweeping 6 candidates. The test volumes took no part in that choice.",
+    "This volumetric model is not what the API serves. An upload is a single slice and a 3D U-Net needs the slices around it, so uploads are segmented by the 2D U-Net; this model's Dice is a volumetric result measured on held-out volumes.",
+    "Disclosure: these held-out volumes were segmented twice. First at the default decision threshold of 0.5 (test Dice 0.4406), before a threshold sweep on the *validation* volumes showed the model over-segmented by a factor of 2.5 and that 0.80 corrected it. The second pass, reported here, used that validation-chosen threshold. The choice never saw the test volumes, but the test set was read twice and saying so is part of the result."
+  ]
+}

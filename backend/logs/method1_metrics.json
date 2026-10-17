@@ -143,7 +143,7 @@
     },
     "feature_extractor_version": "20260916-221953"
   },
-  "updated_at": "2026-10-17T09:23:11+00:00",
+  "updated_at": "2026-10-17T20:01:41+00:00",
   "segmentation": {
     "split": "patient-grouped held-out test",
     "dataset": "data/figshare",
@@ -285,5 +285,43 @@
     "warnings": [
       "Recorded for comparison; this head is not the one the API serves."
     ]
+  },
+  "segmentation_3d": {
+    "split": "volume-level held-out test (one volume per patient)",
+    "dataset": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+    "architecture": "UNet3D",
+    "volumetric": true,
+    "serves_uploads": false,
+    "decision_threshold": 0.8,
+    "threshold": 0.8,
+    "dice": 0.5091,
+    "dice_on_volumes_with_tumour": 0.5091,
+    "volumes": 72,
+    "volumes_with_tumour": 72,
+    "predicted_to_true_volume_ratio": 1.211,
+    "avg_inference_time_s": 1.917,
+    "validation": {
+      "threshold": 0.8,
+      "dice": 0.5178,
+      "dice_on_volumes_with_tumour": 0.5178,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 1.187,
+      "avg_inference_time_s": 1.932
+    },
+    "model_version": "20261017-192537",
+    "warnings": [
+      "Volumes were brain-cropped and resampled to 128\u00b3 from 240\u00d7240\u00d7155, so the Dice below is measured at that resolution, not at the scanner's.",
+      "FLAIR only: the Decathlon volumes carry four co-registered sequences and this model reads one, which is the sequence whole-tumour extent is clearest in.",
+      "The decision threshold (0.80, not the default 0.5) was chosen on the validation volumes by sweeping 6 candidates. The test volumes took no part in that choice.",
+      "This volumetric model is not what the API serves. An upload is a single slice and a 3D U-Net needs the slices around it, so uploads are segmented by the 2D U-Net; this model's Dice is a volumetric result measured on held-out volumes.",
+      "Disclosure: these held-out volumes were segmented twice. First at the default decision threshold of 0.5 (test Dice 0.4406), before a threshold sweep on the *validation* volumes showed the model over-segmented by a factor of 2.5 and that 0.80 corrected it. The second pass, reported here, used that validation-chosen threshold. The choice never saw the test volumes, but the test set was read twice and saying so is part of the result."
+    ],
+    "earlier_test_evaluation": {
+      "threshold": 0.5,
+      "dice": 0.4406,
+      "dice_on_volumes_with_tumour": 0.4406,
+      "note": "Superseded by the calibrated run; kept so the sequence is visible."
+    }
   }
 }

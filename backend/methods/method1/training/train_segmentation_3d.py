@@ -113,8 +113,17 @@ def _window_starts(size: int, patch: int, step: int) -> list[int]:
 
 
 @torch.no_grad()
-def segment_volume(model, image: np.ndarray, patch: int, device, overlap: int = 16) -> np.ndarray:
-    """Sliding-window inference over a whole volume, averaging the overlaps."""
+def segment_volume(model, image: np.ndarray, patch: int, device, overlap: int = 16,
+                   threshold: float = 0.5) -> np.ndarray:
+    """Sliding-window inference over a whole volume, averaging the overlaps.
+
+    ``threshold`` is the probability a voxel must reach to be called tumour.
+    0.5 is plain argmax; a higher value corrects the sampling prior, because
+    training patches are drawn on tumour far more often than a sweep over a
+    whole volume encounters it, which leaves the network biased towards
+    "tumour". That bias is a decision threshold, so it is fixed on validation
+    and never on the test volumes.
+    """
     model.eval()
     shape = image.shape
     logits = np.zeros((2, *shape), dtype=np.float32)
@@ -134,17 +143,20 @@ def segment_volume(model, image: np.ndarray, patch: int, device, overlap: int = 
                 logits[(slice(None), *sl)] += out
                 counts[sl] += 1.0
     counts[counts == 0] = 1.0
-    return (logits[1] / counts > logits[0] / counts).astype(np.uint8)
+    averaged = logits / counts
+    probability = np.exp(averaged[1] - averaged.max(axis=0))
+    probability /= np.exp(averaged - averaged.max(axis=0)).sum(axis=0)
+    return (probability >= threshold).astype(np.uint8)
 
 
-def evaluate(model, store: VolumeStore, names: list[str], patch: int, device
-             ) -> tuple[dict, list[dict]]:
+def evaluate(model, store: VolumeStore, names: list[str], patch: int, device,
+             threshold: float = 0.5) -> tuple[dict, list[dict]]:
     """Dice per volume, and the aggregate. Tumour-free volumes are reported apart."""
     per_volume, times = [], []
     for name in names:
         image, label = store.load(name)
         t0 = time.perf_counter()
-        pred = segment_volume(model, image, patch, device)
+        pred = segment_volume(model, image, patch, device, threshold=threshold)
         times.append(time.perf_counter() - t0)
         per_volume.append({"volume": Path(name).stem, "dice": round(dice_of(pred, label), 4),
                            "tumour_voxels": int(label.sum()),
@@ -152,10 +164,14 @@ def evaluate(model, store: VolumeStore, names: list[str], patch: int, device
     with_tumour = [v["dice"] for v in per_volume if v["tumour_voxels"] > 0]
     inter = sum(min(v["predicted_voxels"], v["tumour_voxels"]) for v in per_volume)
     summary = {
+        "threshold": threshold,
         "dice": round(float(np.mean([v["dice"] for v in per_volume])), 4),
         "dice_on_volumes_with_tumour": round(float(np.mean(with_tumour)), 4) if with_tumour else None,
         "volumes": len(per_volume),
         "volumes_with_tumour": len(with_tumour),
+        "predicted_to_true_volume_ratio": round(float(np.median(
+            [v["predicted_voxels"] / max(v["tumour_voxels"], 1) for v in per_volume
+             if v["tumour_voxels"] > 0])), 3),
         "avg_inference_time_s": round(float(np.mean(times)), 3),
     }
     return summary, per_volume
@@ -179,6 +195,12 @@ def main() -> int:
     ap.add_argument("--limit-volumes", type=int, default=0,
                     help="use only the first N volumes (a smoke test, never a reported run)")
     ap.add_argument("--skip-test", action="store_true", help="never segment the test volumes")
+    ap.add_argument("--from-checkpoint", action="store_true",
+                    help="load the saved weights and skip training (calibrate and evaluate only)")
+    ap.add_argument("--calibrate", action="store_true",
+                    help="choose the decision threshold on the validation volumes")
+    ap.add_argument("--thresholds", default="0.5,0.6,0.7,0.8,0.9,0.95",
+                    help="candidate thresholds for --calibrate")
     args = ap.parse_args()
 
     device = config.DEVICE
@@ -227,6 +249,18 @@ def main() -> int:
     model = UNet3D(in_channels=1, num_classes=2, base=args.base).to(device)
     print(f"[{TAG}] UNet3D on {device}: {sum(p.numel() for p in model.parameters()):,} parameters "
           f"| {args.patch}³ patches")
+    resumed = False
+    if args.from_checkpoint:
+        from backend.methods.common.checkpoint import load_checkpoint
+
+        ckpt_meta, warns = load_checkpoint(
+            model, WEIGHTS_PATH, expected_method=METHOD1.method_id,
+            expected_architecture=ARCHITECTURE, expected_role="segmentation",
+        )
+        for w in warns:
+            print(f"[{TAG}] {w}")
+        resumed = True
+        print(f"[{TAG}] loaded {WEIGHTS_PATH} ({ckpt_meta.get('model_version')}); skipping training")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", factor=0.5,
                                                            patience=max(2, args.patience // 2))
@@ -274,7 +308,7 @@ def main() -> int:
 
     hist = {"train_loss": [], "val_loss": [], "train_dice": [], "val_dice": []}
     best_state, best_epoch, best_dice, stale = None, 0, -1.0, 0
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(1, 0 if resumed else args.epochs + 1):
         t0 = time.perf_counter()
         tr_loss, tr_dice = run(train_v, True)
         va_loss, va_dice = run(val_v, False)
@@ -295,20 +329,41 @@ def main() -> int:
                 print(f"[{TAG}] early stop at epoch {epoch} (best {best_dice:.4f})")
                 break
 
-    if best_state is None:
+    if best_state is None and not resumed:
         print("ERROR: no epoch improved; nothing to save.")
         return 1
-    model.load_state_dict(best_state)
+    if best_state is not None:
+        model.load_state_dict(best_state)
 
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
-    save_curve(hist["train_loss"], "3D U-Net loss", LOGS_DIR / "seg3d_loss.png",
-               second=hist["val_loss"])
-    save_curve(hist["train_dice"], "3D U-Net patch Dice", LOGS_DIR / "seg3d_dice.png",
-               second=hist["val_dice"])
+    if hist["train_loss"]:
+        save_curve(hist["train_loss"], "3D U-Net loss", LOGS_DIR / "seg3d_loss.png",
+                   second=hist["val_loss"])
+        save_curve(hist["train_dice"], "3D U-Net patch Dice", LOGS_DIR / "seg3d_dice.png",
+                   second=hist["val_dice"])
 
     # Validation is scored on whole volumes too: a patch Dice is not the number
     # anyone means by "how well does it segment a scan".
-    val_summary, _ = evaluate(model, store, val_v, args.patch, device)
+    threshold, sweep = 0.5, []
+    if args.calibrate:
+        for candidate in [float(t) for t in args.thresholds.split(",") if t.strip()]:
+            summary, _ = evaluate(model, store, val_v, args.patch, device, threshold=candidate)
+            sweep.append(summary)
+            print(f"[{TAG}] validation threshold {candidate:.2f}: Dice {summary['dice']:.4f} "
+                  f"| predicted/true volume {summary['predicted_to_true_volume_ratio']}",
+                  flush=True)
+        best = max(sweep, key=lambda r: r["dice"])
+        threshold = float(best["threshold"])
+        val_summary = best
+        print(f"[{TAG}] threshold {threshold:.2f} chosen on validation "
+              f"(Dice {val_summary['dice']:.4f})")
+        warnings.append(
+            f"The decision threshold ({threshold:.2f}, not the default 0.5) was chosen on the "
+            f"validation volumes by sweeping {len(sweep)} candidates. The test volumes took no "
+            f"part in that choice."
+        )
+    else:
+        val_summary, _ = evaluate(model, store, val_v, args.patch, device)
     print(f"[{TAG}] VALIDATION (whole volumes): Dice {val_summary['dice']:.4f} "
           f"({val_summary['volumes']} volumes)")
 
@@ -324,8 +379,14 @@ def main() -> int:
         mask_source="Medical Segmentation Decathlon Task01_BrainTumour (BraTS) voxel labels",
         ground_truth_masks=True,
     )
-    save_checkpoint(WEIGHTS_PATH, model.state_dict(), meta, epoch=best_epoch, val_dice=best_dice)
-    print(f"[{TAG}] checkpoint -> {WEIGHTS_PATH}")
+    if resumed:
+        meta = type(meta)(**{**meta.__dict__, "model_version": str(ckpt_meta.get("model_version")
+                                                                  or meta.model_version)})
+        print(f"[{TAG}] keeping the loaded checkpoint at {WEIGHTS_PATH}")
+    else:
+        save_checkpoint(WEIGHTS_PATH, model.state_dict(), meta, epoch=best_epoch,
+                        val_dice=best_dice)
+        print(f"[{TAG}] checkpoint -> {WEIGHTS_PATH}")
 
     warnings.append(
         "This volumetric model is not what the API serves. An upload is a single slice and a 3D "
@@ -339,7 +400,8 @@ def main() -> int:
         "modality": "FLAIR", "volume_size": args.volume_size, "patch": args.patch,
         "split": "volume-level (one volume per patient)", "split_summary": summary,
         "epochs_run": len(hist["train_loss"]), "best_epoch": best_epoch,
-        "validation": val_summary, "test": None, "per_volume": None,
+        "validation": val_summary, "threshold": threshold,
+        "validation_threshold_sweep": sweep, "test": None, "per_volume": None,
         "history": hist, "model_version": meta.model_version,
         "checkpoint": str(WEIGHTS_PATH), "device": str(device),
         "train_duration_s": round(time.perf_counter() - started, 1), "warnings": warnings,
@@ -351,7 +413,8 @@ def main() -> int:
         return 0
 
     # --- The held-out volumes are segmented here, once. ------------------- #
-    test_summary, per_volume = evaluate(model, store, test_v, args.patch, device)
+    test_summary, per_volume = evaluate(model, store, test_v, args.patch, device,
+                                        threshold=threshold)
     print(f"[{TAG}] FINAL TEST (held-out volumes, segmented once): Dice {test_summary['dice']:.4f} "
           f"| on volumes with tumour {test_summary['dice_on_volumes_with_tumour']} "
           f"| {test_summary['volumes']} volumes")
@@ -366,6 +429,7 @@ def main() -> int:
         "architecture": ARCHITECTURE,
         "volumetric": True,
         "serves_uploads": False,
+        "decision_threshold": threshold,
         **test_summary,
         "validation": val_summary,
         "model_version": meta.model_version,
