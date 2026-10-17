@@ -56,6 +56,8 @@ export interface MethodSummary {
   display_number: number;
   /** False for whole-image classifiers that have no segmentation stage by design. */
   has_segmentation_stage: boolean;
+  accepts_secondary_image?: boolean;
+  secondary_image_label?: string;
   warnings: string[];
 }
 
@@ -82,6 +84,8 @@ export interface MethodPrediction {
   segmentation_mask_url: string | null;
   heatmap_url: string | null;
   original_image_url: string | null;
+  /** Present only when a second (SPECT) image was uploaded to the fusion method. */
+  fused_image_url: string | null;
   processing_time_s: number;
   model_version: string;
   dataset_context: string;
@@ -247,6 +251,9 @@ export const getAllMetrics = () => req<MethodMetrics[]>("/api/metrics");
 export const getMethodPlots = (id: MethodId) => req<PlotImage[]>(`/api/gallery/${id}/plots`);
 export const getDatasetSamples = (id: MethodId, perClass = 3) =>
   req<DatasetSamples>(`/api/gallery/${id}/dataset?per_class=${perClass}`);
+/** MRI | SPECT | fused panels; empty for every method that does not fuse modalities. */
+export const getFusionSamples = (id: MethodId) =>
+  req<PlotImage[]>(`/api/gallery/${id}/fusion`);
 export const getHealth = () => req<Health>("/health");
 export const getTrainStatus = () => req<TrainStatus>("/train-status");
 export const getHistory = (limit = 50, methodId?: MethodId) =>
@@ -260,11 +267,14 @@ export const reportUrl = (methodId: MethodId | undefined, id: string) =>
 export function predictWithMethod(
   methodId: MethodId,
   file: File,
-  onProgress?: (pct: number) => void
+  onProgress?: (pct: number) => void,
+  /** Registered SPECT counterpart, for the method whose architecture fuses two modalities. */
+  secondary?: File | null
 ): Promise<MethodPrediction> {
   return new Promise((resolve, reject) => {
     const form = new FormData();
     form.append("file", file);
+    if (secondary) form.append("secondary", secondary);
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${API_BASE}/api/predict/${methodId}`);
     xhr.timeout = UPLOAD_TIMEOUT_MS;

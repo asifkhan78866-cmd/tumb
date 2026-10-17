@@ -187,10 +187,11 @@ def main() -> int:
             print(f"\nERROR: {exc}")
             return 1
         warnings.insert(0, (
-            "Trained on MRI only: this is the MRI branch of the MRI–SPECT fusion model. No "
-            "SPECT data and no paired MRI–SPECT scans exist, so the SPECT branch and the "
-            "fusion step are not trained, and these metrics describe MRI classification, "
-            "not multimodal fusion."
+            "Trained on MRI only: this is the MRI branch of the MRI–SPECT fusion model. The "
+            "image-level fusion stage is implemented and measured separately "
+            "(`evaluate_fusion`), but the paired MRI–SPECT data carries no diagnosis labels, "
+            "so no classifier is trained on fused images. These metrics describe MRI "
+            "classification, not multimodal fusion."
         ))
     else:
         root = args.data_root or (m2.SPECT_PATH if modality == "SPECT" else m2.BRI_PATH)

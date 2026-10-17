@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Images, LineChart } from "lucide-react";
+import { Images, Layers, LineChart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   assetUrl,
   getDatasetSamples,
+  getFusionSamples,
   getMethodPlots,
   type DatasetSamples,
   type MethodId,
@@ -22,6 +23,7 @@ import {
 export function MethodGallery({ methodId }: { methodId: MethodId }) {
   const [plots, setPlots] = useState<PlotImage[] | null>(null);
   const [samples, setSamples] = useState<DatasetSamples | null>(null);
+  const [fusion, setFusion] = useState<PlotImage[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -33,6 +35,10 @@ export function MethodGallery({ methodId }: { methodId: MethodId }) {
     getDatasetSamples(methodId, 3)
       .then((d) => active && setSamples(d))
       .catch(() => active && setSamples(null));
+    setFusion([]);
+    getFusionSamples(methodId)
+      .then((f) => active && setFusion(f))
+      .catch(() => active && setFusion([]));
     return () => {
       active = false;
     };
@@ -92,6 +98,37 @@ export function MethodGallery({ methodId }: { methodId: MethodId }) {
           )}
         </CardContent>
       </Card>
+
+      {fusion.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Layers className="h-4 w-4 text-primary" /> MRI–SPECT fusion
+            </CardTitle>
+            <p className="pt-1 text-xs text-muted-foreground">
+              Each panel is one registered pair: the MRI, its SPECT counterpart, and the fused
+              image this method&apos;s fusion stage produced. The transform is deterministic —
+              nothing here is trained, and these images were not used to predict any class.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {fusion.map((panel) => (
+                <figure key={panel.key} className="space-y-1.5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={assetUrl(panel.url)}
+                    alt={`MRI, SPECT and fused image for ${panel.label}`}
+                    loading="lazy"
+                    className="w-full rounded-lg border bg-black"
+                  />
+                  <figcaption className="text-xs text-muted-foreground">{panel.label}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className="pb-3">

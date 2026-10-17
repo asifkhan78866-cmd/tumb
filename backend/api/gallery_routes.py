@@ -162,6 +162,39 @@ def get_plot(method_id: str = PathParam(...), key: str = PathParam(...)):
     return FileResponse(str(path), media_type="image/png")
 
 
+# Panels written by `evaluate_fusion`: MRI | SPECT | fused, one file per pair.
+# They are listed by index rather than by name, so no client string reaches a path.
+_FUSION_SAMPLES: dict[str, Path] = {"method2": config.LOGS_DIR / "method2" / "fusion_samples"}
+
+
+def _fusion_files(method_id: str) -> list[Path]:
+    directory = _FUSION_SAMPLES.get(method_id)
+    if directory is None or not directory.is_dir():
+        return []
+    return sorted(p for p in directory.iterdir() if p.suffix.lower() in IMAGE_EXTS)
+
+
+@router.get("/{method_id}/fusion", response_model=list[PlotImage])
+def list_fusion_samples(method_id: str = PathParam(...)) -> list[PlotImage]:
+    """MRI | SPECT | fused panels, for a method that fuses two modalities."""
+    _spec_or_404(method_id)
+    return [
+        PlotImage(key=str(i), label=path.stem.replace("_", " "),
+                  description="MRI, its registered SPECT counterpart, and the fused image.",
+                  url=f"/api/gallery/{method_id}/fusion/{i}")
+        for i, path in enumerate(_fusion_files(method_id))
+    ]
+
+
+@router.get("/{method_id}/fusion/{index}")
+def get_fusion_sample(method_id: str = PathParam(...), index: int = PathParam(..., ge=0, le=63)):
+    _spec_or_404(method_id)
+    files = _fusion_files(method_id)
+    if index >= len(files) or not _under(files[index], config.LOGS_DIR):
+        raise HTTPException(status_code=404, detail=f"No fusion sample {index} for {method_id}.")
+    return FileResponse(str(files[index]), media_type="image/png")
+
+
 @router.get("/{method_id}/dataset", response_model=DatasetSamples)
 def list_dataset_samples(
     method_id: str = PathParam(...),
@@ -173,8 +206,8 @@ def list_dataset_samples(
     note = ("Images from the dataset's own Testing split — the held-out set these metrics "
             "were measured on. They are examples only, not predictions.")
     if spec.method_id == "method2":
-        note += (" Method 4's SPECT branch has no dataset; these are the MRI images its MRI "
-                 "branch was trained and tested on.")
+        note += (" These are the MRI images its MRI branch was trained and tested on; the "
+                 "paired MRI–SPECT slices that drive its fusion stage are shown separately.")
     samples: list[SampleImage] = []
     for class_key in spec.class_names:
         directory = _class_dir(method_id, class_key)

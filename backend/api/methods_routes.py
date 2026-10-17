@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import APIRouter, File, HTTPException, Path as PathParam, UploadFile
 from fastapi.responses import FileResponse
@@ -105,6 +105,8 @@ def list_all_methods() -> list[MethodSummary]:
                 ai_assessment_available=status["ai_assessment_available"],
                 display_number=spec.display_number,
                 has_segmentation_stage=status["has_segmentation_stage"],
+        accepts_secondary_image=status["accepts_secondary_image"],
+        secondary_image_label=status["secondary_image_label"],
                 warnings=status["warnings"] + list(spec.notes),
             )
         )
@@ -160,6 +162,8 @@ def method_detail(method_id: str = PathParam(..., description=f"one of {METHOD_I
         ai_assessment_available=status["ai_assessment_available"],
         display_number=spec.display_number,
         has_segmentation_stage=status["has_segmentation_stage"],
+        accepts_secondary_image=status["accepts_secondary_image"],
+        secondary_image_label=status["secondary_image_label"],
         warnings=status["warnings"] + list(spec.notes),
         pipeline_stages=[
             {"id": s.id, "label": s.label, "kind": s.kind, "description": s.description}
@@ -177,15 +181,11 @@ def method_detail(method_id: str = PathParam(..., description=f"one of {METHOD_I
 # --------------------------------------------------------------------------- #
 # Prediction
 # --------------------------------------------------------------------------- #
-@router.post("/predict/{method_id}", response_model=MethodPredictionResponse)
-def predict(method_id: str, file: UploadFile = File(...)) -> MethodPredictionResponse:
-    """Run one method's pipeline. Synchronous on purpose — see the module docstring."""
-    spec = _spec_or_404(method_id)
-
-    if file.content_type not in ALLOWED_CONTENT:
-        raise HTTPException(status_code=415, detail=f"Unsupported file type: {file.content_type}")
-
-    data = file.file.read(config.MAX_UPLOAD_BYTES + 1)
+def _read_upload(upload: UploadFile) -> bytes:
+    """Read one upload, applying the same type and size limits to every image."""
+    if upload.content_type not in ALLOWED_CONTENT:
+        raise HTTPException(status_code=415, detail=f"Unsupported file type: {upload.content_type}")
+    data = upload.file.read(config.MAX_UPLOAD_BYTES + 1)
     if not data:
         raise HTTPException(status_code=400, detail="Empty file.")
     if len(data) > config.MAX_UPLOAD_BYTES:
@@ -193,16 +193,46 @@ def predict(method_id: str, file: UploadFile = File(...)) -> MethodPredictionRes
             status_code=413,
             detail=f"File exceeds the {config.MAX_UPLOAD_MB:g} MB limit (MAX_UPLOAD_MB).",
         )
+    return data
+
+
+@router.post("/predict/{method_id}", response_model=MethodPredictionResponse)
+def predict(
+    method_id: str,
+    file: UploadFile = File(...),
+    secondary: Optional[UploadFile] = File(
+        None,
+        description=("Second modality image for a method that fuses two of them — the "
+                     "registered SPECT counterpart of the MRI. Ignored, with a warning, by "
+                     "every other method."),
+    ),
+) -> MethodPredictionResponse:
+    """Run one method's pipeline. Synchronous on purpose — see the module docstring."""
+    spec = _spec_or_404(method_id)
+    data = _read_upload(file)
 
     try:
         engine = load_engine(method_id)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Could not load {method_id}: {exc}") from exc
 
+    extra_warnings: list[str] = []
+    second: Optional[bytes] = None
+    if secondary is not None and secondary.filename:
+        if getattr(engine, "accepts_secondary_image", False):
+            second = _read_upload(secondary)
+        else:
+            extra_warnings.append(
+                f"A second image was uploaded but {spec.short_name} takes one image, so it was "
+                f"ignored. Only the MRI-SPECT fusion method reads a second modality."
+            )
+
     try:
-        result = engine.predict(data)
+        result = engine.predict(data, second) if second else engine.predict(data)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if extra_warnings:
+        result.warnings = [*extra_warnings, *result.warnings]
 
     response = MethodPredictionResponse(
         method_id=spec.method_id,
@@ -215,6 +245,7 @@ def predict(method_id: str, file: UploadFile = File(...)) -> MethodPredictionRes
         segmentation_mask_url=_asset_url(result.mask_path),
         heatmap_url=_asset_url(result.overlay_path),
         original_image_url=_asset_url(result.original_path),
+        fused_image_url=_asset_url(getattr(result, "fused_path", None)),
         processing_time_s=result.inference_time_s,
         model_version=result.model_version,
         dataset_context=dataset_context(spec),
@@ -235,6 +266,7 @@ def predict(method_id: str, file: UploadFile = File(...)) -> MethodPredictionRes
             "original_image": response.original_image_url,
             "segmentation_mask": response.segmentation_mask_url,
             "gradcam_overlay": response.heatmap_url,
+            "fused_image": response.fused_image_url,
             "segmentation_available": response.segmentation_available,
             "probabilities": response.class_probabilities,
             "model_version": response.model_version,
