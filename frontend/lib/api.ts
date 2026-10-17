@@ -116,6 +116,15 @@ export interface MethodMetrics {
   per_class: Record<string, number[]> | null;
   model_version: string | null;
   dataset_context: string;
+  /** A 3D model's own result, measured on volumes; it does not serve uploads. */
+  volumetric_segmentation?: {
+    dice?: number;
+    dice_on_volumes_with_tumour?: number | null;
+    volumes?: number;
+    architecture?: string;
+    dataset?: string;
+    warnings?: string[];
+  } | null;
   warnings: string[];
 }
 

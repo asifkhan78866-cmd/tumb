@@ -151,6 +151,11 @@ class MethodMetricsResponse(BaseModel):
     per_class: Optional[dict[str, Any]] = None
     model_version: Optional[str] = None
     dataset_context: str = ""
+    volumetric_segmentation: Optional[dict[str, Any]] = Field(
+        None,
+        description=("A 3D model's own result, when one was trained. Kept out of the fields "
+                     "above because it is measured on volumes and does not serve uploads."),
+    )
     warnings: list[str] = Field(default_factory=list)
 
 

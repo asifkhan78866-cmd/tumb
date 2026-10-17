@@ -86,6 +86,34 @@ export function ModelStatusCard({ method }: { method: MethodDetail }) {
             <p className="text-muted-foreground">Not evaluated — no test metrics recorded.</p>
           )}
         </div>
+
+        {metrics?.volumetric_segmentation && (
+          <div className="rounded-lg border border-dashed p-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Volumetric segmentation — measured, not served
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <Metric
+                label="Dice (volumes)"
+                value={pct(metrics.volumetric_segmentation.dice ?? null)}
+              />
+              <Metric
+                label="Dice (with tumour)"
+                value={pct(metrics.volumetric_segmentation.dice_on_volumes_with_tumour ?? null)}
+              />
+              <Metric
+                label="Test volumes"
+                value={String(metrics.volumetric_segmentation.volumes ?? "—")}
+              />
+            </div>
+            <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+              {metrics.volumetric_segmentation.architecture} on{" "}
+              {metrics.volumetric_segmentation.dataset}. An upload is a single slice and a 3D
+              model needs the slices around it, so uploads are segmented by the 2D U-Net above —
+              this number belongs to the volumetric model alone.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
