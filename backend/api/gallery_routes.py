@@ -39,6 +39,13 @@ _PLOTS: dict[str, dict[str, tuple[str, str, str]]] = {
         "roc": ("method1_cls_roc.png", "ROC curves (held-out test)", "One-vs-rest, with per-class AUC."),
         "accuracy": ("method1_cls_acc.png", "Accuracy per epoch", "Training vs validation."),
         "loss": ("method1_cls_loss.png", "Loss per epoch", "Training vs validation."),
+        "seg_dice": ("method1_seg_dice.png", "Segmentation Dice per epoch",
+                     "2D U-Net, training vs validation."),
+        "seg_loss": ("method1_seg_loss.png", "Segmentation loss per epoch", "2D U-Net."),
+        "seg3d_dice": ("method1/seg3d_dice.png", "3D U-Net patch Dice per epoch",
+                       "Volumetric model, training vs validation. Measured on volumes; it does "
+                       "not segment uploads."),
+        "seg3d_loss": ("method1/seg3d_loss.png", "3D U-Net loss per epoch", "Volumetric model."),
         "feature_selection": ("method1/sfla_feature_selection.png",
                               "SFLA feature selection — fitness per iteration",
                               "Best and population-mean fitness of the frog population; fitness is "
@@ -50,6 +57,10 @@ _PLOTS: dict[str, dict[str, tuple[str, str, str]]] = {
         "roc": ("method2_cls_roc.png", "ROC curves (held-out test)", "One-vs-rest, with per-class AUC."),
         "accuracy": ("method2_cls_acc.png", "Accuracy per epoch", "Training vs validation."),
         "loss": ("method2_cls_loss.png", "Loss per epoch", "Training vs validation."),
+        "seg_dice": ("method2_seg_dice.png", "Multi-class segmentation Dice per epoch",
+                     "Mean over the three tumour sub-regions, training vs validation."),
+        "seg_loss": ("method2_seg_loss.png", "Segmentation loss per epoch",
+                     "Class-weighted cross-entropy plus soft Dice."),
     },
     "method3": {
         "confusion_matrix": ("method3_cls_confusion_matrix.png", "Confusion matrix (held-out test)",

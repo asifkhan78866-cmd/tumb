@@ -20,9 +20,15 @@ backend/weights/method1/*
 # ...and the SVM that classifies its SFLA-selected ConvLSTM features.
 !backend/weights/method1/feature_svm.joblib
 !backend/weights/method1/feature_svm_metadata.json
+# ...and the volumetric U-Net trained on Decathlon (BraTS) volumes.
+!backend/weights/method1/best_unet3d.pth
+!backend/weights/method1/best_unet3d.pth.meta.json
 # ...the MRI-SPECT fusion method's trained MRI branch...
 !backend/weights/method2_dcn.pth
 !backend/weights/method2_model_metadata.json
+# ...and its multi-class segmentation head.
+!backend/weights/method2_segmentation.pth
+!backend/weights/method2_segmentation.pth.meta.json
 # ...and the transfer-learning and Red Fox ZFNet classifiers.
 backend/weights/method3/*
 !backend/weights/method3/best_classifier.pth
@@ -65,6 +71,10 @@ backend/logs/method1/*
 !backend/logs/method1/sfla_feature_selection.json
 !backend/logs/method1/sfla_feature_selection.png
 !backend/logs/method1/roi_geometry_comparison.json
+!backend/logs/method1/segmentation3d_metrics.json
+!backend/logs/method1/seg3d_dice.png
+!backend/logs/method1/seg3d_loss.png
+!backend/logs/method1_segmentation3d_runcard.json
 !backend/logs/method1_segmentation_runcard.json
 !backend/logs/method1_seg_dice.png
 !backend/logs/method1_seg_loss.png
@@ -73,6 +83,9 @@ backend/logs/method1/*
 !backend/logs/method2_cls_confusion_matrix.png
 !backend/logs/method2_cls_roc.png
 !backend/logs/method2_fusion_runcard.json
+!backend/logs/method2_segmentation_runcard.json
+!backend/logs/method2_seg_dice.png
+!backend/logs/method2_seg_loss.png
 !backend/logs/method2/
 backend/logs/method2/*
 !backend/logs/method2/fusion_metrics.json
