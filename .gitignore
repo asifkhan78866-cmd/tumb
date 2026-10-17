@@ -17,6 +17,9 @@ backend/weights/method1/*
 !backend/weights/method1/model_metadata.json
 !backend/weights/method1/best_unet.pth
 !backend/weights/method1/best_unet.pth.meta.json
+# ...and the SVM that classifies its SFLA-selected ConvLSTM features.
+!backend/weights/method1/feature_svm.joblib
+!backend/weights/method1/feature_svm_metadata.json
 # ...the MRI-SPECT fusion method's trained MRI branch...
 !backend/weights/method2_dcn.pth
 !backend/weights/method2_model_metadata.json
@@ -51,6 +54,7 @@ backend/logs/*
 !backend/logs/eval_roc.png
 !backend/logs/method1_classification_runcard.json
 !backend/logs/method1_sfla_runcard.json
+!backend/logs/method1_feature_selection_runcard.json
 !backend/logs/method1_cls_confusion_matrix.png
 !backend/logs/method1_cls_roc.png
 !backend/logs/method1_cls_acc.png
@@ -58,6 +62,8 @@ backend/logs/*
 !backend/logs/method1/
 backend/logs/method1/*
 !backend/logs/method1/sfla_results.json
+!backend/logs/method1/sfla_feature_selection.json
+!backend/logs/method1/sfla_feature_selection.png
 !backend/logs/method1_segmentation_runcard.json
 !backend/logs/method1_seg_dice.png
 !backend/logs/method1_seg_loss.png
