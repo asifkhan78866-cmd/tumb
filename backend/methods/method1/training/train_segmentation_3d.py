@@ -97,6 +97,21 @@ def dice_of(pred: np.ndarray, target: np.ndarray) -> float:
     return float(2 * (p & t).sum() / total)
 
 
+def _window_starts(size: int, patch: int, step: int) -> list[int]:
+    """Window offsets along one axis, with the last one flush against the edge.
+
+    Striding alone leaves a tail uncovered whenever the step does not divide the
+    axis — those voxels would silently keep their initial value and be reported
+    as background.
+    """
+    if size <= patch:
+        return [0]
+    starts = list(range(0, size - patch + 1, step))
+    if starts[-1] != size - patch:
+        starts.append(size - patch)
+    return starts
+
+
 @torch.no_grad()
 def segment_volume(model, image: np.ndarray, patch: int, device, overlap: int = 16) -> np.ndarray:
     """Sliding-window inference over a whole volume, averaging the overlaps."""
@@ -105,7 +120,7 @@ def segment_volume(model, image: np.ndarray, patch: int, device, overlap: int = 
     logits = np.zeros((2, *shape), dtype=np.float32)
     counts = np.zeros(shape, dtype=np.float32)
     step = max(patch - overlap, 1)
-    starts = [range(0, max(s - patch, 0) + 1, step) for s in shape]
+    starts = [_window_starts(s, patch, step) for s in shape]
     for z in starts[0]:
         for y in starts[1]:
             for x in starts[2]:
