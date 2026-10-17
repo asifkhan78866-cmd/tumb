@@ -201,9 +201,12 @@ METHOD1 = MethodSpec(
     },
     optimization_result_filename="method1/sfla_results.json",
     notes=(
-        "The classifier is served the same geometry it was trained on (recorded in its "
-        "checkpoint): whole slices until a U-Net checkpoint exists, ROI crops after. "
-        "See backend/methods/method1/transforms.py for the single shared definition.",
+        "The classifier is served the same geometry it was trained on, recorded in its "
+        "checkpoint. Both geometries were trained to convergence and compared on validation "
+        "macro-F1: whole slices 0.9775, U-Net ROI crops 0.9595, so whole slices are served "
+        "even though a U-Net checkpoint exists — the crop depends on a Dice 0.656 mask. See "
+        "backend/logs/method1/roi_geometry_comparison.json for the comparison and "
+        "backend/methods/method1/transforms.py for the single shared definition.",
     ),
 )
 
