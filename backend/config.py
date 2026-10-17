@@ -105,6 +105,41 @@ BRI_DATASET_PATH = resolve_bri_path(ROOT_DIR, os.getenv("BRI_DATASET_PATH", ""))
 BRATS_DATASET_PATH = _env_path("BRATS_DATASET_PATH", DATASET_DIR / "brats2020-training-data")
 SPECT_DATASET_PATH = _env_path("SPECT_DATASET_PATH", DATASET_DIR / "spect")
 
+# Paired MRI + SPECT slices for the fusion stage: two folders of identically
+# named images, one per modality. Searched in the usual places so a clone that
+# unpacked the download elsewhere still finds it.
+PAIRED_CANDIDATE_PATHS = (
+    "data/spect_mri", "data/SPECT-MRI", "data/SPECT-MRI/SPECT-MRI", "SPECT-MRI",
+    "SPECT-MRI/SPECT-MRI", "data/paired_mri_spect",
+)
+
+
+def looks_like_paired_mri_spect(path: Path) -> bool:
+    """True when ``path`` holds MRI/ and SPECT/ folders with images in both."""
+    try:
+        names = {p.name.lower(): p for p in path.iterdir() if p.is_dir()}
+    except (OSError, AttributeError):
+        return False
+    mri, spect = names.get("mri"), names.get("spect")
+    if not (mri and spect):
+        return False
+    return any(mri.iterdir()) and any(spect.iterdir())
+
+
+def resolve_paired_path(root: Path, configured: str = "") -> Path:
+    """Pick the paired-modality root; an explicit setting always wins."""
+    if configured.strip():
+        path = Path(configured.strip()).expanduser()
+        return path if path.is_absolute() else (root / path).resolve()
+    for candidate in PAIRED_CANDIDATE_PATHS:
+        resolved = (root / candidate).resolve()
+        if looks_like_paired_mri_spect(resolved):
+            return resolved
+    return (root / PAIRED_CANDIDATE_PATHS[0]).resolve()
+
+
+PAIRED_MRI_SPECT_PATH = resolve_paired_path(ROOT_DIR, os.getenv("PAIRED_MRI_SPECT_PATH", ""))
+
 # Method 1 weights. New runs write into weights/method1/; the legacy flat paths
 # are still honoured so the classifier shipped in the repo keeps loading.
 METHOD1_WEIGHTS_DIR = WEIGHTS_DIR / "method1"

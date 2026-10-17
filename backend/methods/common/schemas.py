@@ -51,6 +51,12 @@ class MethodPredictionResponse(BaseModel):
     segmentation_mask_url: Optional[str] = None
     heatmap_url: Optional[str] = None
     original_image_url: Optional[str] = None
+    fused_image_url: Optional[str] = Field(
+        None,
+        description=("MRI-SPECT fused image, present only when a second (SPECT) image was "
+                     "uploaded to the fusion method. It is that stage's output and is not "
+                     "what produced the class."),
+    )
     processing_time_s: float = 0.0
     model_version: str = "untrained"
     dataset_context: str = ""
@@ -101,6 +107,11 @@ class MethodSummary(BaseModel):
     # Position in the numbered method list (1-4); ids are stable, numbers are display.
     display_number: int = 0
     has_segmentation_stage: bool = True
+    accepts_secondary_image: bool = Field(
+        False,
+        description="True when this method fuses two modalities and can read a second image.",
+    )
+    secondary_image_label: str = Field("", examples=["SPECT"])
     warnings: list[str] = Field(default_factory=list)
 
 

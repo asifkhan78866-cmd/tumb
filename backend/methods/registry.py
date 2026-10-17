@@ -235,9 +235,10 @@ METHOD2 = MethodSpec(
     summary=(
         "Multimodal design: an MRI branch (grayscale, filtering, multi-class tumour "
         "segmentation) and a SPECT branch (uptake features) fused before a densely "
-        "connected classifier. The MRI branch's dense network is trained on the shared MRI "
-        "split; no paired MRI–SPECT dataset exists, so the SPECT branch and fusion are not "
-        "trained and no fusion is performed."
+        "connected classifier. Image-level MRI–SPECT fusion is implemented and measured on "
+        "357 registered pairs. The MRI branch's dense network is trained on the shared MRI "
+        "split and is what produces the four-class prediction; the paired set carries no "
+        "diagnosis labels, so no classifier is trained on fused images."
     ),
     modality="MRI + SPECT",
     class_names=METHOD2_CLASS_NAMES,
@@ -249,6 +250,7 @@ METHOD2 = MethodSpec(
         PipelineStage("filter", "Filtering / denoising", "preprocess", "Resize first, then median + bilateral edge-preserving filtering."),
         PipelineStage("segment", "Multi-class segmentation", "segmentation", "4-way softmax mask: background / necrotic core / edema / enhancing tumour."),
         PipelineStage("features", "SPECT feature stage", "feature", "Modality-specific descriptors: per-region uptake statistics and intensity histogram."),
+        PipelineStage("fusion", "MRI–SPECT fusion", "feature", "Laplacian pyramid fusion of the MRI with the SPECT luminance, local-energy coefficient selection; SPECT chrominance carried through unchanged. Deterministic — nothing is trained."),
         PipelineStage("dcn", "Dense Convolutional Network", "classifier", "DenseNet-BC style densely connected blocks with transition layers."),
         PipelineStage("predict", "Multi-class classification", "output", "Normal / Glioma / Meningioma / Pituitary."),
         PipelineStage("gradcam", "Grad-CAM", "output", "Heatmap over the DCN's last dense block."),
@@ -265,6 +267,18 @@ METHOD2 = MethodSpec(
                 "Drives the modality-specific branch and the DCN classifier. Class "
                 "folders are discovered at training time and must match the "
                 "configured class list — they are never assumed."
+            ),
+        ),
+        DatasetSpec(
+            key="paired_mri_spect",
+            name="Paired MRI–SPECT slices",
+            role="fusion",
+            source="configure PAIRED_MRI_SPECT_PATH",
+            path_attr="PAIRED_MRI_SPECT_PATH",
+            notes=(
+                "357 registered MRI/SPECT pairs over 15 cases, matched by filename. Drives "
+                "the fusion stage and its quality metrics. It carries no diagnosis labels, so "
+                "nothing is trained or classified on it."
             ),
         ),
         DatasetSpec(
@@ -302,16 +316,20 @@ METHOD2 = MethodSpec(
     training_entrypoints=(
         "python -m backend.methods.method2.training.train_segmentation",
         "python -m backend.methods.method2.training.train_classifier",
+        "python -m backend.methods.method2.training.evaluate_fusion",
     ),
     metrics_filename="method2_metrics.json",
     run_card_filenames={
         "segmentation": "method2_segmentation_runcard.json",
         "classification": "method2_classification_runcard.json",
+        "fusion": "method2_fusion_runcard.json",
     },
     notes=(
-        "Only the MRI branch is trained. Fusion needs MRI and SPECT scans of the same "
-        "patients and no such paired dataset is available, so the SPECT branch and fusion "
-        "step are untrained; metrics describe MRI classification, not fusion.",
+        "Image-level MRI–SPECT fusion is implemented and measured on 357 registered pairs; "
+        "it is a deterministic multi-scale transform, so there is nothing in it to train. "
+        "What is still untrained is a classifier on fused images: that paired set carries no "
+        "diagnosis labels. The four-class accuracy reported for this method is therefore the "
+        "trained MRI branch's, on MRI, and is labelled as such everywhere it appears.",
         "The reference diagram writes 'PECT'; the dataset and this implementation "
         "are SPECT. See METHOD2_MODALITY in .env.example.",
     ),
@@ -514,6 +532,10 @@ def runtime_status(spec: MethodSpec) -> dict[str, Any]:
 
     roles = {w.role for w in spec.weights}
     has_seg = "segmentation" in roles
+    # A second image is offered only by a method that both declares two modalities
+    # and has a paired dataset behind the stage that would use it.
+    fuses = any(d.role == "fusion" for d in spec.datasets)
+    secondary = spec.modality.split("+")[-1].strip() if fuses and "+" in spec.modality else ""
     seg_ok = weights.get("segmentation", {}).get("present", False)
     cls_ok = weights.get("classification", {}).get("present", False)
     warnings: list[str] = []
@@ -535,6 +557,10 @@ def runtime_status(spec: MethodSpec) -> dict[str, Any]:
         "classifier_available": cls_ok,
         "trained": cls_ok and (seg_ok or not has_seg),
         "has_segmentation_stage": has_seg,
+        # Only a method with two modality branches can read a second image; the
+        # upload page asks this before offering the field.
+        "accepts_secondary_image": bool(secondary),
+        "secondary_image_label": secondary,
         # An AI model assesses uploads for methods whose classifier is not trained
         # (the fusion method, and the new methods until their training finishes).
         "ai_assessment_available": (

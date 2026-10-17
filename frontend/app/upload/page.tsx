@@ -30,6 +30,7 @@ export default function UploadPage() {
   const [selected, setSelected] = useState<MethodId>("method3");
   const [detail, setDetail] = useState<MethodDetail | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [secondary, setSecondary] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<MethodPrediction | null>(null);
@@ -46,6 +47,7 @@ export default function UploadPage() {
     let active = true;
     setDetail(null);
     setResult(null);
+    setSecondary(null);  // a SPECT slice belongs to the method it was uploaded for
     getMethod(selected)
       .then((d) => active && setDetail(d))
       .catch((e) => active && setError(errorMessage(e)));
@@ -63,7 +65,7 @@ export default function UploadPage() {
     setResult(null);
     setProgress(0);
     try {
-      const res = await predictWithMethod(selected, file, setProgress);
+      const res = await predictWithMethod(selected, file, setProgress, secondary);
       setResult(res);
       if (res.prediction && res.details?.result_source === "ai_assessment") {
         toast.warning(`AI assessment (not a trained model): ${res.prediction}`);
@@ -120,6 +122,30 @@ export default function UploadPage() {
           )}
 
           <UploadDropzone onFile={setFile} disabled={loading} />
+
+          {detail?.accepts_secondary_image && (
+            <div className="space-y-3 rounded-xl border border-dashed p-4">
+              <div>
+                <p className="text-sm font-semibold">
+                  {detail.secondary_image_label} counterpart{" "}
+                  <span className="font-normal text-muted-foreground">(optional)</span>
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  This method fuses two modalities. Add the registered{" "}
+                  {detail.secondary_image_label} image of the same slice to run its fusion
+                  stage and see the fused result. The predicted class still comes from the
+                  trained MRI branch either way — no classifier here was trained on fused
+                  images.
+                </p>
+              </div>
+              <UploadDropzone
+                onFile={setSecondary}
+                disabled={loading}
+                label={`Drop the ${detail.secondary_image_label} image`}
+                compact
+              />
+            </div>
+          )}
 
           {loading && (
             <div className="space-y-2">

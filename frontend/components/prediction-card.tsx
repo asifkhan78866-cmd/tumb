@@ -145,6 +145,8 @@ export function PredictionCard({ result }: { result: MethodPrediction }) {
             </div>
           )}
 
+          {result.fused_image_url && <FusionPanel result={result} />}
+
           {Object.keys(result.class_probabilities).length > 0 && (
             <div className="space-y-3">
               <h4 className="text-sm font-semibold">
@@ -225,6 +227,54 @@ function AIFindings({ ai }: { ai: Record<string, any> }) {
       {ai.rationale && (
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{ai.rationale}</p>
       )}
+    </div>
+  );
+}
+
+/**
+ * The fusion stage's own output: the fused image and what it measured. Kept
+ * visually separate from the three panels above, which are the classification
+ * path, because the fused image did not produce the class.
+ */
+function FusionPanel({ result }: { result: MethodPrediction }) {
+  const fusion = result.details?.fusion ?? {};
+  const q = fusion.quality ?? {};
+  const rows: [string, number | undefined][] = [
+    ["Q_abf (edge preservation)", q.qabf],
+    ["Entropy", q.entropy],
+    ["Spatial frequency", q.spatial_frequency],
+    ["SSIM vs MRI", q.ssim_mri],
+  ];
+  return (
+    <div className="space-y-3 rounded-xl border bg-muted/20 p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <h4 className="text-sm font-semibold">MRI–SPECT fusion stage</h4>
+        <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+          {fusion.pyramid_levels ?? "?"}-level Laplacian pyramid · not used for the class
+        </span>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <ImagePanel label="MRI (input)" src={result.original_image_url} />
+        <ImagePanel label="Fused MRI + SPECT" src={result.fused_image_url} />
+        <div className="rounded-lg border p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Fusion quality (this pair)
+          </p>
+          <dl className="mt-2 space-y-1 text-xs">
+            {rows.map(([label, value]) => (
+              <div key={label} className="flex justify-between gap-2">
+                <dt className="text-muted-foreground">{label}</dt>
+                <dd className="tabular-nums font-semibold">
+                  {typeof value === "number" ? value.toFixed(3) : "—"}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        {fusion.method}. {fusion.quality_note}
+      </p>
     </div>
   );
 }

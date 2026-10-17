@@ -1,0 +1,162 @@
+{
+  "method_id": "method2",
+  "stage": "fusion",
+  "dataset": {
+    "root": "/Users/syedasif/tumb/data/spect_mri",
+    "name": "Paired MRI\u2013SPECT slices",
+    "pairs": 357,
+    "cases": 15,
+    "labels": "none \u2014 this dataset has no diagnosis labels"
+  },
+  "split_strategy": {
+    "type": "none \u2014 a deterministic transform is not fitted, so every pair is evaluated"
+  },
+  "random_seed": 42,
+  "preprocessing": {
+    "spect_colour_space": "YCrCb; Cr/Cb carried through unchanged"
+  },
+  "image_size": 256,
+  "architecture": "Laplacian pyramid fusion, local-energy coefficient selection",
+  "model_config": {
+    "levels": 4,
+    "base_rule": "weighted average",
+    "detail_rule": "larger local energy wins",
+    "energy_window": 5
+  },
+  "optimizer": {
+    "name": "none \u2014 deterministic transform"
+  },
+  "epochs": 0,
+  "best_epoch": 0,
+  "metrics": {
+    "stage": "fusion",
+    "method": "Laplacian pyramid fusion of MRI with the SPECT luminance; SPECT chrominance carried through unchanged",
+    "trained": false,
+    "deterministic": true,
+    "dataset": "/Users/syedasif/tumb/data/spect_mri",
+    "pairs": 357,
+    "cases": 15,
+    "pyramid_levels": 4,
+    "metrics": {
+      "entropy": {
+        "mean": 4.2577,
+        "std": 0.7666,
+        "min": 2.2325,
+        "max": 6.0907
+      },
+      "std": {
+        "mean": 0.2005,
+        "std": 0.0282,
+        "min": 0.1241,
+        "max": 0.2645
+      },
+      "spatial_frequency": {
+        "mean": 0.0761,
+        "std": 0.0176,
+        "min": 0.0344,
+        "max": 0.1276
+      },
+      "mutual_information_mri": {
+        "mean": 1.599,
+        "std": 0.2243,
+        "min": 0.8944,
+        "max": 2.0786
+      },
+      "mutual_information_spect": {
+        "mean": 0.7751,
+        "std": 0.1911,
+        "min": 0.2052,
+        "max": 1.1596
+      },
+      "ssim_mri": {
+        "mean": 0.9204,
+        "std": 0.0345,
+        "min": 0.8086,
+        "max": 0.9864
+      },
+      "ssim_spect": {
+        "mean": 0.5834,
+        "std": 0.0989,
+        "min": 0.3422,
+        "max": 0.8236
+      },
+      "qabf": {
+        "mean": 0.7079,
+        "std": 0.0462,
+        "min": 0.6025,
+        "max": 0.8008
+      }
+    },
+    "average_baseline": {
+      "entropy": {
+        "mean": 4.3867,
+        "std": 0.7765,
+        "min": 2.3293,
+        "max": 6.1599
+      },
+      "std": {
+        "mean": 0.1744,
+        "std": 0.0251,
+        "min": 0.1045,
+        "max": 0.2281
+      },
+      "spatial_frequency": {
+        "mean": 0.0414,
+        "std": 0.0093,
+        "min": 0.0192,
+        "max": 0.0677
+      },
+      "mutual_information_mri": {
+        "mean": 1.6828,
+        "std": 0.3048,
+        "min": 0.9225,
+        "max": 2.5658
+      },
+      "mutual_information_spect": {
+        "mean": 1.143,
+        "std": 0.2753,
+        "min": 0.3185,
+        "max": 1.7666
+      },
+      "ssim_mri": {
+        "mean": 0.8425,
+        "std": 0.0399,
+        "min": 0.7445,
+        "max": 0.935
+      },
+      "ssim_spect": {
+        "mean": 0.6849,
+        "std": 0.0906,
+        "min": 0.4431,
+        "max": 0.8916
+      },
+      "qabf": {
+        "mean": 0.3924,
+        "std": 0.0259,
+        "min": 0.3301,
+        "max": 0.4653
+      }
+    },
+    "qabf_gain_over_baseline": 0.3155,
+    "evaluation_time_s": 5.46,
+    "ms_per_pair": 15.28,
+    "warnings": [
+      "This dataset carries no diagnosis labels, so the fusion stage is measured by reference-free fusion quality only. No classification accuracy is claimed for it, and the method's four-class prediction still comes from its trained MRI branch.",
+      "The pairs are supplied pre-registered. This stage fuses them; it does not register them, and a misregistered pair would fuse into a misaligned image.",
+      "15 cases only (357 slices). These numbers describe this dataset, not MRI\u2013SPECT fusion in general."
+    ]
+  },
+  "checkpoint_path": "",
+  "inference_time_s": 0.015281,
+  "train_duration_s": 0.0,
+  "model_version": "deterministic",
+  "created_at": "2026-10-17T10:06:07+00:00",
+  "git_revision": "ddc23b2",
+  "device": "cpu",
+  "python": "3.13.7",
+  "warnings": [
+    "This dataset carries no diagnosis labels, so the fusion stage is measured by reference-free fusion quality only. No classification accuracy is claimed for it, and the method's four-class prediction still comes from its trained MRI branch.",
+    "The pairs are supplied pre-registered. This stage fuses them; it does not register them, and a misregistered pair would fuse into a misaligned image.",
+    "15 cases only (357 slices). These numbers describe this dataset, not MRI\u2013SPECT fusion in general."
+  ]
+}

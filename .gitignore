@@ -72,6 +72,12 @@ backend/logs/method1/*
 !backend/logs/method2_classification_runcard.json
 !backend/logs/method2_cls_confusion_matrix.png
 !backend/logs/method2_cls_roc.png
+!backend/logs/method2_fusion_runcard.json
+!backend/logs/method2/
+backend/logs/method2/*
+!backend/logs/method2/fusion_metrics.json
+!backend/logs/method2/fusion_samples/
+!backend/logs/method2/fusion_samples/*.png
 !backend/logs/method3_metrics.json
 !backend/logs/method3_classification_runcard.json
 !backend/logs/method3_cls_confusion_matrix.png
@@ -95,6 +101,11 @@ backend/logs/method4/*
 !backend/logs/method4/train_loss.png
 *.nii
 *.nii.gz
+# Dataset folders unpacked into the project root. Datasets are never committed;
+# the code finds them here (see PAIRED_CANDIDATE_PATHS / BRI_CANDIDATE_PATHS).
+/BraTs 2023/
+/SPECT-MRI/
+/kaggle/
 
 # Secrets / credentials
 kaggle.json

@@ -18,8 +18,9 @@ Both designs fuse several feature sources before one classifier, but they fuse
 different things:
 
 * This method fuses **modalities** — an MRI branch and a SPECT branch describing
-  the same patient. Only its MRI branch is trained, because no paired MRI–SPECT
-  dataset exists, so no fusion is actually performed.
+  the same patient. Image-level fusion of a registered pair is implemented and
+  measured; only its MRI branch is *trained*, because the paired data carries no
+  diagnosis labels.
 * The snippet fuses **architectures** — four networks reading the *same* image.
   That is an ensemble, not multimodal fusion: it needs only one dataset and
   cannot add information a second modality would bring.

@@ -52,6 +52,7 @@ class Method2Result:
     warnings: list[str] = field(default_factory=list)
     details: dict = field(default_factory=dict)
     prediction_id: str = ""
+    fused_path: Optional[Path] = None
 
 
 class Method2Engine:
@@ -137,8 +138,10 @@ class Method2Engine:
             if self.trained_branch == "MRI":
                 self.load_warnings.append(
                     "This result comes from the trained MRI branch of the MRI–SPECT fusion "
-                    "model. The SPECT branch and the fusion step are not trained (no paired "
-                    "MRI–SPECT data), so no fusion is performed."
+                    "model. The image-level fusion stage is implemented and measured, but it "
+                    "is a deterministic transform and no classifier has been trained on fused "
+                    "images — the paired MRI–SPECT data carries no diagnosis labels — so the "
+                    "class comes from the MRI alone."
                 )
             elif self.trained_branch != m2.MODALITY.upper():
                 self.load_warnings.append(
@@ -171,8 +174,18 @@ class Method2Engine:
         }
 
     # ------------------------------------------------------------------ #
-    def predict(self, image_bytes: bytes) -> Method2Result:
-        """Run the Method 2 pipeline. Blocking and CPU-bound — call from a worker."""
+    # This method is the only one that can take a second image: its architecture
+    # has two modality branches. The API checks this flag before offering one.
+    accepts_secondary_image = True
+    secondary_image_label = "SPECT"
+
+    def predict(self, image_bytes: bytes, spect_bytes: Optional[bytes] = None) -> Method2Result:
+        """Run the Method 2 pipeline. Blocking and CPU-bound — call from a worker.
+
+        ``spect_bytes`` is the registered SPECT counterpart of the MRI slice, when
+        the caller has one. It drives the fusion stage; it never reaches the
+        classifier, because no classifier has been trained on fused images.
+        """
         self.load()
         pid = uuid.uuid4().hex[:12]
         started = time.perf_counter()
@@ -278,6 +291,9 @@ class Method2Engine:
                 for r in range(m2.NUM_SEG_CLASSES)
             }
 
+        fused_path, fusion_details, fusion_warnings = self._fuse(image_bytes, spect_bytes, pid)
+        warnings.extend(fusion_warnings)
+
         return Method2Result(
             prediction=prediction,
             prediction_key=prediction_key,
@@ -290,11 +306,13 @@ class Method2Engine:
             inference_time_s=round(elapsed, 4),
             model_version=model_version,
             warnings=warnings,
+            fused_path=fused_path,
             details={
                 **shared_details,
                 "result_source": result_source,
                 "trained_branch": self.trained_branch if self.cls_weights_loaded else None,
-                "fusion_performed": False,
+                "fusion_performed": fused_path is not None,
+                "fusion": fusion_details,
                 "ai_assessment": ai_details,
                 "transform": self.transform.to_dict(),
                 "modality": m2.MODALITY,
@@ -318,6 +336,52 @@ class Method2Engine:
             },
             prediction_id=pid,
         )
+
+    # ------------------------------------------------------------------ #
+    def _fuse(self, mri_bytes: bytes, spect_bytes: Optional[bytes],
+              pid: str) -> tuple[Optional[Path], Optional[dict], list[str]]:
+        """Fuse the slice with its SPECT counterpart, when one was supplied.
+
+        The fused image is an output of the fusion stage, not an input to the
+        classifier: the class above was already decided from the MRI alone, and
+        no model in this repository has been trained on fused images. Saying so
+        in the result is the point of returning the measurements alongside it.
+        """
+        if not spect_bytes:
+            return None, None, []
+        from backend.methods.method2 import fusion as fusion_mod
+
+        try:
+            pair = fusion_mod.fuse_bytes(mri_bytes, spect_bytes)
+        except Exception as exc:  # a fusion failure must not lose the prediction
+            return None, None, [f"MRI–SPECT fusion failed, so only the MRI was used: {exc}"]
+        if pair is None:
+            return None, None, [
+                "The second image could not be decoded, so no MRI–SPECT fusion was performed."
+            ]
+
+        fused_path = config.PREDICTIONS_DIR / f"{pid}_method2_fused.png"
+        cv2.imwrite(str(fused_path), (pair.fused_rgb * 255).astype(np.uint8))
+        measurements = fusion_mod.metrics(pair.mri, pair.spect_luminance, pair.fused_luminance)
+        details = {
+            "performed": True,
+            "method": ("Laplacian pyramid fusion of the MRI with the SPECT luminance; "
+                       "SPECT chrominance carried through unchanged"),
+            "pyramid_levels": pair.levels,
+            "quality": measurements,
+            "quality_note": ("Reference-free fusion metrics for this pair. Q_abf is the share "
+                             "of both sources' gradient information kept, 0-1."),
+            "used_for_classification": False,
+        }
+        warnings = [
+            "The fused image is the output of this method's fusion stage. The class above was "
+            "predicted from the MRI alone: no classifier in this project has been trained on "
+            "fused images, because the paired MRI–SPECT data carries no diagnosis labels.",
+            "The two images are assumed to be registered. This stage fuses them; it does not "
+            "align them, and an unregistered pair will fuse into a misaligned image.",
+            *pair.notes,
+        ]
+        return fused_path, details, warnings
 
     # ------------------------------------------------------------------ #
     def _gradcam(self, xc, fv, class_idx: int, image: np.ndarray) -> Optional[np.ndarray]:
@@ -358,16 +422,17 @@ class Method2Engine:
             image_bytes,
             not_from="this method's trained MRI–SPECT fusion network (which is not trained)",
             reason=(
-                "This method's MRI–SPECT fusion network is not trained (no paired MRI and "
-                "SPECT scans exist to train it), so this single image was read by an AI model. "
-                "No fusion was performed."
+                "This method's classifier is not trained, so this single image was read by an "
+                "AI model instead. Results switch to the trained model automatically once its "
+                "checkpoint exists."
             ),
             allowed_modalities=("MRI", "SPECT"),
         )
         if details is not None:
             warnings.append(
-                "No MRI–SPECT fusion was performed: a single image was assessed. Fusion needs "
-                "paired MRI and SPECT scans of the same patient and a trained fusion network."
+                "No MRI–SPECT fusion was performed: a single image was assessed. Upload the "
+                "registered SPECT counterpart alongside the MRI to run this method's fusion "
+                "stage — it is deterministic and does not need a trained network."
             )
         return details, warnings
 
