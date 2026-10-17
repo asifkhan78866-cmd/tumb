@@ -1,0 +1,418 @@
+{
+  "method_id": "method1",
+  "method_name": "3D U-Net\u2013ConvLSTM\u2013SFLA-Based Anomaly Segmentation & Classification",
+  "architecture": "ConvLSTM features + SFLA feature selection + SVM",
+  "class_order": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "dataset_path": "/Users/syedasif/tumb/data/bri/archive",
+  "dataset_counts": {
+    "train": {
+      "glioma": 1107,
+      "meningioma": 1132,
+      "notumor": 1267,
+      "pituitary": 1235
+    },
+    "validation": {
+      "glioma": 214,
+      "meningioma": 205,
+      "notumor": 203,
+      "pituitary": 215
+    },
+    "test": {
+      "glioma": 300,
+      "meningioma": 306,
+      "notumor": 405,
+      "pituitary": 300
+    },
+    "train_copies_of_test_images_dropped": 134
+  },
+  "split_strategy": "dataset Training/Testing split; validation carved from Training only; image-level split; no patient identifiers",
+  "preprocessing": {
+    "id": "m1-v1-legacy",
+    "image_size": 128,
+    "order": "denoise_then_resize",
+    "denoise": true,
+    "clahe": true,
+    "roi_crop": false,
+    "roi_pad": 8,
+    "roi_min_pixels": 20,
+    "description": "Original geometry: full-resolution non-local-means denoise, CLAHE, then resize; classifier sees the whole slice, never an ROI crop. Used for the untagged classifier checkpoint shipped with the repository."
+  },
+  "feature_extractor": {
+    "architecture": "ConvLSTMClassifier",
+    "layer": "penultimate dense layer",
+    "model_version": "20260916-221953",
+    "transform_id": "m1-v1-legacy",
+    "features_per_image": 128
+  },
+  "feature_selection": {
+    "algorithm": "Shuffled Frog Leaping Algorithm",
+    "population": 30,
+    "memeplexes": 5,
+    "iterations": 30,
+    "local_iterations": 8,
+    "evaluations": 1850,
+    "features_available": 98,
+    "features_selected": 36,
+    "duration_s": 32.6
+  },
+  "svm": {
+    "C": 8.53622763207344,
+    "gamma": 0.020417821288915457,
+    "kernel": "linear"
+  },
+  "served_head": "sfla_svm",
+  "validation_metrics": {
+    "sfla_svm": {
+      "accuracy": 0.9892,
+      "precision": 0.9894,
+      "recall": 0.9895,
+      "sensitivity": 0.9895,
+      "specificity": 0.9964,
+      "f1": 0.9893,
+      "weighted": {
+        "precision": 0.9896,
+        "recall": 0.9892,
+        "specificity": 0.9965,
+        "f1": 0.9893
+      },
+      "auc": 0.9966,
+      "avg_inference_time_s": 2e-06,
+      "total_eval_time_s": 0.001,
+      "confusion_matrix": [
+        [
+          207,
+          6,
+          0,
+          1
+        ],
+        [
+          0,
+          205,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          203,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          213
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 1.0,
+          "recall": 0.9673,
+          "sensitivity": 0.9673,
+          "specificity": 1.0,
+          "f1": 0.9834,
+          "support": 214
+        },
+        "meningioma": {
+          "precision": 0.9624,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 0.9873,
+          "f1": 0.9809,
+          "support": 205
+        },
+        "notumor": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "f1": 1.0,
+          "support": 203
+        },
+        "pituitary": {
+          "precision": 0.9953,
+          "recall": 0.9907,
+          "sensitivity": 0.9907,
+          "specificity": 0.9984,
+          "f1": 0.993,
+          "support": 215
+        }
+      }
+    },
+    "convlstm_softmax": {
+      "accuracy": 0.9773,
+      "precision": 0.9784,
+      "recall": 0.9778,
+      "sensitivity": 0.9778,
+      "specificity": 0.9925,
+      "f1": 0.9775,
+      "weighted": {
+        "precision": 0.9787,
+        "recall": 0.9773,
+        "specificity": 0.9926,
+        "f1": 0.9774
+      },
+      "auc": 0.9989,
+      "avg_inference_time_s": 0.0,
+      "total_eval_time_s": 0.0,
+      "confusion_matrix": [
+        [
+          202,
+          11,
+          0,
+          1
+        ],
+        [
+          0,
+          204,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          203,
+          0
+        ],
+        [
+          0,
+          6,
+          0,
+          209
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 1.0,
+          "recall": 0.9439,
+          "sensitivity": 0.9439,
+          "specificity": 1.0,
+          "f1": 0.9712,
+          "support": 214
+        },
+        "meningioma": {
+          "precision": 0.9231,
+          "recall": 0.9951,
+          "sensitivity": 0.9951,
+          "specificity": 0.9731,
+          "f1": 0.9577,
+          "support": 205
+        },
+        "notumor": {
+          "precision": 0.9951,
+          "recall": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 0.9984,
+          "f1": 0.9975,
+          "support": 203
+        },
+        "pituitary": {
+          "precision": 0.9952,
+          "recall": 0.9721,
+          "sensitivity": 0.9721,
+          "specificity": 0.9984,
+          "f1": 0.9835,
+          "support": 215
+        }
+      }
+    }
+  },
+  "test_metrics": {
+    "sfla_svm": {
+      "accuracy": 0.9695,
+      "precision": 0.9688,
+      "recall": 0.9707,
+      "sensitivity": 0.9707,
+      "specificity": 0.9899,
+      "f1": 0.9697,
+      "weighted": {
+        "precision": 0.9698,
+        "recall": 0.9695,
+        "specificity": 0.99,
+        "f1": 0.9695
+      },
+      "auc": 0.9944,
+      "avg_inference_time_s": 2e-06,
+      "total_eval_time_s": 0.002,
+      "confusion_matrix": [
+        [
+          289,
+          7,
+          2,
+          2
+        ],
+        [
+          3,
+          297,
+          5,
+          1
+        ],
+        [
+          9,
+          9,
+          387,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          298
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9601,
+          "recall": 0.9633,
+          "sensitivity": 0.9633,
+          "specificity": 0.9881,
+          "f1": 0.9617,
+          "support": 300
+        },
+        "meningioma": {
+          "precision": 0.9429,
+          "recall": 0.9706,
+          "sensitivity": 0.9706,
+          "specificity": 0.9821,
+          "f1": 0.9565,
+          "support": 306
+        },
+        "notumor": {
+          "precision": 0.9822,
+          "recall": 0.9556,
+          "sensitivity": 0.9556,
+          "specificity": 0.9923,
+          "f1": 0.9687,
+          "support": 405
+        },
+        "pituitary": {
+          "precision": 0.99,
+          "recall": 0.9933,
+          "sensitivity": 0.9933,
+          "specificity": 0.997,
+          "f1": 0.9917,
+          "support": 300
+        }
+      }
+    },
+    "convlstm_softmax": {
+      "accuracy": 0.9641,
+      "precision": 0.9639,
+      "recall": 0.9659,
+      "sensitivity": 0.9659,
+      "specificity": 0.9882,
+      "f1": 0.9643,
+      "weighted": {
+        "precision": 0.9657,
+        "recall": 0.9641,
+        "specificity": 0.9887,
+        "f1": 0.9644
+      },
+      "auc": 0.997,
+      "avg_inference_time_s": 0.0,
+      "total_eval_time_s": 0.0,
+      "confusion_matrix": [
+        [
+          285,
+          13,
+          0,
+          2
+        ],
+        [
+          0,
+          301,
+          4,
+          1
+        ],
+        [
+          9,
+          14,
+          382,
+          0
+        ],
+        [
+          0,
+          4,
+          0,
+          296
+        ]
+      ],
+      "class_order": [
+        "glioma",
+        "meningioma",
+        "notumor",
+        "pituitary"
+      ],
+      "per_class": {
+        "glioma": {
+          "precision": 0.9694,
+          "recall": 0.95,
+          "sensitivity": 0.95,
+          "specificity": 0.9911,
+          "f1": 0.9596,
+          "support": 300
+        },
+        "meningioma": {
+          "precision": 0.9066,
+          "recall": 0.9837,
+          "sensitivity": 0.9837,
+          "specificity": 0.9692,
+          "f1": 0.9436,
+          "support": 306
+        },
+        "notumor": {
+          "precision": 0.9896,
+          "recall": 0.9432,
+          "sensitivity": 0.9432,
+          "specificity": 0.9956,
+          "f1": 0.9659,
+          "support": 405
+        },
+        "pituitary": {
+          "precision": 0.99,
+          "recall": 0.9867,
+          "sensitivity": 0.9867,
+          "specificity": 0.997,
+          "f1": 0.9883,
+          "support": 300
+        }
+      }
+    }
+  },
+  "random_seed": 42,
+  "device": "mps",
+  "model_version": "20261017-145311",
+  "artefact_path": "/Users/syedasif/tumb/backend/weights/method1/feature_svm.joblib",
+  "total_time_s": 57.3,
+  "warnings": [
+    "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
+    "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
+    "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
+    "Two classifier heads exist for this method: the ConvLSTM's softmax layer and an SVM on SFLA-selected ConvLSTM features. The sfla_svm head is served; the choice was made on validation macro-F1 (0.9893 SVM vs 0.9775 softmax) before the test set was opened.",
+    "The SVM's probabilities come from Platt scaling cross-fitted on the training split; they rank classes well but are not calibrated risk estimates.",
+    "Grad-CAM explains the ConvLSTM that produced the features, not the SVM's decision boundary."
+  ]
+}
