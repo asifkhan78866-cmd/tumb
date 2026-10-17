@@ -67,6 +67,9 @@ def metrics_for(method_id: str) -> dict[str, Any]:
     data = read_metrics(method_id)
     seg = data.get("segmentation") or {}
     cls = data.get("classification") or {}
+    # A volumetric model is reported beside the served numbers, never merged into
+    # them: it is measured on volumes and the API serves single slices.
+    volumetric = data.get("segmentation_3d") or None
     evaluated = bool(seg or cls)
 
     warnings: list[str] = []
@@ -101,5 +104,6 @@ def metrics_for(method_id: str) -> dict[str, Any]:
         "dataset_context": ", ".join(
             filter(None, [seg.get("dataset", ""), cls.get("dataset", "")])
         ),
+        "volumetric_segmentation": volumetric,
         "warnings": warnings,
     }
