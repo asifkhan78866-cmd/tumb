@@ -304,12 +304,13 @@ def train(method_id: str, stage: str = "classification") -> TrainRequestResponse
     spec = _spec_or_404(method_id)
     module_stage = {"classification": "train_classifier", "segmentation": "train_segmentation",
                     "sfla": "optimization.run_sfla", "rfo": "optimization.run_rfo",
-                    "feature_selection": "train_feature_svm"}.get(stage)
+                    "feature_selection": "train_feature_svm",
+                    "segmentation_3d": "train_segmentation_3d"}.get(stage)
     if module_stage is None:
         raise HTTPException(
             status_code=400,
             detail=(f"Unknown stage '{stage}'. Use: classification, segmentation, sfla, rfo, "
-                    f"feature_selection."),
+                    f"feature_selection, segmentation_3d."),
         )
     # A method only offers the stages it has a run card for (SFLA belongs to the
     # U-Net–ConvLSTM method, Red Fox to ZFNet, segmentation to methods that segment).

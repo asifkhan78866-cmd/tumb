@@ -210,6 +210,45 @@ def discover_brats_h5(root: Path) -> list[str]:
     return [str(p) for p in sorted(data_dirs[0].glob("volume_*_slice_*.h5"))]
 
 
+def discover_msd_slices(root: Path, *, size: Optional[int] = None,
+                        stride: int = 2) -> tuple[list[str], list[str]]:
+    """Slices extracted from the Medical Segmentation Decathlon volumes.
+
+    The MSD release ships whole NIfTI volumes, so the first call materialises a
+    slice cache and later ones reuse it. Returns ``(paths, warnings)``; the
+    warnings describe which slices were kept and travel into the run card.
+    """
+    from backend.methods.common import msd_brain
+
+    root = Path(root)
+    pairs = msd_brain.discover_msd(root)
+    if not pairs:
+        return [], []
+    size = size or m2.TRANSFORM.image_size
+    out_dir = msd_brain.slice_cache_dir(root, "FLAIR", stride, size)
+    index = msd_brain.materialise_slices(pairs, out_dir, modality="FLAIR", stride=stride,
+                                         size=size)
+    return [str(out_dir / name) for name in index.files], list(index.warnings)
+
+
+def discover_multiclass_slices(brats_root: Path, msd_root: Optional[Path] = None
+                               ) -> tuple[list[str], str, list[str]]:
+    """Whichever multi-region source this machine has: ``(paths, source, warnings)``.
+
+    The per-slice BraTS mirror is preferred when present because it needs no
+    extraction; the MSD volumes are the fallback, and the only one obtainable
+    without a Kaggle account.
+    """
+    samples = discover_brats_h5(brats_root)
+    if samples:
+        return samples, "BraTS 2020 per-slice HDF5 mirror", []
+    if msd_root is not None:
+        samples, warnings = discover_msd_slices(msd_root)
+        if samples:
+            return samples, "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)", warnings
+    return [], "", []
+
+
 def segmentation_group_of(path: str) -> str:
     return brats_volume_id(path)
 
@@ -232,16 +271,30 @@ class MultiClassSegmentationDataset(Dataset):
     def __len__(self) -> int:
         return len(self.samples)
 
-    def __getitem__(self, idx: int):
+    def _read(self, path: str) -> tuple[np.ndarray, np.ndarray]:
+        """One slice as ``(uint8 image, integer label map)``.
+
+        Two on-disk forms are accepted. The BraTS per-slice mirror stores the
+        mask as one-hot channels; the Decathlon slice cache stores the label map
+        already in this project's class order, remapped when it was written
+        (see ``msd_brain.MSD_TO_PROJECT``) rather than assumed here.
+        """
+        if path.endswith(".npz"):
+            with np.load(path) as data:
+                image, label_map = data["image"], data["label"].astype(np.uint8)
+            return (image * 255).clip(0, 255).astype(np.uint8), label_map
+
         import h5py
 
-        with h5py.File(self.samples[idx], "r") as h:
+        with h5py.File(path, "r") as h:
             image, mask = h["image"][:], h["mask"][:]
-
-        img = cv2.normalize(image[:, :, 0], None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
         label_map = np.zeros(mask.shape[:2], dtype=np.uint8)
         for channel in range(min(mask.shape[2], m2.NUM_REGIONS)):
             label_map[mask[:, :, channel] > 0] = channel + 1
+        return cv2.normalize(image[:, :, 0], None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8), label_map
+
+    def __getitem__(self, idx: int):
+        img, label_map = self._read(self.samples[idx])
 
         size = self.spec.image_size
         img = cv2.resize(to_grayscale(img), (size, size), interpolation=cv2.INTER_LINEAR)
