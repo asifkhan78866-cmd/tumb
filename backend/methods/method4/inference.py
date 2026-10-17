@@ -16,6 +16,7 @@ import torch
 
 from backend import config
 from backend.methods.common.classifier_engine import WholeImageClassifierEngine
+from backend.methods.common.feature_selection import load_selection_bundle
 from backend.methods.method4.models import ZFNet
 from backend.methods.method4.transforms import DEFAULT_SPEC, to_input
 from backend.methods.registry import METHOD4
@@ -51,32 +52,13 @@ class Method4Engine(WholeImageClassifierEngine):
 
     # -- the SVM head ------------------------------------------------------- #
     def load_extras(self) -> None:
-        self.svm = None
-        if not SVM_PATH.exists():
-            return
-        try:
-            import joblib
-
-            bundle = joblib.load(SVM_PATH)
-            version = str(self.meta.get("model_version") or "")
-            if str(bundle.get("zfnet_model_version")) != version:
-                self.load_warnings.append(
-                    f"The Red Fox feature-selection SVM in {SVM_PATH.name} was built from ZFNet "
-                    f"{bundle.get('zfnet_model_version')}, but the loaded checkpoint is {version}; "
-                    f"it is ignored and the network's own softmax layer is used. Rebuild it with "
-                    f"`python -m backend.methods.method4.training.train_feature_svm`."
-                )
-                return
-            if list(bundle.get("class_names") or []) != self.class_names:
-                self.load_warnings.append(
-                    f"{SVM_PATH.name} was built for different classes; it is ignored."
-                )
-                return
-            if not bundle.get("serve"):
-                return  # built, but the softmax head scored better on validation
-            self.svm = bundle
-        except Exception as exc:  # pragma: no cover - a broken artefact must not break serving
-            self.load_warnings.append(f"The feature-selection SVM could not be loaded: {exc}")
+        self.svm, warns = load_selection_bundle(
+            SVM_PATH, method_id=self.method_id,
+            extractor_version=str(self.meta.get("model_version") or ""),
+            class_names=self.class_names, extractor_name="zfnet",
+            rebuild_command="python -m backend.methods.method4.training.train_feature_svm",
+        )
+        self.load_warnings.extend(warns)
 
     @property
     def served_head(self) -> str:

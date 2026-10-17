@@ -39,6 +39,10 @@ _PLOTS: dict[str, dict[str, tuple[str, str, str]]] = {
         "roc": ("method1_cls_roc.png", "ROC curves (held-out test)", "One-vs-rest, with per-class AUC."),
         "accuracy": ("method1_cls_acc.png", "Accuracy per epoch", "Training vs validation."),
         "loss": ("method1_cls_loss.png", "Loss per epoch", "Training vs validation."),
+        "feature_selection": ("method1/sfla_feature_selection.png",
+                              "SFLA feature selection — fitness per iteration",
+                              "Best and population-mean fitness of the frog population; fitness is "
+                              "validation macro-F1 minus a penalty for the features kept."),
     },
     "method2": {
         "confusion_matrix": ("method2_cls_confusion_matrix.png", "Confusion matrix (held-out test)",

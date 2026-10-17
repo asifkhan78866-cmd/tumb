@@ -125,7 +125,9 @@ METHOD1 = MethodSpec(
     summary=(
         "Binary tumour segmentation with a 2D U-Net, mask-driven ROI extraction, "
         "then four-class typing with a ConvLSTM classifier whose hyper-parameters "
-        "are chosen by a Shuffled Frog Leaping Algorithm search."
+        "are chosen by a Shuffled Frog Leaping Algorithm search. A second SFLA search "
+        "selects which of the ConvLSTM's features an SVM classifies; the head that "
+        "scores higher on validation is the one served."
     ),
     modality="MRI",
     class_names=METHOD1_CLASS_NAMES,
@@ -138,6 +140,9 @@ METHOD1 = MethodSpec(
         PipelineStage("roi", "ROI crop", "preprocess", "Bounding box of the mask, padded, resampled to the model input size."),
         PipelineStage("classify", "ConvLSTM classification", "classifier", "Conv feature stack + ConvLSTM cell + dense head."),
         PipelineStage("sfla", "SFLA optimization", "optimization", "Shuffled Frog Leaping search over classifier hyper-parameters (train/val only)."),
+        PipelineStage("features", "Feature extraction", "feature", "The ConvLSTM's penultimate dense layer becomes a fixed feature vector per image."),
+        PipelineStage("sfla_features", "SFLA feature selection", "optimization", "A second SFLA search picks the feature subset and the SVM's C, gamma and kernel, scored by validation macro-F1 (train/val only)."),
+        PipelineStage("svm", "SVM classifier", "classifier", "A support vector machine on the selected features. Served only if it beats the ConvLSTM's own softmax layer on validation."),
         PipelineStage("predict", "Prediction", "output", "Normal (No Tumor) / Glioma / Meningioma / Pituitary."),
         PipelineStage("gradcam", "Grad-CAM", "output", "Class-discriminative heatmap over the classified ROI."),
         PipelineStage("evaluate", "Performance evaluation", "eval", "Dice/IoU for segmentation; accuracy/precision/recall/F1/specificity for classification."),
@@ -171,20 +176,28 @@ METHOD1 = MethodSpec(
         "U-Net (encoder/decoder, skip connections, BatchNorm, dropout). Implemented in 2D on "
         "slices; a volumetric 3D U-Net needs BraTS volumes and is not trained."
     ),
-    classifier_model="ConvLSTM (Conv+BN feature stack → ConvLSTM cell → dense → softmax)",
-    optimization="SFLA (Shuffled Frog Leaping Algorithm) over classifier hyper-parameters",
+    classifier_model=(
+        "ConvLSTM (Conv+BN feature stack → ConvLSTM cell → dense → softmax), or an SVM on "
+        "SFLA-selected ConvLSTM features — whichever wins on validation macro-F1"
+    ),
+    optimization=(
+        "SFLA (Shuffled Frog Leaping Algorithm), twice: over the classifier's hyper-parameters, "
+        "and over the feature subset plus SVM hyper-parameters"
+    ),
     engine_module="backend.methods.method1.inference",
     transforms_module="backend.methods.method1.transforms",
     training_entrypoints=(
         "python -m backend.methods.method1.training.train_segmentation",
         "python -m backend.methods.method1.training.train_classifier",
         "python -m backend.methods.method1.optimization.run_sfla",
+        "python -m backend.methods.method1.training.train_feature_svm",
     ),
     metrics_filename="method1_metrics.json",
     run_card_filenames={
         "segmentation": "method1_segmentation_runcard.json",
         "classification": "method1_classification_runcard.json",
         "sfla": "method1_sfla_runcard.json",
+        "feature_selection": "method1_feature_selection_runcard.json",
     },
     optimization_result_filename="method1/sfla_results.json",
     notes=(

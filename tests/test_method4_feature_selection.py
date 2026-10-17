@@ -7,7 +7,7 @@ import pytest
 
 sklearn = pytest.importorskip("sklearn", reason="scikit-learn not installed")
 
-from backend.methods.method4.optimization.feature_selection import (  # noqa: E402
+from backend.methods.common.feature_selection import (  # noqa: E402
     SVM_PARAMETERS, build_svm, feature_space, fitted_pipeline, make_objective, mask_of,
 )
 
@@ -148,7 +148,7 @@ def test_the_svm_head_is_used_when_the_artefact_matches_the_checkpoint(tmp_path,
 def test_an_svm_built_from_another_checkpoint_is_refused_and_said_so(tmp_path, monkeypatch):
     engine = _engine(monkeypatch, _bundle(tmp_path), zfnet_version="a-different-zfnet")
     assert engine.served_head == "zfnet_softmax"
-    assert any("was built from ZFNet" in w for w in engine.load_warnings)
+    assert any("was built from zfnet" in w for w in engine.load_warnings)
 
 
 def test_an_svm_that_lost_on_validation_is_not_served(tmp_path, monkeypatch):

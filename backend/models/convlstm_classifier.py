@@ -103,7 +103,7 @@ class ConvLSTMClassifier(nn.Module):
             nn.Linear(128, num_classes),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def recurrent_features(self, x: torch.Tensor) -> torch.Tensor:
         feats = self.features(x)                       # (B, C, h, w)
         b, _, h, w = feats.shape
         state = self.convlstm.init_state(b, (h, w), feats.device)
@@ -112,4 +112,16 @@ class ConvLSTMClassifier(nn.Module):
         for _ in range(self.lstm_steps):
             state = self.convlstm(feats, state)
         h_final, _ = state
-        return self.head(h_final)                      # raw logits
+        return h_final
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.head(self.recurrent_features(x))   # raw logits
+
+    def penultimate(self, x: torch.Tensor) -> torch.Tensor:
+        """The 128 numbers the final dense layer classifies.
+
+        This is the feature vector the SFLA feature selection searches over. The
+        dropout in between is identity in eval mode, so the vector is the same
+        one the softmax layer sees at inference.
+        """
+        return self.head[:-1](self.recurrent_features(x))

@@ -191,6 +191,7 @@ class SFLA:
         seed: int = 42,
         objective_name: str = "objective",
         log_evaluations: bool = True,
+        progress: Optional[Callable[[dict], None]] = None,
     ):
         if memeplexes < 1:
             raise ValueError("memeplexes must be >= 1")
@@ -210,6 +211,9 @@ class SFLA:
         self.seed = seed
         self.objective_name = objective_name
         self.log_evaluations = log_evaluations
+        # Optional per-iteration callback, so a long search can report progress
+        # instead of going silent for minutes.
+        self.progress = progress
 
         self._rng = random.Random(seed)
         self._evaluations = 0
@@ -295,6 +299,8 @@ class SFLA:
                     "evaluations": self._evaluations,
                 }
             )
+            if self.progress is not None:
+                self.progress(history[-1])
 
         return SFLAResult(
             best_parameters=best.params or self.space.decode(best.position),

@@ -30,6 +30,7 @@ import torch.nn.functional as F
 
 from backend import config
 from backend.methods.common.checkpoint import CheckpointError, load_checkpoint, peek_meta
+from backend.methods.common.feature_selection import load_selection_bundle
 from backend.methods.method1 import config as m1
 from backend.methods.method1.models import ConvLSTMClassifier, UNet
 from backend.methods.method1.transforms import (
@@ -43,7 +44,10 @@ from backend.methods.method1.transforms import (
 from backend.methods.registry import METHOD1, dataset_context
 from backend.utils.gradcam import GradCAM, overlay_heatmap
 
-__all__ = ["Method1Result", "Method1Engine", "engine"]
+__all__ = ["Method1Result", "Method1Engine", "engine", "SVM_PATH"]
+
+# The SFLA feature-selection SVM, written beside the classifier checkpoint.
+SVM_PATH = m1.CLS_WEIGHTS_PATH.with_name("feature_svm.joblib")
 
 
 @dataclass
@@ -76,6 +80,7 @@ class Method1Engine:
         self.cls_weights_loaded = False
         self.seg_meta: dict = {}
         self.cls_meta: dict = {}
+        self.cls_svm: Optional[dict] = None
         self.load_warnings: list[str] = []
         self.transform: TransformSpec = m1.LEGACY_TRANSFORM
         self._loaded = False
@@ -173,10 +178,59 @@ class Method1Engine:
             )
         model.eval()
         self.cls_model = model
+        self._load_feature_svm()
+
+    def _load_feature_svm(self) -> None:
+        """The SFLA-selected-feature SVM, when training recorded that it won."""
+        self.cls_svm = None
+        if not self.cls_weights_loaded:
+            return
+        self.cls_svm, warns = load_selection_bundle(
+            SVM_PATH, method_id=self.method_id,
+            extractor_version=str(self.cls_meta.get("model_version") or ""),
+            class_names=m1.CLASS_NAMES, extractor_name="convlstm",
+            rebuild_command="python -m backend.methods.method1.training.train_feature_svm",
+        )
+        self.load_warnings.extend(warns)
+
+    @property
+    def served_head(self) -> str:
+        return "sfla_svm" if getattr(self, "cls_svm", None) else "convlstm_softmax"
+
+    def _feature_selection_details(self) -> dict:
+        if not getattr(self, "cls_svm", None):
+            return {}
+        return {
+            "feature_selection": {
+                "algorithm": "SFLA over the ConvLSTM feature vector",
+                "features_available": self.cls_svm.get("features_available"),
+                "features_selected": self.cls_svm.get("features_selected"),
+                "svm": self.cls_svm.get("svm_hyperparameters"),
+                "feature_extractor_version": self.cls_svm.get("convlstm_model_version"),
+                "probability_estimates": "Platt scaling cross-fitted on the training split",
+            },
+            "gradcam_note": (
+                "The heatmap explains the ConvLSTM that produced the features, not the SVM's "
+                "decision boundary."
+            ),
+        }
+
+    def _class_probabilities(self, cx: torch.Tensor) -> np.ndarray:
+        """One probability per class. The SVM head replaces the dense softmax layer,
+        reading the same penultimate features the softmax layer would have read."""
+        if not getattr(self, "cls_svm", None):
+            with torch.no_grad():
+                return F.softmax(self.cls_model(cx), dim=1).squeeze(0).cpu().numpy()
+        with torch.no_grad():
+            features = self.cls_model.penultimate(cx).float().cpu().numpy()
+        selected = self.cls_svm["scaler"].transform(features)[:, self.cls_svm["kept_columns"]]
+        return np.asarray(self.cls_svm["svm"].predict_proba(selected), dtype=np.float64).squeeze(0)
 
     # ------------------------------------------------------------------ #
     @property
     def model_version(self) -> str:
+        if getattr(self, "cls_svm", None):
+            return str(self.cls_svm.get("model_version") or "untrained")
         return str(self.cls_meta.get("model_version") or "untrained")
 
     def status(self) -> dict:
@@ -217,8 +271,7 @@ class Method1Engine:
 
         if self.cls_weights_loaded:
             cx = to_tensor(cls_img).to(self.device)
-            with torch.no_grad():
-                probs = F.softmax(self.cls_model(cx), dim=1).squeeze(0).cpu().numpy()
+            probs = self._class_probabilities(cx)
             idx = int(np.argmax(probs))
             prediction_key = m1.CLASS_NAMES[idx]
             prediction = m1.CLASS_LABELS[prediction_key]
@@ -280,6 +333,8 @@ class Method1Engine:
                 "segmentation_model": METHOD1.segmentation_model,
                 "classifier_model": METHOD1.classifier_model,
                 "optimization": METHOD1.optimization,
+                "classifier_head": self.served_head,
+                **self._feature_selection_details(),
             },
             prediction_id=pid,
         )
