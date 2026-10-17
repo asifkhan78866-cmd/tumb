@@ -64,6 +64,8 @@ class Method2Engine:
         self.cls_model: Optional[DenseConvNetClassifier] = None
         self.seg_weights_loaded = False
         self.cls_weights_loaded = False
+        # True only when the loaded DCN was fitted with real region channels.
+        self.cls_feature_stage = False
         self.seg_meta: dict = {}
         self.cls_meta: dict = {}
         self.load_warnings: list[str] = []
@@ -120,6 +122,7 @@ class Method2Engine:
         ).to(self.device)
 
         self.cls_weights_loaded = False
+        self.cls_feature_stage = False
         self.cls_meta = {}
         self.trained_branch = None
         try:
@@ -132,6 +135,8 @@ class Method2Engine:
             )
             self.cls_meta = meta
             self.cls_weights_loaded = True
+            # Was this checkpoint fitted with real region channels, or zeros?
+            self.cls_feature_stage = bool((meta.get("extra") or {}).get("feature_stage_active"))
             self.load_warnings.extend(warns)
             trained_modality = str(meta.get("extra", {}).get("modality", m2.MODALITY))
             self.trained_branch = trained_modality.upper()
@@ -204,7 +209,25 @@ class Method2Engine:
         # --- Modality feature stage -------------------------------------- #
         # With no segmentation there are no regions, so every region descriptor
         # is zero. That is reported, not hidden.
-        effective_labels = label_map if label_map is not None else np.zeros_like(image, dtype=np.uint8)
+        #
+        # A checkpoint trained before the segmentation head existed saw all-zero
+        # region channels for every image. Feeding it real ones now would be a
+        # different input distribution than it was fitted on, so what the
+        # checkpoint was trained with wins — the same rule Method 3 applies to
+        # its transform spec. The mask is still shown; it just does not reach a
+        # classifier that was never trained with it.
+        classifier_labels = label_map
+        if label_map is not None and not self.cls_feature_stage:
+            classifier_labels = None
+            warnings.append(
+                "The segmentation mask is shown but is not fed to the classifier: this DCN "
+                "checkpoint was trained before the segmentation head existed, with all-zero "
+                "region channels. Retrain it with "
+                "`python -m backend.methods.method2.training.train_classifier` to use the "
+                "feature stage end to end."
+            )
+        effective_labels = (classifier_labels if classifier_labels is not None
+                            else np.zeros_like(image, dtype=np.uint8))
         channels, descriptor = build_inputs(image, effective_labels, m2.NUM_REGIONS)
         if label_map is None:
             warnings.append(
@@ -320,6 +343,7 @@ class Method2Engine:
                 "segmentation_classes": m2.SEG_CLASS_NAMES,
                 "region_area_fractions": region_areas,
                 "feature_stage": {
+                    "reaches_classifier": bool(self.cls_feature_stage and label_map is not None),
                     "dimension": int(descriptor.shape[0]),
                     "names": feature_names(m2.SEG_CLASS_NAMES[1:], m2.MODALITY),
                     "values": [round(float(v), 5) for v in descriptor.tolist()],
