@@ -140,6 +140,11 @@ def resolve_paired_path(root: Path, configured: str = "") -> Path:
 
 PAIRED_MRI_SPECT_PATH = resolve_paired_path(ROOT_DIR, os.getenv("PAIRED_MRI_SPECT_PATH", ""))
 
+# Medical Segmentation Decathlon Task01 — BraTS volumes with multi-region labels,
+# published without an account. The only source here carrying both real volumes
+# and real sub-region masks.
+MSD_BRAIN_PATH = _env_path("MSD_BRAIN_PATH", ROOT_DIR / "data" / "msd_brain")
+
 # Method 1 weights. New runs write into weights/method1/; the legacy flat paths
 # are still honoured so the classifier shipped in the repo keeps loading.
 METHOD1_WEIGHTS_DIR = WEIGHTS_DIR / "method1"

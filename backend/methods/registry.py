@@ -188,6 +188,7 @@ METHOD1 = MethodSpec(
     transforms_module="backend.methods.method1.transforms",
     training_entrypoints=(
         "python -m backend.methods.method1.training.train_segmentation",
+        "python -m backend.methods.method1.training.train_segmentation_3d",
         "python -m backend.methods.method1.training.train_classifier",
         "python -m backend.methods.method1.optimization.run_sfla",
         "python -m backend.methods.method1.training.train_feature_svm",
@@ -198,6 +199,7 @@ METHOD1 = MethodSpec(
         "classification": "method1_classification_runcard.json",
         "sfla": "method1_sfla_runcard.json",
         "feature_selection": "method1_feature_selection_runcard.json",
+        "segmentation_3d": "method1_segmentation3d_runcard.json",
     },
     optimization_result_filename="method1/sfla_results.json",
     notes=(

@@ -28,7 +28,7 @@ from backend.methods.common.splits import group_train_val_test_split, split_summ
 from backend.methods.method2 import config as m2
 from backend.methods.method2.datasets import (
     MultiClassSegmentationDataset,
-    discover_brats_h5,
+    discover_multiclass_slices,
     segmentation_group_of,
 )
 from backend.methods.method2.models import MultiClassUNet
@@ -118,6 +118,8 @@ def main() -> int:
     ap.add_argument("--val-frac", type=float, default=0.15)
     ap.add_argument("--test-frac", type=float, default=0.15)
     ap.add_argument("--data-root", default=None)
+    ap.add_argument("--limit-volumes", type=int, default=0,
+                    help="use only the first N volumes (a smoke test, never a reported run)")
     args = ap.parse_args()
 
     seed_everything(config.SEED)
@@ -126,16 +128,26 @@ def main() -> int:
     warnings: list[str] = []
 
     root = args.data_root or m2.BRATS_PATH
-    samples = discover_brats_h5(root)
+    samples, source, source_warnings = discover_multiclass_slices(root, m2.MSD_PATH)
     if not samples:
         print(
-            f"\nERROR: no BraTS per-slice HDF5 files under {root}. Method 2's "
-            f"multi-class head needs real multi-region masks; download them with "
-            f"`python -m backend.utils.dataset_download --kind segmentation` or set "
-            f"BRATS_DATASET_PATH."
+            f"\nERROR: no multi-region annotation found. Looked for the BraTS per-slice "
+            f"HDF5 mirror under {root} and for Decathlon volumes under {m2.MSD_PATH}. "
+            f"Method 2's multi-class head needs real sub-region masks: download them with "
+            f"`python -m backend.utils.dataset_download --kind segmentation` (Kaggle account), "
+            f"or put Task01_BrainTumour under data/msd_brain (no account needed), or set "
+            f"BRATS_DATASET_PATH / MSD_BRAIN_PATH."
         )
         return 1
-    print(f"[m2-seg] {len(samples)} slices from {root}")
+    warnings.extend(source_warnings)
+    if args.limit_volumes:
+        keep = sorted({segmentation_group_of(p) for p in samples})[: args.limit_volumes]
+        samples = [p for p in samples if segmentation_group_of(p) in set(keep)]
+        warnings.append(
+            f"SMOKE TEST: only {len(keep)} volumes were used (--limit-volumes). These numbers "
+            f"describe a fraction of the dataset and must not be quoted as the method's result."
+        )
+    print(f"[m2-seg] {len(samples)} slices | source: {source}")
 
     spec = m2.TRANSFORM
     train_s, val_s, test_s = group_train_val_test_split(
@@ -202,7 +214,7 @@ def main() -> int:
     meta = build_meta(
         method_id=m2.METHOD_ID, architecture=m2.SEG_ARCHITECTURE, role="segmentation",
         class_names=m2.SEG_CLASS_NAMES, image_size=spec.image_size, transform_id=spec.id,
-        modality="MRI (BraTS)",
+        modality="MRI (BraTS)", source=source,
     )
     save_checkpoint(m2.SEG_WEIGHTS_PATH, model.state_dict(), meta,
                     epoch=best_epoch, val_dice=stopper.best)
@@ -215,7 +227,8 @@ def main() -> int:
     )
     section = {
         "split": "volume-grouped held-out test",
-        "dataset": str(root),
+        "dataset": source,
+        "dataset_root": str(root),
         "dice": round(float(np.mean(dice[1:])), 4),
         "iou": round(float(np.mean(iou[1:])), 4),
         "per_class_dice": {n: round(d, 4) for n, d in zip(m2.SEG_CLASS_NAMES, dice)},
@@ -230,8 +243,8 @@ def main() -> int:
         m2.run_card_path("segmentation"),
         RunCard(
             method_id=m2.METHOD_ID, stage="segmentation",
-            dataset={"name": "BraTS", "root": str(root), "num_samples": len(samples),
-                     "modality": "MRI"},
+            dataset={"name": source, "root": str(root), "num_samples": len(samples),
+                     "modality": "MRI (FLAIR)"},
             split_strategy={"type": "volume-level three-way", "group_key": "BraTS volume id",
                             "val_frac": args.val_frac, "test_frac": args.test_frac, **summary},
             random_seed=config.SEED, preprocessing=spec.to_dict(), image_size=spec.image_size,
