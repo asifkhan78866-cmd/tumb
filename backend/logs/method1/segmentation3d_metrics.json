@@ -1,0 +1,552 @@
+{
+  "architecture": "UNet3D",
+  "dataset": "/Users/syedasif/tumb/data/msd_brain",
+  "source": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+  "modality": "FLAIR",
+  "volume_size": 128,
+  "patch": 64,
+  "split": "volume-level (one volume per patient)",
+  "split_summary": {
+    "threshold": 0.95,
+    "dice": 0.3807,
+    "dice_on_volumes_with_tumour": 0.3807,
+    "volumes": 73,
+    "volumes_with_tumour": 73,
+    "predicted_to_true_volume_ratio": 0.401,
+    "avg_inference_time_s": 2.078
+  },
+  "epochs_run": 0,
+  "best_epoch": 0,
+  "validation": {
+    "threshold": 0.8,
+    "dice": 0.5178,
+    "dice_on_volumes_with_tumour": 0.5178,
+    "volumes": 73,
+    "volumes_with_tumour": 73,
+    "predicted_to_true_volume_ratio": 1.187,
+    "avg_inference_time_s": 1.932
+  },
+  "threshold": 0.8,
+  "validation_threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "dice": 0.4548,
+      "dice_on_volumes_with_tumour": 0.4548,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 2.456,
+      "avg_inference_time_s": 2.073
+    },
+    {
+      "threshold": 0.6,
+      "dice": 0.4854,
+      "dice_on_volumes_with_tumour": 0.4854,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 2.004,
+      "avg_inference_time_s": 2.005
+    },
+    {
+      "threshold": 0.7,
+      "dice": 0.5087,
+      "dice_on_volumes_with_tumour": 0.5087,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 1.6,
+      "avg_inference_time_s": 2.068
+    },
+    {
+      "threshold": 0.8,
+      "dice": 0.5178,
+      "dice_on_volumes_with_tumour": 0.5178,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 1.187,
+      "avg_inference_time_s": 1.932
+    },
+    {
+      "threshold": 0.9,
+      "dice": 0.4788,
+      "dice_on_volumes_with_tumour": 0.4788,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 0.681,
+      "avg_inference_time_s": 2.056
+    },
+    {
+      "threshold": 0.95,
+      "dice": 0.3807,
+      "dice_on_volumes_with_tumour": 0.3807,
+      "volumes": 73,
+      "volumes_with_tumour": 73,
+      "predicted_to_true_volume_ratio": 0.401,
+      "avg_inference_time_s": 2.078
+    }
+  ],
+  "test": {
+    "threshold": 0.8,
+    "dice": 0.5091,
+    "dice_on_volumes_with_tumour": 0.5091,
+    "volumes": 72,
+    "volumes_with_tumour": 72,
+    "predicted_to_true_volume_ratio": 1.211,
+    "avg_inference_time_s": 1.917
+  },
+  "per_volume": [
+    {
+      "volume": "BRATS_288",
+      "dice": 0.3237,
+      "tumour_voxels": 9210,
+      "predicted_voxels": 40962
+    },
+    {
+      "volume": "BRATS_313",
+      "dice": 0.5106,
+      "tumour_voxels": 27780,
+      "predicted_voxels": 68057
+    },
+    {
+      "volume": "BRATS_221",
+      "dice": 0.4848,
+      "tumour_voxels": 43021,
+      "predicted_voxels": 34927
+    },
+    {
+      "volume": "BRATS_428",
+      "dice": 0.4826,
+      "tumour_voxels": 49153,
+      "predicted_voxels": 54464
+    },
+    {
+      "volume": "BRATS_424",
+      "dice": 0.4102,
+      "tumour_voxels": 65649,
+      "predicted_voxels": 74637
+    },
+    {
+      "volume": "BRATS_265",
+      "dice": 0.607,
+      "tumour_voxels": 127641,
+      "predicted_voxels": 97425
+    },
+    {
+      "volume": "BRATS_055",
+      "dice": 0.4796,
+      "tumour_voxels": 102188,
+      "predicted_voxels": 82189
+    },
+    {
+      "volume": "BRATS_429",
+      "dice": 0.687,
+      "tumour_voxels": 34674,
+      "predicted_voxels": 40461
+    },
+    {
+      "volume": "BRATS_130",
+      "dice": 0.459,
+      "tumour_voxels": 33925,
+      "predicted_voxels": 49099
+    },
+    {
+      "volume": "BRATS_324",
+      "dice": 0.523,
+      "tumour_voxels": 58562,
+      "predicted_voxels": 53104
+    },
+    {
+      "volume": "BRATS_231",
+      "dice": 0.6454,
+      "tumour_voxels": 83656,
+      "predicted_voxels": 72207
+    },
+    {
+      "volume": "BRATS_349",
+      "dice": 0.7161,
+      "tumour_voxels": 62028,
+      "predicted_voxels": 76226
+    },
+    {
+      "volume": "BRATS_069",
+      "dice": 0.4582,
+      "tumour_voxels": 31089,
+      "predicted_voxels": 77442
+    },
+    {
+      "volume": "BRATS_250",
+      "dice": 0.3723,
+      "tumour_voxels": 98162,
+      "predicted_voxels": 87637
+    },
+    {
+      "volume": "BRATS_463",
+      "dice": 0.5751,
+      "tumour_voxels": 68694,
+      "predicted_voxels": 88777
+    },
+    {
+      "volume": "BRATS_267",
+      "dice": 0.6263,
+      "tumour_voxels": 50167,
+      "predicted_voxels": 73234
+    },
+    {
+      "volume": "BRATS_340",
+      "dice": 0.3813,
+      "tumour_voxels": 21472,
+      "predicted_voxels": 49911
+    },
+    {
+      "volume": "BRATS_165",
+      "dice": 0.671,
+      "tumour_voxels": 96570,
+      "predicted_voxels": 84116
+    },
+    {
+      "volume": "BRATS_193",
+      "dice": 0.5086,
+      "tumour_voxels": 42689,
+      "predicted_voxels": 69453
+    },
+    {
+      "volume": "BRATS_417",
+      "dice": 0.3238,
+      "tumour_voxels": 100261,
+      "predicted_voxels": 66162
+    },
+    {
+      "volume": "BRATS_407",
+      "dice": 0.5631,
+      "tumour_voxels": 61128,
+      "predicted_voxels": 84336
+    },
+    {
+      "volume": "BRATS_409",
+      "dice": 0.6241,
+      "tumour_voxels": 92566,
+      "predicted_voxels": 75870
+    },
+    {
+      "volume": "BRATS_315",
+      "dice": 0.3878,
+      "tumour_voxels": 24884,
+      "predicted_voxels": 68664
+    },
+    {
+      "volume": "BRATS_339",
+      "dice": 0.6054,
+      "tumour_voxels": 62868,
+      "predicted_voxels": 95543
+    },
+    {
+      "volume": "BRATS_264",
+      "dice": 0.4478,
+      "tumour_voxels": 17205,
+      "predicted_voxels": 43369
+    },
+    {
+      "volume": "BRATS_430",
+      "dice": 0.4044,
+      "tumour_voxels": 43151,
+      "predicted_voxels": 65636
+    },
+    {
+      "volume": "BRATS_290",
+      "dice": 0.5517,
+      "tumour_voxels": 36431,
+      "predicted_voxels": 57650
+    },
+    {
+      "volume": "BRATS_372",
+      "dice": 0.5409,
+      "tumour_voxels": 24560,
+      "predicted_voxels": 56781
+    },
+    {
+      "volume": "BRATS_195",
+      "dice": 0.4794,
+      "tumour_voxels": 70235,
+      "predicted_voxels": 62250
+    },
+    {
+      "volume": "BRATS_205",
+      "dice": 0.4963,
+      "tumour_voxels": 90620,
+      "predicted_voxels": 70579
+    },
+    {
+      "volume": "BRATS_153",
+      "dice": 0.5404,
+      "tumour_voxels": 35167,
+      "predicted_voxels": 53715
+    },
+    {
+      "volume": "BRATS_440",
+      "dice": 0.3826,
+      "tumour_voxels": 44634,
+      "predicted_voxels": 88463
+    },
+    {
+      "volume": "BRATS_194",
+      "dice": 0.3332,
+      "tumour_voxels": 59592,
+      "predicted_voxels": 45539
+    },
+    {
+      "volume": "BRATS_453",
+      "dice": 0.4296,
+      "tumour_voxels": 85650,
+      "predicted_voxels": 62240
+    },
+    {
+      "volume": "BRATS_423",
+      "dice": 0.6039,
+      "tumour_voxels": 34143,
+      "predicted_voxels": 66409
+    },
+    {
+      "volume": "BRATS_104",
+      "dice": 0.4424,
+      "tumour_voxels": 27773,
+      "predicted_voxels": 49133
+    },
+    {
+      "volume": "BRATS_425",
+      "dice": 0.5943,
+      "tumour_voxels": 43196,
+      "predicted_voxels": 78750
+    },
+    {
+      "volume": "BRATS_184",
+      "dice": 0.2405,
+      "tumour_voxels": 17896,
+      "predicted_voxels": 69576
+    },
+    {
+      "volume": "BRATS_411",
+      "dice": 0.6612,
+      "tumour_voxels": 120293,
+      "predicted_voxels": 88042
+    },
+    {
+      "volume": "BRATS_299",
+      "dice": 0.2572,
+      "tumour_voxels": 13221,
+      "predicted_voxels": 62441
+    },
+    {
+      "volume": "BRATS_022",
+      "dice": 0.5474,
+      "tumour_voxels": 220042,
+      "predicted_voxels": 89983
+    },
+    {
+      "volume": "BRATS_310",
+      "dice": 0.5823,
+      "tumour_voxels": 76081,
+      "predicted_voxels": 82642
+    },
+    {
+      "volume": "BRATS_473",
+      "dice": 0.404,
+      "tumour_voxels": 16179,
+      "predicted_voxels": 43373
+    },
+    {
+      "volume": "BRATS_075",
+      "dice": 0.6051,
+      "tumour_voxels": 74697,
+      "predicted_voxels": 89122
+    },
+    {
+      "volume": "BRATS_317",
+      "dice": 0.379,
+      "tumour_voxels": 25814,
+      "predicted_voxels": 80387
+    },
+    {
+      "volume": "BRATS_070",
+      "dice": 0.4622,
+      "tumour_voxels": 29168,
+      "predicted_voxels": 81573
+    },
+    {
+      "volume": "BRATS_347",
+      "dice": 0.7374,
+      "tumour_voxels": 83076,
+      "predicted_voxels": 83027
+    },
+    {
+      "volume": "BRATS_174",
+      "dice": 0.7542,
+      "tumour_voxels": 67227,
+      "predicted_voxels": 69852
+    },
+    {
+      "volume": "BRATS_228",
+      "dice": 0.5538,
+      "tumour_voxels": 79255,
+      "predicted_voxels": 64702
+    },
+    {
+      "volume": "BRATS_475",
+      "dice": 0.4853,
+      "tumour_voxels": 117621,
+      "predicted_voxels": 71605
+    },
+    {
+      "volume": "BRATS_462",
+      "dice": 0.5482,
+      "tumour_voxels": 23605,
+      "predicted_voxels": 49956
+    },
+    {
+      "volume": "BRATS_015",
+      "dice": 0.5246,
+      "tumour_voxels": 102133,
+      "predicted_voxels": 72741
+    },
+    {
+      "volume": "BRATS_096",
+      "dice": 0.7184,
+      "tumour_voxels": 49848,
+      "predicted_voxels": 66597
+    },
+    {
+      "volume": "BRATS_034",
+      "dice": 0.6122,
+      "tumour_voxels": 125382,
+      "predicted_voxels": 83295
+    },
+    {
+      "volume": "BRATS_302",
+      "dice": 0.3518,
+      "tumour_voxels": 18685,
+      "predicted_voxels": 74432
+    },
+    {
+      "volume": "BRATS_479",
+      "dice": 0.5401,
+      "tumour_voxels": 32917,
+      "predicted_voxels": 54956
+    },
+    {
+      "volume": "BRATS_297",
+      "dice": 0.3056,
+      "tumour_voxels": 19962,
+      "predicted_voxels": 73623
+    },
+    {
+      "volume": "BRATS_236",
+      "dice": 0.525,
+      "tumour_voxels": 102586,
+      "predicted_voxels": 65043
+    },
+    {
+      "volume": "BRATS_059",
+      "dice": 0.67,
+      "tumour_voxels": 59110,
+      "predicted_voxels": 62030
+    },
+    {
+      "volume": "BRATS_321",
+      "dice": 0.6108,
+      "tumour_voxels": 39841,
+      "predicted_voxels": 83792
+    },
+    {
+      "volume": "BRATS_202",
+      "dice": 0.5955,
+      "tumour_voxels": 136435,
+      "predicted_voxels": 89172
+    },
+    {
+      "volume": "BRATS_026",
+      "dice": 0.4745,
+      "tumour_voxels": 40314,
+      "predicted_voxels": 57381
+    },
+    {
+      "volume": "BRATS_027",
+      "dice": 0.4562,
+      "tumour_voxels": 33340,
+      "predicted_voxels": 74674
+    },
+    {
+      "volume": "BRATS_402",
+      "dice": 0.5737,
+      "tumour_voxels": 54320,
+      "predicted_voxels": 61697
+    },
+    {
+      "volume": "BRATS_071",
+      "dice": 0.5026,
+      "tumour_voxels": 36637,
+      "predicted_voxels": 66087
+    },
+    {
+      "volume": "BRATS_157",
+      "dice": 0.6639,
+      "tumour_voxels": 102004,
+      "predicted_voxels": 82861
+    },
+    {
+      "volume": "BRATS_286",
+      "dice": 0.481,
+      "tumour_voxels": 84872,
+      "predicted_voxels": 55957
+    },
+    {
+      "volume": "BRATS_017",
+      "dice": 0.4263,
+      "tumour_voxels": 64119,
+      "predicted_voxels": 74223
+    },
+    {
+      "volume": "BRATS_281",
+      "dice": 0.5848,
+      "tumour_voxels": 102003,
+      "predicted_voxels": 75370
+    },
+    {
+      "volume": "BRATS_131",
+      "dice": 0.5751,
+      "tumour_voxels": 103460,
+      "predicted_voxels": 58455
+    },
+    {
+      "volume": "BRATS_381",
+      "dice": 0.103,
+      "tumour_voxels": 15112,
+      "predicted_voxels": 63476
+    },
+    {
+      "volume": "BRATS_009",
+      "dice": 0.4716,
+      "tumour_voxels": 157778,
+      "predicted_voxels": 66306
+    }
+  ],
+  "history": {
+    "train_loss": [],
+    "val_loss": [],
+    "train_dice": [],
+    "val_dice": []
+  },
+  "model_version": "20261017-192537",
+  "checkpoint": "/Users/syedasif/tumb/backend/weights/method1/best_unet3d.pth",
+  "device": "mps",
+  "train_duration_s": 897.9,
+  "warnings": [
+    "Volumes were brain-cropped and resampled to 128\u00b3 from 240\u00d7240\u00d7155, so the Dice below is measured at that resolution, not at the scanner's.",
+    "FLAIR only: the Decathlon volumes carry four co-registered sequences and this model reads one, which is the sequence whole-tumour extent is clearest in.",
+    "The decision threshold (0.80, not the default 0.5) was chosen on the validation volumes by sweeping 6 candidates. The test volumes took no part in that choice.",
+    "This volumetric model is not what the API serves. An upload is a single slice and a 3D U-Net needs the slices around it, so uploads are segmented by the 2D U-Net; this model's Dice is a volumetric result measured on held-out volumes.",
+    "Disclosure: these held-out volumes were segmented twice. First at the default decision threshold of 0.5 (test Dice 0.4406), before a threshold sweep on the *validation* volumes showed the model over-segmented by a factor of 2.5 and that 0.80 corrected it. The second pass, reported here, used that validation-chosen threshold. The choice never saw the test volumes, but the test set was read twice and saying so is part of the result."
+  ],
+  "earlier_test_evaluation": {
+    "threshold": 0.5,
+    "dice": 0.4406,
+    "dice_on_volumes_with_tumour": 0.4406,
+    "note": "Superseded by the calibrated run; kept so the sequence is visible."
+  }
+}
