@@ -123,7 +123,7 @@
       "Correction (2026-10-17): the sentence above was written when this method had no paired MRI-SPECT data. 357 registered pairs have since been added and the image-level fusion stage is implemented and measured \u2014 see the fusion section of this file. What that sentence still gets right is this classifier: it is trained on MRI only, because the paired data carries no diagnosis labels."
     ]
   },
-  "updated_at": "2026-10-17T10:08:57+00:00",
+  "updated_at": "2026-10-17T22:04:21+00:00",
   "fusion": {
     "stage": "fusion",
     "method": "Laplacian pyramid fusion of MRI with the SPECT luminance; SPECT chrominance carried through unchanged",
@@ -240,6 +240,33 @@
       "This dataset carries no diagnosis labels, so the fusion stage is measured by reference-free fusion quality only. No classification accuracy is claimed for it, and the method's four-class prediction still comes from its trained MRI branch.",
       "The pairs are supplied pre-registered. This stage fuses them; it does not register them, and a misregistered pair would fuse into a misaligned image.",
       "15 cases only (357 slices). These numbers describe this dataset, not MRI\u2013SPECT fusion in general."
+    ]
+  },
+  "segmentation": {
+    "split": "volume-grouped held-out test",
+    "dataset": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+    "dataset_root": "/Users/syedasif/tumb/backend/dataset/brats2020-training-data",
+    "dice": 0.3725,
+    "iou": 0.2651,
+    "per_class_dice": {
+      "background": 0.9965,
+      "necrotic_core": 0.2426,
+      "edema": 0.5947,
+      "enhancing_tumor": 0.2802
+    },
+    "per_class_iou": {
+      "background": 0.993,
+      "necrotic_core": 0.1667,
+      "edema": 0.4399,
+      "enhancing_tumor": 0.1888
+    },
+    "avg_inference_time_s": 0.00042,
+    "model_version": "20261017-220421",
+    "warnings": [
+      "Slices were sampled, not taken whole: every 2th slice with at least 64 annotated voxels, plus one in 8 tumour-free slices (15620 annotated, 2895 tumour-free). A model trained on this sees far more tumour than a whole scan contains.",
+      "Slices were resampled to 128\u00d7128 from 240\u00d7240, so fine structure is lost before the network sees it.",
+      "Loss is class-weighted cross-entropy plus soft Dice over the foreground classes. Unweighted cross-entropy scored 0.0 Dice on two of the three sub-regions: predicting background everywhere is a good enough minimum when the regions are this small.",
+      "Method 2's segmentation head is trained on BraTS MRI because it is the only source of real multi-region masks; the classifier stage may run on SPECT. This cross-modality step is intentional and recorded, not hidden."
     ]
   }
 }
