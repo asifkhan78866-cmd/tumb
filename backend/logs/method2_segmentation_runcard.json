@@ -1,0 +1,106 @@
+{
+  "method_id": "method2",
+  "stage": "segmentation",
+  "dataset": {
+    "name": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+    "root": "/Users/syedasif/tumb/backend/dataset/brats2020-training-data",
+    "num_samples": 18515,
+    "modality": "MRI (FLAIR)"
+  },
+  "split_strategy": {
+    "type": "volume-level three-way",
+    "group_key": "BraTS volume id",
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "counts": {
+      "train": 12961,
+      "val": 2777,
+      "test": 2777
+    },
+    "group_counts": {
+      "train": 316,
+      "val": 84,
+      "test": 84
+    },
+    "group_overlap": {},
+    "leak_free": true
+  },
+  "random_seed": 42,
+  "preprocessing": {
+    "id": "m2-v1",
+    "image_size": 128,
+    "order": "resize_then_filter",
+    "median_ksize": 3,
+    "bilateral_d": 5,
+    "bilateral_sigma_color": 50.0,
+    "bilateral_sigma_space": 50.0,
+    "description": "Grayscale \u2192 resize \u2192 median(3) \u2192 bilateral(5) \u2192 min-max scale."
+  },
+  "image_size": 128,
+  "architecture": "MultiClassUNet",
+  "model_config": {
+    "num_classes": 4,
+    "classes": [
+      "background",
+      "necrotic_core",
+      "edema",
+      "enhancing_tumor"
+    ]
+  },
+  "optimizer": {
+    "name": "Adam",
+    "lr": 0.001,
+    "scheduler": "ReduceLROnPlateau",
+    "batch_size": 16,
+    "loss": "class-weighted cross-entropy + soft Dice (foreground)",
+    "class_weights": {
+      "background": 1.0,
+      "necrotic_core": 50.0,
+      "edema": 50.0,
+      "enhancing_tumor": 50.0
+    }
+  },
+  "epochs": 40,
+  "best_epoch": 28,
+  "metrics": {
+    "split": "volume-grouped held-out test",
+    "dataset": "Medical Segmentation Decathlon Task01_BrainTumour (BraTS volumes)",
+    "dataset_root": "/Users/syedasif/tumb/backend/dataset/brats2020-training-data",
+    "dice": 0.3725,
+    "iou": 0.2651,
+    "per_class_dice": {
+      "background": 0.9965,
+      "necrotic_core": 0.2426,
+      "edema": 0.5947,
+      "enhancing_tumor": 0.2802
+    },
+    "per_class_iou": {
+      "background": 0.993,
+      "necrotic_core": 0.1667,
+      "edema": 0.4399,
+      "enhancing_tumor": 0.1888
+    },
+    "avg_inference_time_s": 0.00042,
+    "model_version": "20261017-220421",
+    "warnings": [
+      "Slices were sampled, not taken whole: every 2th slice with at least 64 annotated voxels, plus one in 8 tumour-free slices (15620 annotated, 2895 tumour-free). A model trained on this sees far more tumour than a whole scan contains.",
+      "Slices were resampled to 128\u00d7128 from 240\u00d7240, so fine structure is lost before the network sees it.",
+      "Loss is class-weighted cross-entropy plus soft Dice over the foreground classes. Unweighted cross-entropy scored 0.0 Dice on two of the three sub-regions: predicting background everywhere is a good enough minimum when the regions are this small.",
+      "Method 2's segmentation head is trained on BraTS MRI because it is the only source of real multi-region masks; the classifier stage may run on SPECT. This cross-modality step is intentional and recorded, not hidden."
+    ]
+  },
+  "checkpoint_path": "/Users/syedasif/tumb/backend/weights/method2_segmentation.pth",
+  "inference_time_s": 0.0004226510857735118,
+  "train_duration_s": 9993.1,
+  "model_version": "20261017-220421",
+  "created_at": "2026-10-17T22:04:21+00:00",
+  "git_revision": "79a9897",
+  "device": "mps",
+  "python": "3.13.7",
+  "warnings": [
+    "Slices were sampled, not taken whole: every 2th slice with at least 64 annotated voxels, plus one in 8 tumour-free slices (15620 annotated, 2895 tumour-free). A model trained on this sees far more tumour than a whole scan contains.",
+    "Slices were resampled to 128\u00d7128 from 240\u00d7240, so fine structure is lost before the network sees it.",
+    "Loss is class-weighted cross-entropy plus soft Dice over the foreground classes. Unweighted cross-entropy scored 0.0 Dice on two of the three sub-regions: predicting background everywhere is a good enough minimum when the regions are this small.",
+    "Method 2's segmentation head is trained on BraTS MRI because it is the only source of real multi-region masks; the classifier stage may run on SPECT. This cross-modality step is intentional and recorded, not hidden."
+  ]
+}
