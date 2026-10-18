@@ -194,7 +194,7 @@ def materialise_slices(pairs: Iterable[VolumePair], out_dir: Path, *, modality: 
             print(f"[msd] {n}/{len(pairs)} volumes -> {len(files)} slices", flush=True)
 
     warnings = [
-        f"Slices were sampled, not taken whole: every {stride}th slice with at least "
+        f"Slices were sampled, not taken whole: one slice in {stride} with at least "
         f"{min_tumour_pixels} annotated voxels, plus one in {background_every} tumour-free "
         f"slices ({kept_tumour} annotated, {kept_background} tumour-free). A model trained on "
         f"this sees far more tumour than a whole scan contains.",

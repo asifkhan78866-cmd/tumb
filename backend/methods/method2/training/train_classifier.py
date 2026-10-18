@@ -124,6 +124,25 @@ def evaluate(model, loader, device):
     )
 
 
+def feature_stage_note(seg_model) -> str:
+    """One sentence on where the region maps came from, and how good they are.
+
+    A descriptor computed from a mediocre mask is a mediocre descriptor, so the
+    segmentation's own held-out Dice travels with the classifier's metrics
+    instead of sitting in a different file.
+    """
+    if seg_model is None:
+        return ("The modality feature stage ran with an all-background region map because no "
+                "segmentation checkpoint was present: every per-region descriptor is zero.")
+    from backend.methods.common.metrics_store import read_metrics
+
+    dice = (read_metrics(m2.METHOD_ID).get("segmentation") or {}).get("dice")
+    measured = (f" That head's held-out foreground Dice is {dice}, so the region descriptors "
+                f"below are approximate." if dice is not None else "")
+    return ("The modality feature stage is active: region maps come from the trained "
+            "multi-class segmentation head." + measured)
+
+
 def prepare_mri_shared_split(args, warnings: list[str], seg_model=None, device=None):
     """MRI branch: the same BRI split and test images as the other MRI methods.
 
@@ -197,11 +216,7 @@ def main() -> int:
         except Exception as exc:
             print(f"\nERROR: {exc}")
             return 1
-        warnings.insert(0, (
-            f"The modality feature stage {'is active: region maps come from the trained '
-            f'multi-class segmentation head' if seg_model is not None else 'ran with an '
-            f'all-background region map because no segmentation checkpoint was present'}."
-        ))
+        warnings.insert(0, feature_stage_note(seg_model))
         warnings.insert(0, (
             "Trained on MRI only: this is the MRI branch of the MRI–SPECT fusion model. The "
             "image-level fusion stage is implemented and measured separately "

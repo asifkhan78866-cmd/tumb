@@ -5,45 +5,45 @@
     "dataset": "/Users/syedasif/tumb/data/bri/archive (MRI)",
     "modality": "MRI",
     "branch": "MRI branch of the MRI\u2013SPECT fusion model",
-    "accuracy": 0.8909,
-    "precision": 0.8891,
-    "recall": 0.8862,
-    "sensitivity": 0.8862,
-    "specificity": 0.9635,
-    "f1": 0.8871,
+    "accuracy": 0.9138,
+    "precision": 0.9124,
+    "recall": 0.9096,
+    "sensitivity": 0.9096,
+    "specificity": 0.9712,
+    "f1": 0.9103,
     "weighted": {
-      "precision": 0.8904,
-      "recall": 0.8909,
-      "specificity": 0.9629,
-      "f1": 0.8901
+      "precision": 0.9139,
+      "recall": 0.9138,
+      "specificity": 0.971,
+      "f1": 0.9132
     },
-    "auc": 0.9788,
-    "avg_inference_time_s": 0.002897,
-    "total_eval_time_s": 4.155,
+    "auc": 0.9874,
+    "avg_inference_time_s": 0.002568,
+    "total_eval_time_s": 13.815,
     "confusion_matrix": [
       [
-        385,
-        8,
-        12,
+        391,
+        5,
+        9,
         0
       ],
       [
-        0,
-        251,
-        45,
+        2,
+        255,
+        39,
         4
       ],
       [
-        38,
+        24,
         8,
-        243,
-        17
+        258,
+        16
       ],
       [
-        0,
-        9,
-        2,
-        289
+        1,
+        4,
+        1,
+        294
       ]
     ],
     "class_order": [
@@ -54,76 +54,75 @@
     ],
     "per_class": {
       "precision": [
-        0.9102,
-        0.9094,
-        0.8046,
-        0.9323
+        0.9354,
+        0.9375,
+        0.8404,
+        0.9363
       ],
       "recall": [
-        0.9506,
-        0.8367,
-        0.7941,
-        0.9633
+        0.9654,
+        0.85,
+        0.8431,
+        0.98
       ],
       "f1": [
-        0.93,
-        0.8715,
-        0.7993,
-        0.9475
+        0.9502,
+        0.8916,
+        0.8418,
+        0.9577
       ],
       "specificity": [
-        0.9581,
-        0.9753,
-        0.9413,
-        0.9792
+        0.9702,
+        0.9832,
+        0.9512,
+        0.9802
       ]
     },
     "per_class_detail": {
       "normal": {
-        "precision": 0.9102,
-        "recall": 0.9506,
-        "sensitivity": 0.9506,
-        "specificity": 0.9581,
-        "f1": 0.93,
+        "precision": 0.9354,
+        "recall": 0.9654,
+        "sensitivity": 0.9654,
+        "specificity": 0.9702,
+        "f1": 0.9502,
         "support": 405
       },
       "glioma": {
-        "precision": 0.9094,
-        "recall": 0.8367,
-        "sensitivity": 0.8367,
-        "specificity": 0.9753,
-        "f1": 0.8715,
+        "precision": 0.9375,
+        "recall": 0.85,
+        "sensitivity": 0.85,
+        "specificity": 0.9832,
+        "f1": 0.8916,
         "support": 300
       },
       "meningioma": {
-        "precision": 0.8046,
-        "recall": 0.7941,
-        "sensitivity": 0.7941,
-        "specificity": 0.9413,
-        "f1": 0.7993,
+        "precision": 0.8404,
+        "recall": 0.8431,
+        "sensitivity": 0.8431,
+        "specificity": 0.9512,
+        "f1": 0.8418,
         "support": 306
       },
       "pituitary": {
-        "precision": 0.9323,
-        "recall": 0.9633,
-        "sensitivity": 0.9633,
-        "specificity": 0.9792,
-        "f1": 0.9475,
+        "precision": 0.9363,
+        "recall": 0.98,
+        "sensitivity": 0.98,
+        "specificity": 0.9802,
+        "f1": 0.9577,
         "support": 300
       }
     },
-    "model_version": "20260917-154328",
-    "feature_stage_active": false,
+    "model_version": "20261018-092436",
+    "feature_stage_active": true,
     "warnings": [
-      "Trained on MRI only: this is the MRI branch of the MRI\u2013SPECT fusion model. No SPECT data and no paired MRI\u2013SPECT scans exist, so the SPECT branch and the fusion step are not trained, and these metrics describe MRI classification, not multimodal fusion.",
-      "No Method 2 segmentation checkpoint (/Users/syedasif/tumb/backend/weights/method2_segmentation.pth: checkpoint not found.). The DCN is being trained with all-background region maps, so every per-region SPECT descriptor is zero and the feature stage contributes nothing. Train the segmentation head first for the full pipeline.",
+      "Trained on MRI only: this is the MRI branch of the MRI\u2013SPECT fusion model. The image-level fusion stage is implemented and measured separately (`evaluate_fusion`), but the paired MRI\u2013SPECT data carries no diagnosis labels, so no classifier is trained on fused images. These metrics describe MRI classification, not multimodal fusion.",
+      "The modality feature stage is active: region maps come from the trained multi-class segmentation head. That head's held-out foreground Dice is 0.3725, so the region descriptors below are approximate.",
       "The Kaggle brain-MRI classification dataset carries no patient identifiers, so samples can only be grouped by image identity (training groups byte-identical copies together). Scores from this dataset may still be optimistic if the same patient appears under unrelated filenames.",
       "Using the dataset's own Training/Testing split. It is an IMAGE-level split: this dataset ships no patient identifiers, so slices from one patient may appear on both sides and the test score can be optimistic.",
-      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified.",
-      "Correction (2026-10-17): the sentence above was written when this method had no paired MRI-SPECT data. 357 registered pairs have since been added and the image-level fusion stage is implemented and measured \u2014 see the fusion section of this file. What that sentence still gets right is this classifier: it is trained on MRI only, because the paired data carries no diagnosis labels."
+      "Dropped 134 Training images that are byte-identical to a Testing image, so the test score is not inflated by memorised copies. The Testing set itself was not modified."
     ]
   },
-  "updated_at": "2026-10-17T22:04:21+00:00",
+  "updated_at": "2026-10-18T09:26:28+00:00",
   "fusion": {
     "stage": "fusion",
     "method": "Laplacian pyramid fusion of MRI with the SPECT luminance; SPECT chrominance carried through unchanged",
