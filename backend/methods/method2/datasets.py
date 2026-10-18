@@ -169,24 +169,38 @@ class SpectClassificationDataset(Dataset):
 class CachedSpectClassificationDataset(Dataset):
     """Like :class:`SpectClassificationDataset`, over pre-filtered cached images.
 
-    Used when no segmentation model exists, so the region map is all background
-    (recorded by the caller). Augmentation is seeded; the descriptor is computed
-    after augmentation, exactly as the uncached dataset does.
+    The region map comes from ``seg_model`` when one is supplied, and is all
+    background otherwise — which the caller records rather than the dataset
+    silently substituting something. Augmentation is seeded, and the region map
+    is computed *after* augmentation so the channels describe the image the
+    network actually receives.
     """
 
-    def __init__(self, images: np.ndarray, labels: Sequence[int], augment: bool = False, seed: int = 42):
+    def __init__(self, images: np.ndarray, labels: Sequence[int], augment: bool = False,
+                 seed: int = 42, seg_model=None, device=None):
         self.images = images
         self.labels = np.asarray(labels, dtype=np.int64)
         self.aug = Augmentor(vflip=0.0, seed=seed) if augment else None
+        self.seg_model = seg_model
+        self.device = device
 
     def __len__(self) -> int:
         return len(self.labels)
+
+    def _regions(self, image: np.ndarray) -> np.ndarray:
+        if self.seg_model is None:
+            return np.zeros_like(image, dtype=np.uint8)
+        x = torch.from_numpy(np.ascontiguousarray(image)).float()[None, None]
+        if self.device is not None:
+            x = x.to(self.device)
+        with torch.no_grad():
+            return self.seg_model(x).argmax(dim=1).squeeze(0).cpu().numpy().astype(np.uint8)
 
     def __getitem__(self, idx: int):
         image = self.images[idx]
         if self.aug is not None:
             image = self.aug((image * 255).astype(np.uint8)).astype(np.float32) / 255.0
-        channels, descriptor = build_inputs(image, np.zeros_like(image, dtype=np.uint8), m2.NUM_REGIONS)
+        channels, descriptor = build_inputs(image, self._regions(image), m2.NUM_REGIONS)
         return (
             torch.from_numpy(np.ascontiguousarray(channels)).float(),
             torch.from_numpy(np.ascontiguousarray(descriptor)).float(),
