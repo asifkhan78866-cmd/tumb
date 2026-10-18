@@ -124,8 +124,16 @@ def evaluate(model, loader, device):
     )
 
 
-def prepare_mri_shared_split(args, warnings: list[str]):
-    """MRI branch: the same BRI split and test images as the other MRI methods."""
+def prepare_mri_shared_split(args, warnings: list[str], seg_model=None, device=None):
+    """MRI branch: the same BRI split and test images as the other MRI methods.
+
+    The split must not depend on whether the feature stage is active. It used to:
+    with a segmentation checkpoint present this method fell through to a generic
+    group-level split whose validation part was ~89% one class, so the network
+    scored 0.89 accuracy and 0.23 macro-F1 by predicting that class and nothing
+    else — and its numbers stopped being comparable with the other three methods,
+    which all report on the same 1,311 test images.
+    """
     from backend.methods.common.bri_data import cached_arrays, prepare_bri_split
     from backend.methods.method1.datasets import class_weights
     from backend.methods.method2.datasets import CachedSpectClassificationDataset
@@ -143,7 +151,8 @@ def prepare_mri_shared_split(args, warnings: list[str]):
         labels[part] = [remap[y] for _, y in samples]
         arr = cached_arrays(samples, preprocess_file, key, f"method2_{part}")
         parts[part] = CachedSpectClassificationDataset(arr, labels[part], augment=(part == "train"),
-                                                        seed=config.SEED)
+                                                        seed=config.SEED, seg_model=seg_model,
+                                                        device=device)
     # class_weights counts by index on (path, label) pairs, in this method's class order.
     counts = [labels["train"].count(i) for i in range(m2.NUM_CLASSES)]
     total = sum(counts)
@@ -180,12 +189,19 @@ def main() -> int:
     seg_model = load_segmentation(device, warnings)
     spec = m2.TRANSFORM
 
-    if modality == "MRI" and seg_model is None:
+    if modality == "MRI":
         try:
-            datasets, weights, ds_meta, split_kind, summary, dist, dropped = prepare_mri_shared_split(args, warnings)
+            datasets, weights, ds_meta, split_kind, summary, dist, dropped = prepare_mri_shared_split(
+                args, warnings, seg_model, device
+            )
         except Exception as exc:
             print(f"\nERROR: {exc}")
             return 1
+        warnings.insert(0, (
+            f"The modality feature stage {'is active: region maps come from the trained '
+            f'multi-class segmentation head' if seg_model is not None else 'ran with an '
+            f'all-background region map because no segmentation checkpoint was present'}."
+        ))
         warnings.insert(0, (
             "Trained on MRI only: this is the MRI branch of the MRI–SPECT fusion model. The "
             "image-level fusion stage is implemented and measured separately "
