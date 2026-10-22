@@ -114,3 +114,41 @@ def test_the_checked_in_notebooks_carry_their_outputs():
         images = sum(1 for c in nb["cells"] if c["cell_type"] == "code"
                      for o in c.get("outputs", []) if "image/png" in o.get("data", {}))
         assert images >= 2, f"{name} should show pictures without being run"
+
+
+def test_each_method_notebook_looks_at_different_images(built):
+    """Four notebooks that all show the same glioma teach less than four that
+    show four different scans — and that is what they did before this test."""
+    offsets, classes = set(), set()
+    for name, method_id in EXPECTED.items():
+        if not method_id:
+            continue
+        source = "\n".join(c.source for c in nbformat.read(built / name, as_version=4).cells)
+        offset = next(line for line in source.splitlines() if line.startswith("OFFSET = "))
+        focus = next(line for line in source.splitlines() if line.startswith("FOCUS = "))
+        offsets.add(offset)
+        classes.add(focus)
+    assert len(offsets) == 4, "every method must pick its examples from a different position"
+    assert len(classes) == 4, "every method must demonstrate a different class"
+
+
+def test_the_shipped_notebooks_share_no_rendered_image():
+    import hashlib
+
+    from backend import config
+
+    shipped = config.ROOT_DIR / "notebooks"
+    rendered = {}
+    for name, method_id in EXPECTED.items():
+        if not method_id:
+            continue  # the overview runs all four on one image, by design
+        if not (shipped / name).exists():
+            pytest.skip("notebooks have not been generated on this machine")
+        nb = json.loads((shipped / name).read_text())
+        rendered[name] = {
+            hashlib.sha1(o["data"]["image/png"].encode()).hexdigest()
+            for c in nb["cells"] if c["cell_type"] == "code"
+            for o in c.get("outputs", []) if "image/png" in o.get("data", {})
+        }
+    everywhere = set.intersection(*rendered.values())
+    assert not everywhere, f"{len(everywhere)} image(s) appear in all four notebooks"
