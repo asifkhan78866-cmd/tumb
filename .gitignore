@@ -128,6 +128,9 @@ backend/.env
 !backend/.env.example
 !frontend/.env.example
 
+# Terminal run folders (backend.cli.run_methods writes one per invocation)
+outputs/
+
 # Model / ROI caches (regenerated from the checkpoints)
 backend/.model_cache/
 
