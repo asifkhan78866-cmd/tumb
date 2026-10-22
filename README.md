@@ -320,6 +320,16 @@ threshold chosen on validation), and both numbers are in the metrics file.
 
 ## Repository layout
 
+A clone is 281 files and ~140 MB, and predicts immediately: the trained
+checkpoints and their recorded metrics are committed. [STRUCTURE.md](STRUCTURE.md)
+maps the whole tree and — more usefully on a machine that has only what was
+pushed — says what is *missing*, why, and how to get it. To see the state of a
+copy in front of you:
+
+```bash
+python -m backend.cli.doctor
+```
+
 ```
 tumb/
 ├── backend/
