@@ -54,6 +54,7 @@ patient-level.
 
 ```bash
 scripts/setup.sh                 # creates .venv, installs everything, reports what is ready
+scripts/unpack_data.sh           # unpacks the datasets that ship with the repository
 ```
 
 ```bash

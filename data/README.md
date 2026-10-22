@@ -1,58 +1,62 @@
 # data/
 
-The datasets themselves are **not** in this repository — they are downloaded:
+One command puts everything in place:
 
 ```bash
-scripts/download_dataset.sh                                   # the 4-class MRI set (Kaggle)
-python -m backend.utils.dataset_download --kind segmentation  # BraTS, needs a Kaggle account
+scripts/unpack_data.sh          # unpack what the repository ships
+scripts/unpack_data.sh --msd    # also fetch the 7.1 GB Decathlon volumes
 ```
 
-The Decathlon release of the BraTS volumes needs no account and is what the
-volumetric and multi-class models here were trained on:
+## What travels with the repository
+
+| Archive | Unpacks to | Size | What it is |
+|---|---|---|---|
+| `bri.zip.part-aa` + `-ab` | `bri/archive/{Training,Testing}` | 149 MB | the 4-class MRI dataset, 7,023 images — what every classifier was trained and tested on |
+| `spect_mri.zip` | `spect_mri/{MRI,SPECT}` | 12 MB | 357 registered MRI–SPECT pairs over 15 cases, behind Method 4's fusion numbers |
+| (loose) | `bri/archive/Testing/…`, `spect_mri/…` | 230 KB | nine sample images, so the documented commands run before anything is unpacked |
+
+The MRI dataset is split in two because GitHub refuses a single file over
+100 MB. `cat data/bri.zip.part-* > data/bri.zip` reassembles it, which is what
+the script does.
+
+## What does not, and why
+
+**The Decathlon (BraTS) volumes — 7.1 GB unpacked, 484 annotated volumes.** Far
+past what a git repository should carry. They are needed only to *retrain*
+segmentation or the 3D U-Net; every trained model in this repository already
+works without them. The download is public — no Kaggle account, no token:
 
 ```bash
+scripts/unpack_data.sh --msd
+# or by hand:
 curl -L -o data/msd_brain/Task01_BrainTumour.tar \
   https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar
 tar -xf data/msd_brain/Task01_BrainTumour.tar -C data/msd_brain
 ```
 
-## What *is* committed
+Method 3's 2D U-Net was trained on the figshare (Cheng) T1-contrast masks,
+which are a separate download again — see the segmentation run card for which
+release.
 
-A handful of example images, so the documented commands and the notebooks run
-on a fresh clone before anything is downloaded:
+## Where the data came from
 
-| path | from |
-|---|---|
-| `bri/archive/Testing/{glioma,meningioma,notumor,pituitary}/…` | [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) — one or two slices per class, from its **Testing** split |
-| `spect_mri/{MRI,SPECT}/10017.png` | one registered MRI–SPECT pair, for the fusion stage |
+| Dataset | Source | Licence |
+|---|---|---|
+| Brain Tumor MRI Dataset (4-class) | [Kaggle · masoudnickparvar](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) — itself a compilation of figshare, SARTAJ and Br35H | CC0 / CC BY per source |
+| Medical Segmentation Decathlon, Task01 | [medicaldecathlon.com](http://medicaldecathlon.com/) (BraTS) | CC BY-SA 4.0 |
+| Paired MRI–SPECT slices | Whole Brain Atlas–style registered pairs | research use |
 
-## The full paired MRI–SPECT set
+Redistributed here for reproducibility, with attribution. If you intend to use
+any of it beyond that, check the licence at the source.
 
-`spect_mri.zip` (12 MB) holds all **357 registered pairs over 15 cases** — the
-data Method 4's fusion stage was measured on. It is committed because it is
-small enough to ship and there is no download script for it:
+## Reproducing the numbers
 
 ```bash
 unzip -qo data/spect_mri.zip -d data/      # -> data/spect_mri/{MRI,SPECT}
-```
-
-`-o` overwrites without asking: the clone already holds one pair from this same
-set, and unzip would otherwise stop on a prompt.
-
-The archive carries `__MACOSX/` resource-fork entries from the Mac it was made
-on; every loader here skips dot-files, so they are noise rather than a problem.
-After unpacking, `PAIRED_MRI_SPECT_PATH` finds it with no configuration, and
-the fusion evaluation runs on all 357 pairs:
-
-```bash
 python -m backend.methods.method2.training.evaluate_fusion
 ```
 
-They are examples for demonstrations. Every accuracy in this project was
-measured on the full held-out split, not on these.
-
-```bash
-python -m backend.cli.run_methods data/bri/archive/Testing/meningioma/Te-me_0014.jpg
-python -m backend.cli.run_methods data/bri/archive/Testing/glioma/Te-gl_0012.jpg \
-    --methods 4 --spect data/spect_mri/SPECT/10017.png
-```
+`-o` overwrites without asking: the clone already holds one pair from this same
+set, and unzip would otherwise stop on a prompt. The archive carries
+`__MACOSX/` resource-fork entries from the Mac it was made on; every loader
+here skips dot-files, so they are noise rather than a problem.

@@ -89,7 +89,8 @@ tumb/
 │   ├── README.md                   where the real datasets come from
 │   ├── bri/archive/Testing/        7 slices, one or two per class
 │   ├── spect_mri/{MRI,SPECT}/      one registered MRI–SPECT pair
-│   └── spect_mri.zip      12 MB    all 357 pairs — unzip -d data/
+│   ├── spect_mri.zip      12 MB    all 357 pairs
+│   └── bri.zip.part-a{a,b} 149 MB  the full 4-class dataset, 7,023 images
 │
 └── tests/                        240 tests
 ```
@@ -117,9 +118,9 @@ tumb/
 | `.venv/` | ~3 GB | nothing runs | `scripts/setup.sh` |
 | `frontend/node_modules/` | ~400 MB | the dashboard cannot start | `cd frontend && npm install` |
 | **ImageNet backbones** | ~800 MB | **Method 1 only**: downloads them on first use | automatic, needs internet once |
-| `data/bri/archive` (full) | ~165 MB | predictions fine; **training** impossible | `scripts/download_dataset.sh` |
-| Decathlon (BraTS) volumes | ~7.6 GB | cannot retrain segmentation or the 3D U-Net | see [data/README.md](data/README.md) |
-| Paired MRI–SPECT (357) | 12 MB | fusion runs on the one sample pair until unpacked | `unzip -qo data/spect_mri.zip -d data/` — the zip **is** committed |
+| `data/bri/archive` (full) | 149 MB | predictions fine; **training** impossible until unpacked | `scripts/unpack_data.sh` — the archive **is** committed |
+| Decathlon (BraTS) volumes | 7.1 GB | cannot retrain segmentation or the 3D U-Net | `scripts/unpack_data.sh --msd` — too large to commit |
+| Paired MRI–SPECT (357) | 12 MB | fusion runs on the one sample pair until unpacked | `scripts/unpack_data.sh` — the zip **is** committed |
 | `outputs/`, `backend/predictions/` | — | created on first run | automatic |
 | `backend/.model_cache/` | varies | preprocessing recomputed once | automatic |
 
@@ -164,7 +165,8 @@ which is deliberate — renaming the ids would invalidate every checkpoint.
 
 ```bash
 scripts/setup.sh                      # 1 · environment            (~10 min)
-python -m backend.cli.doctor          # 2 · what is present
+scripts/unpack_data.sh                # 2 · datasets out of their archives
+python -m backend.cli.doctor          # 3 · what is present
 python -m backend.cli.run_methods data/bri/archive/Testing/meningioma/Te-me_0014.jpg
 ```
 
