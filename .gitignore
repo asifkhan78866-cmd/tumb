@@ -189,3 +189,6 @@ data/spect_mri/SPECT/*
 !data/spect_mri/SPECT/10017.png
 # The full paired set as a zip, so a clone can unpack all 357 pairs (12 MB).
 !data/spect_mri.zip
+# The 4-class MRI dataset, split into parts under GitHub's 100 MB file limit.
+!data/bri.zip.part-aa
+!data/bri.zip.part-ab
