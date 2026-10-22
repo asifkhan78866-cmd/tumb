@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    image: neuroseg-backend:latest
     container_name: neuroseg-backend
     ports:
       - "8000:8000"
@@ -13,30 +14,37 @@ services:
       - MAX_UPLOAD_MB=20
       - METHOD2_MODALITY=SPECT
       - TRAINING_API_ENABLED=false
-    # Kaggle/HF credentials are read from a local .env by the BACKEND only.
+    # Kaggle/API credentials are read from a local .env by the BACKEND only.
     # They are never passed to the frontend service.
     env_file:
       - path: .env
         required: false
     volumes:
-      # Persist weights, dataset and generated images across restarts.
-      - ./backend/weights:/app/backend/weights
-      - ./backend/dataset:/app/backend/dataset
+      # Only what the container *writes* is mounted. The weights and the metrics
+      # are baked into the image: mounting the host's copy over them would hide
+      # the trained models behind an empty folder on a machine that pulled the
+      # image rather than cloning the repository.
       - ./backend/predictions:/app/backend/predictions
-      - ./backend/logs:/app/backend/logs
+      - ./backend/uploads:/app/backend/uploads
+      # Uncomment to train inside the container against a dataset on the host.
+      # - ./data:/app/data
+      # - ./backend/weights:/app/backend/weights
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s
-      timeout: 5s
-      retries: 3
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        # Build-time: this value is compiled into the browser bundle.
-        NEXT_PUBLIC_API_URL: http://localhost:8000
+        # Build-time: this value is compiled into the browser bundle, so it is
+        # the address the *browser* uses, not the one the container uses.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    image: neuroseg-frontend:latest
     container_name: neuroseg-frontend
     ports:
       - "3000:3000"

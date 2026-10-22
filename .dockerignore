@@ -1,24 +1,43 @@
+# What must NOT go into the image: environments, caches, notebooks, datasets.
 **/__pycache__/
 **/*.pyc
 .venv/
 venv/
+.pytest_cache/
 frontend/node_modules/
 frontend/.next/
-# Keep the shipped Method 1 classifier and its metrics IN the image so a plain
-# `docker run` behaves like a checkout. Everything else generated is excluded.
-backend/weights/*.pth
-!backend/weights/best_classifier.pth
-backend/dataset/*
-backend/predictions/*
-backend/uploads/*
-backend/logs/*
-!backend/logs/metrics.json
-!backend/logs/method1_metrics.json
-backend/.model_cache/
-.venv/
-.env
 .git/
-.gitignore
-*.md
-!README.md
-data/
+.env
+outputs/
+notebooks/
+backend/.model_cache/
+backend/uploads/*
+backend/predictions/*
+backend/dataset/*
+backend/logs/*.log
+# Dataset folders unpacked at the project root (see .gitignore).
+BraTs 2023
+SPECT-MRI
+kaggle
+
+# The datasets are gigabytes and are downloaded, not shipped. Unlike .gitignore,
+# a file under an excluded directory CAN be re-included here, so the handful of
+# sample images the documented commands use are named one by one — a pattern
+# over the folders would pull in the whole test split sitting beside them.
+data
+!data/README.md
+!data/bri/archive/Testing/meningioma/Te-me_0014.jpg
+!data/bri/archive/Testing/glioma/Te-gl_0010.jpg
+!data/bri/archive/Testing/glioma/Te-gl_0012.jpg
+!data/bri/archive/Testing/glioma/Te-glTr_0000.jpg
+!data/bri/archive/Testing/notumor/Te-noTr_0000.jpg
+!data/bri/archive/Testing/notumor/Te-no_0015.jpg
+!data/bri/archive/Testing/pituitary/Te-pi_0010.jpg
+!data/spect_mri/MRI/10017.png
+!data/spect_mri/SPECT/10017.png
+
+# Everything a trained method needs IS shipped: backend/weights (the four
+# methods' checkpoints and the two SVM bundles) and backend/logs (the metrics
+# they were measured with, the run cards and the plots). An image without them
+# would start up and report every method untrained, which is the one thing this
+# project must never do quietly.

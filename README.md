@@ -124,6 +124,19 @@ and a few sample images come with it, so nothing has to be downloaded first. Use
 `.venv/bin/python` rather than `python` — macOS has no `python` on PATH — or run
 `source .venv/bin/activate` once per terminal.
 
+### No Python on the target machine?
+
+Use Docker instead — the image carries Python, torch and the trained
+checkpoints, so the receiving machine needs only Docker Desktop:
+
+```bash
+docker compose up --build        # http://localhost:3000
+```
+
+[DOCKER.md](DOCKER.md) covers sending it to another machine, including the
+architecture trap (an image built on Apple Silicon will not start on a normal
+PC) and how to send it as a single file with no accounts involved.
+
 ### If setup fails
 
 `scripts/setup.sh` prints your Python version and CPU architecture first,
