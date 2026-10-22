@@ -26,6 +26,25 @@ on a fresh clone before anything is downloaded:
 | `bri/archive/Testing/{glioma,meningioma,notumor,pituitary}/…` | [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) — one or two slices per class, from its **Testing** split |
 | `spect_mri/{MRI,SPECT}/10017.png` | one registered MRI–SPECT pair, for the fusion stage |
 
+## The full paired MRI–SPECT set
+
+`spect_mri.zip` (12 MB) holds all **357 registered pairs over 15 cases** — the
+data Method 4's fusion stage was measured on. It is committed because it is
+small enough to ship and there is no download script for it:
+
+```bash
+unzip -q data/spect_mri.zip -d data/      # -> data/spect_mri/{MRI,SPECT}
+```
+
+The archive carries `__MACOSX/` resource-fork entries from the Mac it was made
+on; every loader here skips dot-files, so they are noise rather than a problem.
+After unpacking, `PAIRED_MRI_SPECT_PATH` finds it with no configuration, and
+the fusion evaluation runs on all 357 pairs:
+
+```bash
+python -m backend.methods.method2.training.evaluate_fusion
+```
+
 They are examples for demonstrations. Every accuracy in this project was
 measured on the full held-out split, not on these.
 

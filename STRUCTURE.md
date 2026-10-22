@@ -88,7 +88,8 @@ tumb/
 ├── data/                 230 KB  ── SAMPLES ONLY ─────────────────────────────
 │   ├── README.md                   where the real datasets come from
 │   ├── bri/archive/Testing/        7 slices, one or two per class
-│   └── spect_mri/{MRI,SPECT}/      one registered MRI–SPECT pair
+│   ├── spect_mri/{MRI,SPECT}/      one registered MRI–SPECT pair
+│   └── spect_mri.zip      12 MB    all 357 pairs — unzip -d data/
 │
 └── tests/                        240 tests
 ```
@@ -118,7 +119,7 @@ tumb/
 | **ImageNet backbones** | ~800 MB | **Method 1 only**: downloads them on first use | automatic, needs internet once |
 | `data/bri/archive` (full) | ~165 MB | predictions fine; **training** impossible | `scripts/download_dataset.sh` |
 | Decathlon (BraTS) volumes | ~7.6 GB | cannot retrain segmentation or the 3D U-Net | see [data/README.md](data/README.md) |
-| Paired MRI–SPECT (357) | 13 MB | fusion runs on the one sample pair only | see [data/README.md](data/README.md) |
+| Paired MRI–SPECT (357) | 12 MB | fusion runs on the one sample pair until unpacked | `unzip -q data/spect_mri.zip -d data/` — the zip **is** committed |
 | `outputs/`, `backend/predictions/` | — | created on first run | automatic |
 | `backend/.model_cache/` | varies | preprocessing recomputed once | automatic |
 

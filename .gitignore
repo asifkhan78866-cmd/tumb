@@ -187,3 +187,5 @@ data/spect_mri/SPECT/*
 !data/bri/archive/Testing/pituitary/Te-pi_0010.jpg
 !data/spect_mri/MRI/10017.png
 !data/spect_mri/SPECT/10017.png
+# The full paired set as a zip, so a clone can unpack all 357 pairs (12 MB).
+!data/spect_mri.zip
