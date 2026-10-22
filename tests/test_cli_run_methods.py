@@ -37,9 +37,10 @@ def test_one_block_per_method_and_a_summary(monkeypatch, capsys, image, tmp_path
     for number in (1, 2, 3, 4):
         assert f"METHOD {number}" in out
     assert "SUMMARY" in out
-    # Every method names what it is and where its files went.
+    # Every method names what it is, what its pictures show, and where they went.
     assert out.count("What it is") == 4
-    assert out.count("Images") == 4
+    assert out.count("What you see") == 4
+    assert out.count("Saved to") == 4
 
 
 def test_each_method_writes_its_images_into_its_own_folder(monkeypatch, capsys, image, tmp_path):
@@ -115,7 +116,7 @@ def test_a_methods_caveats_are_printed_not_dropped(monkeypatch, capsys, image, t
 
 def test_a_borrowed_mask_is_labelled_as_borrowed(monkeypatch, capsys, image, tmp_path):
     _, out = _invoke(monkeypatch, capsys, str(image), "--methods", "1",
-                     "--outdir", str(tmp_path / "runs"))
+                     "--images", "off", "--outdir", str(tmp_path / "runs"))
     flat = " ".join(out.split())
     if "mask " in flat:
         assert "borrowed from the U-Net" in flat or "Not part of this method" in flat
