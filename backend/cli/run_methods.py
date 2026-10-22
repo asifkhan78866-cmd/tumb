@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Optional
 
 from backend import config
+from backend.cli import render
 from backend.methods.common.metrics_store import metrics_for
 from backend.methods.registry import METHOD_IDS, get_method, list_methods, load_engine
 
@@ -172,22 +173,13 @@ def wrap(text: str, width: int = 86) -> list[str]:
     return textwrap.wrap(text, width=width) or [""]
 
 
-def inline_image(path: Path, enabled: bool, height: int = 14) -> None:
-    """Draw the image in the terminal, where the terminal can draw images.
-
-    Uses the iTerm2 inline-image escape, which iTerm2 and recent VS Code
-    terminals understand. Terminals that do not would print the base64 payload
-    as noise, so this only runs when asked for.
-    """
-    if not enabled:
+def draw(run: "MethodRun", mode: str) -> None:
+    """Draw this method's images in the terminal, side by side and captioned."""
+    if mode == "off" or not run.images:
         return
-    import base64
-
-    payload = base64.b64encode(path.read_bytes()).decode()
-    sys.stdout.write(
-        f"\033]1337;File=inline=1;height={height};preserveAspectRatio=1:{payload}\a\n"
-    )
-    sys.stdout.flush()
+    order = [n for n in ("input", "mask", "gradcam", "fused") if n in run.images]
+    render.show([run.images[n] for n in order], order,
+                mode="inline" if mode == "inline" else "blocks")
 
 
 def run_method(method_id: str, image_bytes: bytes, spect_bytes: Optional[bytes],
@@ -223,7 +215,7 @@ def run_method(method_id: str, image_bytes: bytes, spect_bytes: Optional[bytes],
     )
 
 
-def print_run(run: MethodRun, source: Path, inline: bool) -> None:
+def print_run(run: MethodRun, source: Path, images: str) -> None:
     spec = get_method(run.method_id)
     metrics = metrics_for(run.method_id)
     notes = image_notes(spec, run.details)
@@ -260,12 +252,16 @@ def print_run(run: MethodRun, source: Path, inline: bool) -> None:
                                  for name, value in rows])
 
     if run.images:
+        print()
+        draw(run, images)
+        print()
         lines = []
-        for name, path in run.images.items():
-            lines.append(f"{name:<9}{path}")
-            for i, part in enumerate(wrap(notes.get(name, ""), width=70)):
-                lines.append(dim(f"         {'└─ ' if i == 0 else '   '}{part}"))
-        field("Images", *lines)
+        for name in run.images:
+            parts = wrap(notes.get(name, ""), width=70)
+            lines.append(f"{name:<9}{parts[0]}")
+            lines.extend(f"{'':<9}{dim(part)}" for part in parts[1:])
+        field("What you see", *lines)
+        field("Saved to", str(run.directory))
 
     if run.warnings:
         shown = [w for w in run.warnings]
@@ -276,9 +272,6 @@ def print_run(run: MethodRun, source: Path, inline: bool) -> None:
             lines.extend("  " + p for p in parts[1:])
         field("Caveats", *lines)
 
-    for name in ("input", "gradcam", "mask", "fused"):
-        if name in run.images:
-            inline_image(run.images[name], inline)
 
 
 def main() -> int:
@@ -298,8 +291,12 @@ def main() -> int:
     ap.add_argument("--outdir", default=None,
                     help="where to write the run folder (default: outputs/)")
     ap.add_argument("--open", action="store_true", help="open the produced images afterwards")
-    ap.add_argument("--inline", action="store_true",
-                    help="draw images in the terminal (iTerm2 / recent VS Code terminals)")
+    ap.add_argument("--images", choices=["auto", "blocks", "inline", "off"], default="auto",
+                    help=("how to draw the images: 'blocks' (coloured half-blocks, works in any "
+                          "colour terminal), 'inline' (iTerm2 protocol, true resolution), "
+                          "'auto' picks inline when the terminal supports it, 'off' prints paths "
+                          "only"))
+    ap.add_argument("--inline", action="store_true", help="shorthand for --images inline")
     ap.add_argument("--json", action="store_true", help="also print the run as JSON")
     ap.add_argument("--list", action="store_true", help="list the methods and exit")
     args = ap.parse_args()
@@ -335,6 +332,10 @@ def main() -> int:
                 return 1
         wanted = tuple(dict.fromkeys(chosen))
 
+    image_mode = "inline" if args.inline else args.images
+    if image_mode == "auto":
+        image_mode = "inline" if render.supports_inline() else "blocks"
+
     image_bytes = source.read_bytes()
     spect_bytes = None
     if args.spect:
@@ -362,7 +363,7 @@ def main() -> int:
                       f"({get_method(method_id).short_name}) failed: {exc}"))
             continue
         runs.append(run)
-        print_run(run, source, args.inline)
+        print_run(run, source, image_mode)
 
     print()
     print(cyan("━" * 92))
