@@ -80,6 +80,15 @@ def table(rows, headers):
         print("  ".join(str(c).ljust(w) for c, w in zip(row, widths)))'''
 
 
+def focus_class(spec) -> str:
+    """The class this method's notebook predicts on.
+
+    Rotating by display number gives the four notebooks four different classes,
+    which is more informative than four runs on the same glioma.
+    """
+    return spec.class_names[(spec.display_number - 1) % len(spec.class_names)]
+
+
 def md(text: str) -> nbf.NotebookNode:
     return nbf.v4.new_markdown_cell(text.strip("\n"))
 
@@ -278,13 +287,21 @@ The images below come from the dataset's own **Testing** folder — the held-out
 split the metrics further down were measured on. They are examples, not
 predictions.
 """),
-        code('''root = config.BRI_DATASET_PATH / "Testing"
-samples = {}
+        code(f'''# Each method's notebook looks at *different* images, so four notebooks open
+# side by side show four sets of scans rather than the same one four times.
+# OFFSET is this method's display number; it only shifts which examples are
+# shown, never which images anything was trained or measured on.
+OFFSET = {spec.display_number - 1}
+FOCUS = "{focus_class(spec)}"
+
+root = config.BRI_DATASET_PATH / "Testing"
+samples = {{}}
 for class_key in spec.class_names:
-    folder = root / ({"normal": "notumor"}.get(class_key, class_key))
-    files = sorted(folder.glob("*.jpg"))[:1] if folder.is_dir() else []
+    folder = root / ({{"normal": "notumor"}}.get(class_key, class_key))
+    files = sorted(folder.glob("*.jpg")) if folder.is_dir() else []
     if files:
-        samples[spec.class_labels[class_key]] = files[0]
+        # A clone ships one or two images per class; a full dataset has hundreds.
+        samples[spec.class_labels[class_key]] = files[min(OFFSET, len(files) - 1)]
 
 show([read(p) for p in samples.values()], list(samples), width=3.2)
 table([[label, path.name] for label, path in samples.items()], ["class", "example file"])'''),
@@ -325,7 +342,8 @@ The class, the probabilities, and every image this method writes: the
 preprocessed input it actually read, the segmentation mask, the Grad-CAM
 heatmap, and — for the fusion method — the fused image.
 """),
-        code('''image_path = list(samples.values())[0]
+        code('''# FOCUS differs per method, so each notebook demonstrates a different class.
+image_path = samples.get(spec.class_labels[FOCUS], list(samples.values())[0])
 result = engine.predict(image_path.read_bytes())
 
 print(f"input      : {image_path}")
