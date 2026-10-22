@@ -131,15 +131,26 @@ because that pair is what usually breaks: PyTorch does not publish a wheel for
 every combination, and pip's "No matching distribution found for torch" does not
 say which half is wrong.
 
-| what you see | why | fix |
+| what you see | why | what happens |
 |---|---|---|
 | `python: command not found` | macOS ships `python3` only | use `.venv/bin/python`, or `source .venv/bin/activate` |
-| `No matching distribution found for torch` on an **Intel** Mac | PyTorch's last Intel build, 2.2.2, supports Python 3.8–3.11 | `brew install python@3.11 && PYTHON=python3.11 scripts/setup.sh` |
-| the same on **Apple Silicon** | the Python is newer than any torch wheel | `PYTHON=python3.12 scripts/setup.sh` |
-| `Cache entry deserialization failed` | a half-written pip cache | the script purges it and retries by itself |
+| `No matching distribution found for torch (from versions: none)` | no torch wheel exists for that Python and CPU — on an **Intel** Mac, PyTorch's last Intel build (2.2.2) supports Python 3.8–3.11, so 3.12+ can never work | the script now looks for a Python that can, in `/Library/Frameworks`, `/usr/local/bin` and `/opt/homebrew/bin`, and uses it |
+| `Cache entry deserialization failed` | a half-written pip cache | the script purges it and retries once |
+| `no usable Python found` | nothing on the machine is 3.10–3.13 | it prints the interpreters you do have and two ways to install one |
 
-The setup script applies the Intel pin on its own; the table is there for when
-you are installing by hand.
+**With no Homebrew**, either works and neither needs admin tooling:
+
+```bash
+# a) the python.org installer — double-click, universal (Intel + Apple Silicon)
+open https://www.python.org/downloads/macos/   # take the latest 3.12.x (3.11.x on Intel)
+
+# b) uv — one binary that installs Pythons
+curl -LsSf https://astral.sh/uv/install.sh | sh
+~/.local/bin/uv python install 3.12
+~/.local/bin/uv venv --python 3.12 .venv
+```
+
+Then re-run `scripts/setup.sh`. The Intel torch pin is applied automatically.
 
 ---
 

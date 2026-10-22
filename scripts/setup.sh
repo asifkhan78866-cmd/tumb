@@ -17,57 +17,100 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 
-PY="${PYTHON:-python3}"
-if ! command -v "$PY" >/dev/null 2>&1; then
-  echo "ERROR: '$PY' is not on PATH." >&2
-  echo "       macOS has no 'python', only 'python3'. Install one with: brew install python@3.12" >&2
-  exit 1
-fi
-
 ARCH="$(uname -m)"
 OS="$(uname -s)"
-PYVER="$("$PY" -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
-PYMAJ="${PYVER%%.*}"; PYMIN="${PYVER##*.}"
-echo "[setup] $("$PY" -c 'import sys; print(sys.executable)')"
-echo "[setup] Python $PYVER · $OS $ARCH"
-
-fail_with() {
-  echo >&2
-  echo "ERROR: $1" >&2
-  echo >&2
-  echo "  Fix:  $2" >&2
-  echo "        PYTHON=$3 scripts/setup.sh" >&2
-  exit 1
-}
-
-if [ "$PYMAJ" -lt 3 ] || { [ "$PYMAJ" -eq 3 ] && [ "$PYMIN" -lt 10 ]; }; then
-  fail_with "Python $PYVER is too old; this project needs 3.10 or newer." \
-            "brew install python@3.12" "python3.12"
-fi
 
 # PyTorch stopped shipping macOS Intel (x86_64) wheels after 2.2.2, and 2.2.2
 # supports Python 3.8-3.11. Those two facts together are what produces
-# "(from versions: none)" on an Intel Mac running a recent Python.
+# "No matching distribution found for torch (from versions: none)" on an Intel
+# Mac running a recent Python — so which interpreters can work is decided here,
+# before anything is downloaded.
+if [ "$OS" = "Darwin" ] && [ "$ARCH" = "x86_64" ]; then
+  WANTED="3.11 3.10"
+  WANTED_LABEL="3.11 or 3.10 (PyTorch's last Intel build, 2.2.2, supports Python 3.8-3.11)"
+else
+  WANTED="3.13 3.12 3.11 3.10"
+  WANTED_LABEL="3.13, 3.12, 3.11 or 3.10"
+fi
+
+version_of() { "$1" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null; }
+
+usable() {
+  local found; found="$(version_of "$1")" || return 1
+  [ -n "$found" ] || return 1
+  for want in $WANTED; do [ "$found" = "$want" ] && return 0; done
+  return 1
+}
+
+# Everywhere a Python may live on a Mac that has no package manager.
+candidates() {
+  [ -n "${PYTHON:-}" ] && printf '%s\n' "$PYTHON"
+  for want in $WANTED; do
+    printf '%s\n' "python$want"
+    printf '%s\n' "/Library/Frameworks/Python.framework/Versions/$want/bin/python3"
+    printf '%s\n' "/opt/homebrew/bin/python$want" "/usr/local/bin/python$want"
+  done
+  printf '%s\n' python3 /usr/bin/python3
+  # A venv built earlier is itself a usable interpreter, and may be the only one
+  # on a machine whose system Python cannot install torch.
+  printf '%s\n' .venv/bin/python
+}
+
+PY=""
+while read -r candidate; do
+  [ -n "$candidate" ] || continue
+  command -v "$candidate" >/dev/null 2>&1 || [ -x "$candidate" ] || continue
+  if usable "$candidate"; then PY="$candidate"; break; fi
+done <<EOF
+$(candidates)
+EOF
+
+if [ -z "$PY" ]; then
+  echo "ERROR: no usable Python found. This project needs $WANTED_LABEL." >&2
+  echo >&2
+  echo "       Interpreters on this machine:" >&2
+  while read -r candidate; do
+    [ -n "$candidate" ] || continue
+    if command -v "$candidate" >/dev/null 2>&1 || [ -x "$candidate" ]; then
+      found="$(version_of "$candidate")"
+      [ -n "$found" ] && echo "         $candidate -> $found" >&2
+    fi
+  done <<EOF2
+$(candidates)
+EOF2
+  echo >&2
+  echo "       Install one, no package manager needed — either:" >&2
+  echo >&2
+  echo "       a) python.org installer (double-click, works on Intel and Apple Silicon)" >&2
+  echo "          https://www.python.org/downloads/macos/" >&2
+  echo "          Take the latest ${WANTED%% *}.x 'macOS 64-bit universal2 installer', then re-run:" >&2
+  echo "            scripts/setup.sh" >&2
+  echo >&2
+  echo "       b) uv, a single binary that installs Pythons for you:" >&2
+  echo "            curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
+  echo "            ~/.local/bin/uv python install ${WANTED%% *}" >&2
+  echo "            ~/.local/bin/uv venv --python ${WANTED%% *} .venv" >&2
+  echo "            scripts/setup.sh" >&2
+  exit 1
+fi
+
+PYVER="$(version_of "$PY")"
+echo "[setup] $("$PY" -c 'import sys; print(sys.executable)')"
+echo "[setup] Python $PYVER · $OS $ARCH"
+
 TORCH_PINS=""
 if [ "$OS" = "Darwin" ] && [ "$ARCH" = "x86_64" ]; then
-  if [ "$PYMIN" -ge 12 ]; then
-    fail_with "PyTorch publishes no macOS Intel (x86_64) wheel for Python $PYVER — its last Intel release, 2.2.2, supports Python 3.8-3.11." \
-              "brew install python@3.11" "python3.11"
-  fi
   TORCH_PINS="torch==2.2.2 torchvision==0.17.2"
   echo "[setup] macOS Intel: pinning $TORCH_PINS (the last release with Intel wheels)"
-elif [ "$PYMIN" -ge 14 ]; then
-  echo "[setup] WARNING: Python $PYVER is very new; if torch has no wheel yet, re-run with"
-  echo "[setup]          PYTHON=python3.12 scripts/setup.sh"
 fi
 
 if [ ! -x .venv/bin/python ]; then
   echo "[setup] creating .venv"
   "$PY" -m venv .venv
 else
-  existing="$(.venv/bin/python -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
-  if [ "$existing" != "$PYVER" ]; then
-    echo "[setup] .venv holds Python $existing but you asked for $PYVER — rebuilding it"
+  existing="$(version_of .venv/bin/python)"
+  if ! usable .venv/bin/python; then
+    echo "[setup] .venv holds Python $existing, which cannot install torch here — rebuilding it"
     rm -rf .venv
     "$PY" -m venv .venv
   else
