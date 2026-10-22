@@ -33,8 +33,11 @@ data Method 4's fusion stage was measured on. It is committed because it is
 small enough to ship and there is no download script for it:
 
 ```bash
-unzip -q data/spect_mri.zip -d data/      # -> data/spect_mri/{MRI,SPECT}
+unzip -qo data/spect_mri.zip -d data/      # -> data/spect_mri/{MRI,SPECT}
 ```
+
+`-o` overwrites without asking: the clone already holds one pair from this same
+set, and unzip would otherwise stop on a prompt.
 
 The archive carries `__MACOSX/` resource-fork entries from the Mac it was made
 on; every loader here skips dot-files, so they are noise rather than a problem.
