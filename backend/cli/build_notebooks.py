@@ -196,7 +196,8 @@ table([[k, f"{fusion['metrics'][k]['mean']:.4f}", f"{fusion['average_baseline'][
 print("\\nQ_abf is the share of both sources' gradient information kept (0-1).")'''),
             code('''from backend.methods.method2 import fusion as F
 
-name = sorted(p.name for p in (config.PAIRED_MRI_SPECT_PATH / "MRI").glob("*.png"))[10]
+names = sorted(p.name for p in (config.PAIRED_MRI_SPECT_PATH / "MRI").glob("*.png"))
+name = names[min(10, len(names) - 1)]  # a clone has the one sample pair, not all 357
 mri = read(config.PAIRED_MRI_SPECT_PATH / "MRI" / name)
 spect = read(config.PAIRED_MRI_SPECT_PATH / "SPECT" / name)
 pair = F.fuse(mri, spect)

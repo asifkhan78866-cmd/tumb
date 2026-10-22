@@ -153,4 +153,37 @@ npm-debug.log*
 .idea/
 
 # Local datasets (large, never committed)
-data/
+# Datasets are not committed — they are downloaded (scripts/download_dataset.sh).
+# The exception is the handful of images the documented commands and the notebooks
+# use as examples, so a fresh clone can run them before downloading anything.
+data/*
+!data/README.md
+!data/bri/
+data/bri/*
+!data/bri/archive/
+data/bri/archive/*
+!data/bri/archive/Testing/
+data/bri/archive/Testing/*
+!data/bri/archive/Testing/glioma/
+data/bri/archive/Testing/glioma/*
+!data/bri/archive/Testing/meningioma/
+data/bri/archive/Testing/meningioma/*
+!data/bri/archive/Testing/notumor/
+data/bri/archive/Testing/notumor/*
+!data/bri/archive/Testing/pituitary/
+data/bri/archive/Testing/pituitary/*
+!data/spect_mri/
+data/spect_mri/*
+!data/spect_mri/MRI/
+data/spect_mri/MRI/*
+!data/spect_mri/SPECT/
+data/spect_mri/SPECT/*
+!data/bri/archive/Testing/meningioma/Te-me_0014.jpg
+!data/bri/archive/Testing/glioma/Te-gl_0010.jpg
+!data/bri/archive/Testing/glioma/Te-gl_0012.jpg
+!data/bri/archive/Testing/glioma/Te-glTr_0000.jpg
+!data/bri/archive/Testing/notumor/Te-noTr_0000.jpg
+!data/bri/archive/Testing/notumor/Te-no_0015.jpg
+!data/bri/archive/Testing/pituitary/Te-pi_0010.jpg
+!data/spect_mri/MRI/10017.png
+!data/spect_mri/SPECT/10017.png
