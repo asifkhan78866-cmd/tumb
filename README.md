@@ -106,21 +106,40 @@ table elsewhere changes — the API, the UI and the PDF report all iterate the r
 ## 🚀 Quick start
 
 ```bash
-# 1. Configure
-cp .env.example .env          # fill in Kaggle credentials only if you will download data
+# 1. Environment (creates .venv, installs everything, reports what is ready)
+scripts/setup.sh
 
-# 2. Backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r backend/requirements.txt
-uvicorn backend.main:app --reload          # http://localhost:8000/docs
+# 2. Try every method on one image, in the terminal
+.venv/bin/python -m backend.cli.run_methods data/bri/archive/Testing/meningioma/Te-me_0014.jpg
 
-# 3. Frontend
-cd frontend && npm install
-npm run dev                                # http://localhost:3000
+# 3. Backend
+.venv/bin/python -m uvicorn backend.main:app --reload --port 8000   # http://localhost:8000/docs
+
+# 4. Frontend
+cd frontend && npm install && npm run dev                           # http://localhost:3000
 ```
 
-The app runs immediately. Method 1 will classify (its classifier ships) and will
-tell you that segmentation is unavailable; Method 2 will tell you it is untrained.
+Everything runs on a fresh clone: the trained checkpoints are in the repository
+and a few sample images come with it, so nothing has to be downloaded first. Use
+`.venv/bin/python` rather than `python` — macOS has no `python` on PATH — or run
+`source .venv/bin/activate` once per terminal.
+
+### If setup fails
+
+`scripts/setup.sh` prints your Python version and CPU architecture first,
+because that pair is what usually breaks: PyTorch does not publish a wheel for
+every combination, and pip's "No matching distribution found for torch" does not
+say which half is wrong.
+
+| what you see | why | fix |
+|---|---|---|
+| `python: command not found` | macOS ships `python3` only | use `.venv/bin/python`, or `source .venv/bin/activate` |
+| `No matching distribution found for torch` on an **Intel** Mac | PyTorch's last Intel build, 2.2.2, supports Python 3.8–3.11 | `brew install python@3.11 && PYTHON=python3.11 scripts/setup.sh` |
+| the same on **Apple Silicon** | the Python is newer than any torch wheel | `PYTHON=python3.12 scripts/setup.sh` |
+| `Cache entry deserialization failed` | a half-written pip cache | the script purges it and retries by itself |
+
+The setup script applies the Intel pin on its own; the table is there for when
+you are installing by hand.
 
 ---
 
