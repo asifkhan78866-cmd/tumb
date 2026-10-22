@@ -1,6 +1,6 @@
 # Project structure — what a clone has, and what it does not
 
-A clone is **281 files, ~140 MB**, and it can predict immediately: the trained
+A clone is **~280 files, ~140 MB**, and it can predict immediately: the trained
 checkpoints, the metrics they were measured with, and a few sample images are
 all committed. What is *not* committed is everything that can be downloaded or
 regenerated — the datasets (gigabytes), the Python environment, the caches.
@@ -88,9 +88,7 @@ tumb/
 ├── data/                 230 KB  ── SAMPLES ONLY ─────────────────────────────
 │   ├── README.md                   where the real datasets come from
 │   ├── bri/archive/Testing/        7 slices, one or two per class
-│   ├── spect_mri/{MRI,SPECT}/      one registered MRI–SPECT pair
-│   ├── spect_mri.zip      12 MB    all 357 pairs
-│   └── bri.zip.part-a{a,b} 149 MB  the full 4-class dataset, 7,023 images
+│   └── spect_mri/{MRI,SPECT}/      one registered MRI–SPECT pair
 │
 └── tests/                        240 tests
 ```
@@ -118,9 +116,9 @@ tumb/
 | `.venv/` | ~3 GB | nothing runs | `scripts/setup.sh` |
 | `frontend/node_modules/` | ~400 MB | the dashboard cannot start | `cd frontend && npm install` |
 | **ImageNet backbones** | ~800 MB | **Method 1 only**: downloads them on first use | automatic, needs internet once |
-| `data/bri/archive` (full) | 149 MB | predictions fine; **training** impossible until unpacked | `scripts/unpack_data.sh` — the archive **is** committed |
+| `data/bri/archive` (full) | 149 MB | predictions fine; **training** impossible | `scripts/download_dataset.sh`, or drop the shared `bri.zip` into `data/` |
 | Decathlon (BraTS) volumes | 7.1 GB | cannot retrain segmentation or the 3D U-Net | `scripts/unpack_data.sh --msd` — too large to commit |
-| Paired MRI–SPECT (357) | 12 MB | fusion runs on the one sample pair until unpacked | `scripts/unpack_data.sh` — the zip **is** committed |
+| Paired MRI–SPECT (357) | 12 MB | fusion runs on the one sample pair | drop the shared `spect_mri.zip` into `data/`, then `scripts/unpack_data.sh` |
 | `outputs/`, `backend/predictions/` | — | created on first run | automatic |
 | `backend/.model_cache/` | varies | preprocessing recomputed once | automatic |
 

@@ -4,9 +4,9 @@
 #   scripts/unpack_data.sh            # unpack what the repository ships
 #   scripts/unpack_data.sh --msd      # also fetch the 7.1 GB Decathlon volumes
 #
-# Two of the three datasets travel with the repository as archives; the third
-# is far too large for that and is downloaded instead, from a public bucket
-# that needs no account.
+# No dataset travels with the repository any more: between them they were
+# 160 MB of archives that every clone had to carry whether or not it ever
+# trained anything. Each is a download now, and this script knows where from.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -17,20 +17,31 @@ have() { command -v "$1" >/dev/null 2>&1; }
 have unzip || { echo "ERROR: 'unzip' is not installed." >&2; exit 1; }
 
 # --- 1. The 4-class MRI dataset (7,023 images) ----------------------------- #
-# Shipped as two parts because GitHub refuses a single file over 100 MB.
 if [ -d data/bri/archive/Training ] && \
    [ "$(find data/bri/archive -name '*.jpg' | wc -l | tr -d ' ')" -gt 5000 ]; then
   echo "[data] MRI dataset already unpacked"
 elif ls data/bri.zip.part-* >/dev/null 2>&1; then
+  # Kept for anyone who still has the split archive from a shared folder.
   echo "[data] reassembling the MRI dataset from its parts"
   cat data/bri.zip.part-* > data/bri.zip
-  # -o: the repository already ships a few of these images as samples, and
-  # unzip would otherwise stop to ask whether to replace each one.
+  # -o: the repository ships a few of these images as samples, and unzip would
+  # otherwise stop to ask whether to replace each one.
   unzip -qo data/bri.zip -d data/
   rm -f data/bri.zip
   echo "[data] MRI dataset: $(find data/bri/archive -name '*.jpg' | wc -l | tr -d ' ') images"
+elif [ -f data/bri.zip ]; then
+  echo "[data] unpacking data/bri.zip"
+  unzip -qo data/bri.zip -d data/
+  echo "[data] MRI dataset: $(find data/bri/archive -name '*.jpg' | wc -l | tr -d ' ') images"
 else
-  echo "[data] MRI dataset parts not found — run scripts/download_dataset.sh instead"
+  cat <<'MSG'
+[data] MRI dataset: not here. Nine sample images ship with the repository, which
+       is enough to run every method; the full 7,023 are needed only to train.
+       Get them either way:
+
+         scripts/download_dataset.sh        # from Kaggle, needs a token
+         # or drop the shared data.zip / bri.zip into data/ and re-run this
+MSG
 fi
 
 # --- 2. The paired MRI-SPECT slices (357 pairs) ---------------------------- #
@@ -41,7 +52,8 @@ elif [ -f data/spect_mri.zip ]; then
   unzip -qo data/spect_mri.zip -d data/
   echo "[data] MRI-SPECT: $(ls data/spect_mri/MRI/*.png | wc -l | tr -d ' ') pairs"
 else
-  echo "[data] data/spect_mri.zip not found"
+  echo "[data] MRI-SPECT pairs: not here (one sample pair ships with the repository)."
+  echo "       Drop the shared spect_mri.zip into data/ and re-run this script."
 fi
 
 # --- 3. The Decathlon (BraTS) volumes -------------------------------------- #

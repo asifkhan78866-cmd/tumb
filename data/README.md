@@ -9,15 +9,23 @@ scripts/unpack_data.sh --msd    # also fetch the 7.1 GB Decathlon volumes
 
 ## What travels with the repository
 
-| Archive | Unpacks to | Size | What it is |
-|---|---|---|---|
-| `bri.zip.part-aa` + `-ab` | `bri/archive/{Training,Testing}` | 149 MB | the 4-class MRI dataset, 7,023 images — what every classifier was trained and tested on |
-| `spect_mri.zip` | `spect_mri/{MRI,SPECT}` | 12 MB | 357 registered MRI–SPECT pairs over 15 cases, behind Method 4's fusion numbers |
-| (loose) | `bri/archive/Testing/…`, `spect_mri/…` | 230 KB | nine sample images, so the documented commands run before anything is unpacked |
+Nine sample images, 230 KB: one or two slices per class and one MRI–SPECT pair.
+Enough for every documented command and every method to run — nothing else is
+needed to *use* the trained models.
 
-The MRI dataset is split in two because GitHub refuses a single file over
-100 MB. `cat data/bri.zip.part-* > data/bri.zip` reassembles it, which is what
-the script does.
+The datasets themselves are not committed. They were, briefly, as 160 MB of
+archives, and every clone had to carry them whether or not it ever trained
+anything; they were removed from the history for that reason.
+
+| Dataset | Needed for | Size | Get it |
+|---|---|---|---|
+| 4-class MRI, 7,023 images | training any classifier | 149 MB | `scripts/download_dataset.sh`, or drop `bri.zip` into `data/` |
+| 357 MRI–SPECT pairs | reproducing the fusion metrics | 12 MB | drop `spect_mri.zip` into `data/` |
+| Decathlon (BraTS) volumes | training segmentation or the 3D U-Net | 7.1 GB | `scripts/unpack_data.sh --msd` |
+
+Put any archive you were given into `data/` and run `scripts/unpack_data.sh`;
+it finds `bri.zip`, `bri.zip.part-*` or `spect_mri.zip` and unpacks whichever
+are there.
 
 ## What does not, and why
 
@@ -52,7 +60,7 @@ any of it beyond that, check the licence at the source.
 ## Reproducing the numbers
 
 ```bash
-unzip -qo data/spect_mri.zip -d data/      # -> data/spect_mri/{MRI,SPECT}
+scripts/unpack_data.sh                     # unpacks whatever archives are in data/
 python -m backend.methods.method2.training.evaluate_fusion
 ```
 
