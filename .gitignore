@@ -190,3 +190,10 @@ data/spect_mri/SPECT/*
 # Dataset archives are not committed — they were, and every clone had to carry
 # 160 MB whether or not it ever trained anything. Drop them into data/ and
 # scripts/unpack_data.sh will find them.
+
+# Artefacts the research notebook writes next to itself when it trains
+# (the ensemble checkpoint is ~290 MB).
+best_unified_pipeline.keras
+unified_ensemble_pipeline_final.keras
+training_history.pkl
+*.keras
