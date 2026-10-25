@@ -46,7 +46,6 @@ tumb/
 │   ├── cli/                      ── terminal tools ───────────────────────────
 │   │   ├── run_methods.py          every method on one image, with its images
 │   │   ├── render.py               drawing images in a terminal
-│   │   ├── build_notebooks.py      generates notebooks/ from the registry
 │   │   └── doctor.py               what this copy can run
 │   │
 │   ├── methods/                  ── the four pipelines ───────────────────────
@@ -83,7 +82,7 @@ tumb/
 │   ├── components/                 prediction card, galleries, status cards
 │   └── lib/api.ts                  typed client for every endpoint
 │
-├── notebooks/            ~5 MB   one per method + overview, saved with outputs
+├── notebooks/                    the paper's own Colab work (TensorFlow, not this backend)
 │
 ├── data/                 230 KB  ── SAMPLES ONLY ─────────────────────────────
 │   ├── README.md                   where the real datasets come from

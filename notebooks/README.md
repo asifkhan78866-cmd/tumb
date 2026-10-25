@@ -1,48 +1,45 @@
 # Notebooks
 
-One notebook per method, plus an overview. Each is saved **with its outputs**, so
-the images and numbers are visible without running anything — open a file and
-scroll.
+This folder holds the research notebook the paper is written from — the Colab
+work exported as `.ipynb`.
 
-| notebook | method |
-|---|---|
-| [00_overview.ipynb](00_overview.ipynb) | All four side by side: what is trained, the dataset, the held-out results, the same image through every method |
-| [01_method1_pretrained_transfer.ipynb](01_method1_pretrained_transfer.ipynb) | Pre-trained CNNs + transfer learning (GoogleNet + VGG16 + ResNet-50 + AlexNet feature fusion) |
-| [02_method2_zfnet_redfox.ipynb](02_method2_zfnet_redfox.ipynb) | Red Fox optimised ZFNet, and the SVM on Red Fox–selected features |
-| [03_method3_unet_convlstm_sfla.ipynb](03_method3_unet_convlstm_sfla.ipynb) | U-Net → ROI → ConvLSTM → SFLA, the SFLA feature selection, and the 3D U-Net |
-| [04_method4_mri_spect_fusion.ipynb](04_method4_mri_spect_fusion.ipynb) | MRI–SPECT fusion: the multi-class segmentation, the feature stage, and the fusion transform |
-
-`train_unet_brats_gpu.ipynb` is older and unrelated to this set.
+It is **not** the same implementation as `backend/`. The notebook is TensorFlow /
+Keras and works from BraTS2023 downloaded through `kagglehub`; the backend is
+PyTorch and serves the four methods described in [../README.md](../README.md).
+They share the subject, not the code, and a number from one should never be
+quoted as a number from the other.
 
 ## Running them in VS Code
 
-1. Install the **Jupyter** extension (`ms-toolsai.jupyter`) if it isn't already.
-2. Open a notebook, click **Select Kernel** (top right) → **Python Environments** →
-   `.venv/bin/python` from this project. Everything it imports lives in that venv.
-3. **Run All**. A full pass takes a minute or two; nothing in them trains.
+1. Install the **Jupyter** extension (`ms-toolsai.jupyter`).
+2. Open a notebook → **Select Kernel** → **Python Environments** → `.venv/bin/python`.
+3. The notebook needs TensorFlow, which this project does not install (the
+   backend is PyTorch). For a Colab notebook, either run it in Colab where those
+   packages already exist, or add them here first:
 
-If the kernel picker doesn't list the venv, run this once and reopen VS Code:
+   ```bash
+   .venv/bin/pip install tensorflow kagglehub fuzzy-c-means
+   ```
+
+   On Apple Silicon use `tensorflow-macos` instead of `tensorflow`.
+
+## What used to be here
+
+Four generated notebooks, one per backend method, plus an overview. They read
+the recorded metrics and ran the trained checkpoints, but they described the
+backend rather than the paper, so they were removed along with their generator
+(`backend/cli/build_notebooks.py`). Both are recoverable from git history:
 
 ```bash
-cd /Users/syedasif/tumb && .venv/bin/python -m ipykernel install --user --name tumb --display-name "Python (tumb)"
+git log --oneline --diff-filter=D -- notebooks/
+git checkout <commit>^ -- notebooks/ backend/cli/build_notebooks.py
 ```
 
-## Regenerating them
-
-The notebooks are generated from the registry and the recorded evaluations, so
-they cannot drift from the code:
+To see what the backend's trained models actually produce, use the terminal
+runner instead — it shows every method's prediction and images side by side:
 
 ```bash
-python -m backend.cli.build_notebooks            # rewrite the notebooks
-python -m backend.cli.build_notebooks --execute  # rewrite and run them, saving outputs
+.venv/bin/python -m backend.cli.run_methods data/bri/archive/Testing/meningioma/Te-me_0014.jpg
 ```
 
-Re-run with `--execute` after retraining anything, otherwise the saved outputs
-describe the previous checkpoint.
-
-## What they do not do
-
-Nothing here trains a model or computes a test metric. Every accuracy is read
-from the evaluation its training run recorded, and every image is produced by
-the checkpoint currently on disk. Each notebook ends with the caveats that
-method recorded — they are part of the result, not a footnote.
+`train_unet_brats_gpu.ipynb` is older and unrelated to either set.

@@ -30,7 +30,7 @@ def line(state: str, label: str, detail: str = "", fix: str = "") -> bool:
     mark = _SYMBOL[state]
     if _TTY:
         mark = f"\033[{_COLOUR[state]}m{mark}\033[0m"
-    print(f"  {mark} {label:<46}{detail}")
+    print(f"  {mark} {label:<50}{detail}")
     if fix:
         print(f"      {'→':<2} {fix}")
     return state != BAD

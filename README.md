@@ -3,7 +3,7 @@
 Four independent deep-learning pipelines for brain-MRI tumour analysis, each
 implemented end to end, each trained and evaluated separately, all served behind
 one FastAPI backend and one Next.js dashboard — plus a terminal runner and a set
-of notebooks that show what every method produced.
+a terminal runner that shows what every method produced.
 
 > ⚠️ **Research / decision-support only.** Not a certified medical device, not
 > clinically validated, and not to be used to diagnose or treat anyone. Every
@@ -151,14 +151,14 @@ method's weights can never be served by another, and a model trained on whole
 slices is never fed ROI crops.
 
 **2 · Metrics are read, never computed at request time.** The API, the UI, the
-terminal runner and the notebooks all read the same metrics files written by the
+terminal runner and the dashboard all read the same metrics files written by the
 training runs. They cannot disagree with each other, and nothing can quietly
 "recompute" a nicer number.
 
 **3 · Warnings travel with results.** Each run records what is wrong with it —
 an image-level split, a borrowed mask, a mediocre segmentation feeding a feature
 stage — and those sentences follow the number into the API response, the
-dashboard, the PDF report and the notebooks.
+dashboard and the PDF report.
 
 ### What happens on one prediction
 
@@ -340,7 +340,6 @@ tumb/
 │   ├── cli/
 │   │   ├── run_methods.py          every method on one image, in the terminal
 │   │   ├── render.py               images as half-blocks / iTerm2 inline
-│   │   └── build_notebooks.py      generates notebooks/ from the registry
 │   ├── methods/
 │   │   ├── registry.py             each method's identity, pipeline, datasets, weights
 │   │   ├── common/                 split, checkpoints, metrics store, run cards,
@@ -353,7 +352,7 @@ tumb/
 │   ├── weights/                    trained checkpoints (committed)
 │   └── logs/                       metrics, run cards, plots (committed)
 ├── frontend/                       Next.js 15 dashboard, 6 pages
-├── notebooks/                      one per method + overview, saved with outputs
+├── notebooks/                      the paper's own Colab work (TensorFlow, not this backend)
 ├── data/                           datasets (downloaded) + a few sample images
 ├── scripts/setup.sh                environment bootstrap
 ├── tests/                          240 tests
@@ -404,12 +403,6 @@ python -m backend.methods.method2.training.train_classifier --modality mri
 python -m backend.methods.method2.training.evaluate_fusion
 ```
 
-After retraining anything, regenerate the notebooks so their saved outputs match:
-
-```bash
-python -m backend.cli.build_notebooks --execute
-```
-
 ---
 
 ## API
@@ -431,7 +424,7 @@ Interactive docs at `/docs` once the backend is running.
 
 ---
 
-## Terminal runner and notebooks
+## Terminal runner
 
 ```bash
 .venv/bin/python -m backend.cli.run_methods IMAGE [--methods 2,4] [--spect SPECT.png] [--images inline|blocks|off]
@@ -441,9 +434,9 @@ One block per method: what it is, its recorded accuracy, the prediction, a
 probability bar per class, **the images drawn in the terminal**, what each one
 shows, and the caveats. Files land in `outputs/<timestamp>_<image>/`.
 
-[notebooks/](notebooks/) holds one notebook per method plus an overview, each
-saved with its outputs — open one and the pictures and numbers are there without
-running a kernel. See [notebooks/README.md](notebooks/README.md).
+[notebooks/](notebooks/) holds the paper's own Colab notebook. It is a separate
+TensorFlow implementation of the same research and is **not** what the backend
+runs — see [notebooks/README.md](notebooks/README.md).
 
 ---
 
@@ -457,7 +450,7 @@ They cover the things that would otherwise fail silently: that a split never
 leaks, that one method's checkpoint cannot load into another, that an untrained
 method returns no class, that metrics are `null` rather than `0.0` when nothing
 was measured, that a feature-selection artefact built from a different
-checkpoint is refused, and that the notebooks never train anything.
+checkpoint is refused.
 
 ---
 
